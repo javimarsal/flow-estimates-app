@@ -1,7 +1,8 @@
-<p>panel works!</p>
-
-<div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let panelName of panelNames" cdkDrag>
-        {{panelName}}
+<div cdkDropList cdkDropListOrientation="horizontal" class="panelList" (cdkDropListDropped)="drop($event)">
+    <div cdkDropListGroup>
+        <div class="panelContainer" *ngFor="let panelName of panelNames" cdkDrag>
+            <h2>{{panelName}}</h2>
+            <app-work-item></app-work-item>
+        </div>
     </div>
 </div>
