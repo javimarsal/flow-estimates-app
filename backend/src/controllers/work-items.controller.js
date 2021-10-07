@@ -1,35 +1,35 @@
-const workitemController = {}
+const workItemController = {}
 
-const Workitem = require('../models/Work-item');
+const WorkItem = require('../models/Work-item');
 
-workitemController.getWorkitems = async (req, res) => {
-    const workitems = await Workitem.find();
-    res.json(workitems)
+workItemController.getWorkItems = async (req, res) => {
+    const workItems = await WorkItem.find();
+    res.json(workItems)
 }
 
-workitemController.creatWorkitem = async (req, res) => {
+workItemController.creatWorkItem = async (req, res) => {
     // Creamos el objeto con lo que nos manda el cliente (req)
-    const newWorkitem = new Workitem(req.body)
+    const newWorkItem = new WorkItem(req.body)
     
     // Guardamos el nuevo objeto
-    await newWorkitem.save()
+    await newWorkItem.save()
 
     res.send({ message: 'Work item created' })
 }
 
-workitemController.getWorkitem = async (req, res) => {
-    const workitem = await Workitem.findById(req.params.id)
-    res.send(workitem)
+workItemController.getWorkItem = async (req, res) => {
+    const workItem = await WorkItem.findById(req.params.id)
+    res.send(workItem)
 }
 
-workitemController.editWorkitem = async (req, res) => {
-    await Workitem.findByIdAndUpdate(req.params.id, req.body)
+workItemController.editWorkItem = async (req, res) => {
+    await WorkItem.findByIdAndUpdate(req.params.id, req.body)
     res.send({ message: 'Work item updated' })
 }
 
-workitemController.deleteWorkitem = async (req, res) => {
-    await Workitem.findByIdAndDelete(req.params.id)
+workItemController.deleteWorkItem = async (req, res) => {
+    await WorkItem.findByIdAndDelete(req.params.id)
     res.send({ message: 'Work item deleted' })
 }
 
-module.exports = workitemController;
+module.exports = workItemController;

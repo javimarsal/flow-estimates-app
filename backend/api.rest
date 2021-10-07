@@ -1,3 +1,34 @@
+// Panels
+###
+GET http://localhost:4000/api/panels
+
+###
+POST http://localhost:4000/api/panels
+Content-Type: application/json
+
+{
+    "name": "Close",
+    "position": 4
+}
+
+###
+GET http://localhost:4000/api/panels/615f38f434f2c45eaca3d019
+
+###
+PUT http://localhost:4000/api/panels/615f3a2434f2c45eaca3d028
+Content-Type: application/json
+
+{
+    "name": "Doing"
+}
+
+###
+DELETE http://localhost:4000/api/panels/615f38f434f2c45eaca3d019
+
+
+
+
+// Work-Items
 ###
 GET http://localhost:4000/api/workitems
 
@@ -6,16 +37,16 @@ POST http://localhost:4000/api/workitems
 Content-Type: application/json
 
 {
-    "name": "have breakfast",
+    "name": "have breakfast again",
     "panel": "ToDO",
     "position": 2
 }
 
 ###
-GET http://localhost:4000/api/workitems/615de84c2a2467a6e375c09c
+GET http://localhost:4000/api/workitems/615de802b4719e1dbb786f66
 
 ###
-PUT http://localhost:4000/api/workitems/615de802b4719e1dbb786f66
+PUT http://localhost:4000/api/workitems/615f2118b0cc9646f1f4a090
 Content-Type: application/json
 
 {
@@ -23,4 +54,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:4000/api/workitems/615de84c2a2467a6e375c09c
+DELETE http://localhost:4000/api/workitems/615f2118b0cc9646f1f4a090

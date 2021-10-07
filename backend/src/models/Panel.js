@@ -1,8 +1,7 @@
 const { Schema, model }  = require('mongoose')
 
-const workItemSchema = new Schema({
+const panelSchema = new Schema({
     name: {type: String, required: true},
-    panel: {type: String, required: true},
     position: {type: Number, required: true}
 },
 {
@@ -13,4 +12,4 @@ const workItemSchema = new Schema({
     versionKey: false
 })
 
-module.exports = model('work-item', workItemSchema);
+module.exports = model('panel', panelSchema);
