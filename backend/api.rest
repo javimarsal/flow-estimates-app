@@ -1,0 +1,26 @@
+###
+GET http://localhost:4000/api/workitems
+
+###
+POST http://localhost:4000/api/workitems
+Content-Type: application/json
+
+{
+    "name": "have breakfast",
+    "panel": "ToDO",
+    "position": 2
+}
+
+###
+GET http://localhost:4000/api/workitems/615de84c2a2467a6e375c09c
+
+###
+PUT http://localhost:4000/api/workitems/615de802b4719e1dbb786f66
+Content-Type: application/json
+
+{
+    "panel": "Done"
+}
+
+###
+DELETE http://localhost:4000/api/workitems/615de84c2a2467a6e375c09c
