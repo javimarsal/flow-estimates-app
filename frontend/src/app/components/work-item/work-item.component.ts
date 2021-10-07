@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { WorkItemService } from 'src/app/services/work-item.service';
 
 @Component({
   selector: 'app-work-item',
@@ -7,7 +8,23 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
   styleUrls: ['./work-item.component.css']
 })
 
-export class WorkItemComponent {
+export class WorkItemComponent implements OnInit {
+
+  constructor(private workitemService: WorkItemService) { }
+
+  ngOnInit(): void {
+    
+  }
+
+  getWorkItems() {
+    this.workitemService.getWorkItems().subscribe(
+      res => {
+        this.workitemService.workItems = res;
+      },
+      err => console.log(err)
+    )
+  }
+
   todo = [
     'Get to work',
     'Pick up groceries',
