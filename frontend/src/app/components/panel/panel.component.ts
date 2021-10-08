@@ -10,10 +10,10 @@ import { PanelService } from 'src/app/services/panel.service';
 
 export class PanelComponent implements OnInit {
 
-  constructor(private panelService: PanelService) { }
+  constructor(public panelService: PanelService) { }
 
   ngOnInit(): void {
-    
+    this.getPanels();
   }
 
   getPanels() {
