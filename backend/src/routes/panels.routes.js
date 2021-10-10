@@ -4,7 +4,7 @@ const panelController = require('../controllers/panel.controller')
 // enrutador que permite guardar rutas (URLs del servidor)
 const router = Router();
 
-// Para utilizar estas rutas deben requrirse en app.js
+// Para utilizar estas rutas deben requerirse en app.js
 // CRUD (Create - Read - Update - Delete)
 router.get('/', panelController.getPanels);
 

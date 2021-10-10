@@ -15,15 +15,15 @@ Content-Type: application/json
 GET http://localhost:4000/api/panels/615f38f434f2c45eaca3d019
 
 ###
-PUT http://localhost:4000/api/panels/615f3a2434f2c45eaca3d028
+PUT http://localhost:4000/api/panels/615f3a3134f2c45eaca3d02a
 Content-Type: application/json
 
 {
-    "name": "Doing"
+    "position": 2
 }
 
 ###
-DELETE http://localhost:4000/api/panels/615f38f434f2c45eaca3d019
+DELETE http://localhost:4000/api/panels/616024919a8b70ff924341e1
 
 
 
@@ -37,9 +37,9 @@ POST http://localhost:4000/api/workitems
 Content-Type: application/json
 
 {
-    "name": "have breakfast again",
-    "panel": "ToDO",
-    "position": 2
+    "name": "Walk dog",
+    "panel": "Doing",
+    "position": 5
 }
 
 ###
@@ -54,4 +54,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:4000/api/workitems/615f2118b0cc9646f1f4a090
+DELETE http://localhost:4000/api/workitems/615de802b4719e1dbb786f66
