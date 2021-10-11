@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+
+// Services
 import { PanelService } from 'src/app/services/panel.service';
+
+// Models
 import { Panel } from 'src/app/models/panel';
+
 
 @Component({
   selector: 'app-panel',

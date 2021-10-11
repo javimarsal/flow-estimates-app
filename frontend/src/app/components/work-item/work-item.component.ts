@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { ElementRef } from '@angular/core';
+
+// Services
 import { WorkItemService } from 'src/app/services/work-item.service';
+
+// Models
+import { WorkItem } from 'src/app/models/work-item';
+
 
 @Component({
   selector: 'app-work-item',
@@ -9,36 +16,47 @@ import { WorkItemService } from 'src/app/services/work-item.service';
 })
 
 export class WorkItemComponent implements OnInit {
+  
+  workItemNames: string[] = [];
+  panelNames: string[] = [];
 
-  constructor(private workitemService: WorkItemService) { }
+  constructor(public workitemService: WorkItemService, private elRef: ElementRef) { }
 
   ngOnInit(): void {
-    
+    this.getWorkItems();
   }
 
   getWorkItems() {
     this.workitemService.getWorkItems().subscribe(
       res => {
-        this.workitemService.workItems = res;
+        // Le llegan todos los workitems
+        // Filtrar por el tablero que le corresponde y guardarlos en this.workItemNames
+        this.workItemNames = this.filterWorkItems(res);
       },
       err => console.log(err)
     )
   }
 
-  todo = [
-    'Get to work',
-    'Pick up groceries',
-    'Go home',
-    'Fall asleep'
-  ];
+  filterWorkItems(workItems: WorkItem[]): string[] {
+    // Nombre del id del panel en el que nos encontramos
+    let panelName = this.elRef.nativeElement.parentElement.id;
 
-  done = [
-    'Get up',
-    'Brush teeth',
-    'Take a shower',
-    'Check e-mail',
-    'Walk dog'
-  ];
+    // array de string donde guardaremos los nombres de los workItems
+    let workItemNames: string[] = [];
+
+    for(let workItem of workItems) {
+      // Panel que le corresponde al workItem
+      let workItemPanel = workItem.panel;
+
+      // Si el panel del workItem corresponde con el que nos encontramos, lo guardamos
+      if(workItemPanel == panelName) {
+        workItemNames.push(workItem.name);
+      }
+    }
+
+    return workItemNames;
+  }
+
 
   drop(event: CdkDragDrop<string[]>) {
     if(event.previousContainer === event.container) {
@@ -50,5 +68,10 @@ export class WorkItemComponent implements OnInit {
                         event.previousIndex,
                         event.currentIndex);
     }
+    // PRUEBAS
+    console.log(`PreviousContainer: ${event.previousContainer.data}`)
+    console.log(`Container: ${event.container.id}`)
+    console.log(`PreviousIndex: ${event.previousIndex}`);
+    console.log(`CurrentIndex: ${event.currentIndex}`);
   }
 }

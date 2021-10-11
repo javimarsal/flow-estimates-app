@@ -9,7 +9,7 @@ export class WorkItemService {
 
   URL_API = 'http://localhost:4000/api/workitems';
 
-  workItems: WorkItem[] = [];
+  //workItems: WorkItem[] = [];
 
   constructor(private http: HttpClient) { }
 

@@ -1,5 +1,5 @@
-<div cdkDropList [cdkDropListData]="todo" class="itemList" (cdkDropListDropped)="drop($event)">
-    <div class="itemBox" *ngFor="let item of todo" cdkDrag>
+<div cdkDropList [cdkDropListData]="workItemNames" class="itemList" (cdkDropListDropped)="drop($event)">
+    <div class="itemBox" *ngFor="let item of workItemNames" cdkDrag>
         {{item}}
     </div>
 </div>
