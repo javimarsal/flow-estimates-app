@@ -34,6 +34,10 @@ export class PanelComponent implements OnInit {
     )
   }
 
+  updatePosition() {
+
+  }
+
   getNames(panels: Panel[]) {
     let panelNames: string[] = [];
 
@@ -59,6 +63,50 @@ export class PanelComponent implements OnInit {
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.panelNames, event.previousIndex, event.currentIndex);
 
-    // Actualizar la posición del panel
+    // Actualizar la posición del panel si este cambia de posición
+    if(event.previousIndex != event.currentIndex){
+      // Necesitamos el panel que queremos actualizar      
+      let panel: Panel;
+
+      // Obtenemos la posición del panel (antes de moverse)
+      let previousPosition = event.previousIndex;
+
+      // Posición a la que se mueve el panel
+      let currentPosition = event.currentIndex;
+      
+      // Buscamos el Objeto Panel en el array panelService.panels
+      panel = this.getPanelByPosition(previousPosition, currentPosition);
+      
+
+      // Actualizar la posición del resto de paneles que se ven afectados
+      // hay que actualizar el resto antes de actualizar el propio panel
+    }
+
+    
   }
+
+  getPanelByPosition(previousPosition: number, currentPosition: number): Panel {
+    // Panel que devolvemos
+    let panel: Panel = {
+      name: '',
+      position: 0
+    };
+
+    // Buscamos el Objeto Panel en el array panelService.panels
+    for(let p of this.panelService.panels) {
+      // Si encontramos la misma posición es el panel que buscamos
+      if(p.position == previousPosition) {
+        // Hemos encontrado el Objeto Panel
+        panel = p;
+
+        // Cambiamos su posición por la nueva a la que va
+        panel.position = currentPosition;
+
+        return panel;
+      }
+    }
+
+    return panel;
+  }
+
 }
