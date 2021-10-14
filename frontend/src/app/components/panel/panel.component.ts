@@ -24,10 +24,15 @@ export class PanelComponent implements OnInit {
     this.getPanels();
   }
 
+  setPanelService_Panels(panels: Panel[]) {
+    this.panelService.panels = panels;
+  }
+
   getPanels() {
     this.panelService.getPanels().subscribe(
       res => {
-        this.panelService.panels = res;
+        //this.panelService.panels = res;
+        this.setPanelService_Panels(res);
         this.panelNames = this.getNames(res);
         console.log(this.panelService.panels)
       },
@@ -40,6 +45,47 @@ export class PanelComponent implements OnInit {
       res => console.log(res),
       err => console.log(err)
     )
+  }
+
+  updateAffectedPanels(idMovedPanel: string | undefined, previousPosition: number, currentPosition: number): Panel[] {
+    // Paneles que devolvemos para luego actualizar this.panelService.panels
+    let updatedPanels: Panel[] = [];
+    
+    for(let p of this.panelService.panels) {
+      // No vamos a actualizar el panel que hemos movido (porque ya está actualizado)
+      if(p._id != idMovedPanel) {
+        let panelToBeUpdated: Panel = {
+          _id: p._id,
+          name: p.name,
+          position: p.position
+        };
+
+        // Si currentPosition > previousPosition (hay que restar --)
+        if(currentPosition > previousPosition) {
+          if(panelToBeUpdated.position>=previousPosition && panelToBeUpdated.position<=currentPosition) {
+            panelToBeUpdated.position--;
+
+            // Actualizamos el panel
+            this.updatePanel(panelToBeUpdated);
+          }
+        }
+        
+        // Si currentPosition < previousPosition (hay que sumar ++)
+        if(currentPosition < previousPosition) {
+          if(panelToBeUpdated.position>=currentPosition && panelToBeUpdated.position<=previousPosition) {
+            panelToBeUpdated.position++;
+
+            // Actualizamos el panel
+            this.updatePanel(panelToBeUpdated);
+          }
+        }
+
+        updatedPanels.push(panelToBeUpdated);
+      }
+
+    }
+    
+    return updatedPanels;
   }
 
   getNames(panels: Panel[]) {
@@ -85,6 +131,12 @@ export class PanelComponent implements OnInit {
       this.updatePanel(panel);
       
       // Actualizar la posición del resto de paneles que se ven afectados
+      let updatedPanels = this.updateAffectedPanels(panel._id, previousPosition, currentPosition);
+
+      updatedPanels.push(panel)
+
+      // Actualizar this.panelService.panels
+      this.setPanelService_Panels(updatedPanels);
       
     }
 
@@ -103,7 +155,9 @@ export class PanelComponent implements OnInit {
       // Si encontramos la misma posición es el panel que buscamos
       if(p.position == previousPosition) {
         // Hemos encontrado el Objeto Panel
-        panel = p;
+        panel._id = p._id;
+        panel.name = p.name;
+        panel.position = p.position;
 
         // Cambiamos su posición por la nueva a la que va (p de this.panelService.panels también cambia su posición)
         panel.position = currentPosition;
