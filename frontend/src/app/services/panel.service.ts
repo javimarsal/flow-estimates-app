@@ -17,4 +17,8 @@ export class PanelService {
     return this.http.get<Panel[]>(this.URL_API);
   }
 
+  updatePanel(panel: Panel) {
+    return this.http.put(this.URL_API + `/${panel._id}`, panel);
+  }
+
 }

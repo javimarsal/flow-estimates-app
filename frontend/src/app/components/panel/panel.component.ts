@@ -29,13 +29,17 @@ export class PanelComponent implements OnInit {
       res => {
         this.panelService.panels = res;
         this.panelNames = this.getNames(res);
+        console.log(this.panelService.panels)
       },
       err => console.log(err)
     )
   }
 
-  updatePosition() {
-
+  updatePanel(panel: Panel) {
+    this.panelService.updatePanel(panel).subscribe(
+      res => console.log(res),
+      err => console.log(err)
+    )
   }
 
   getNames(panels: Panel[]) {
@@ -76,10 +80,12 @@ export class PanelComponent implements OnInit {
       
       // Buscamos el Objeto Panel en el array panelService.panels
       panel = this.getPanelByPosition(previousPosition, currentPosition);
-      
 
+      // Actualizamos el panel en la bbdd
+      this.updatePanel(panel);
+      
       // Actualizar la posición del resto de paneles que se ven afectados
-      // hay que actualizar el resto antes de actualizar el propio panel
+      
     }
 
     
@@ -99,7 +105,7 @@ export class PanelComponent implements OnInit {
         // Hemos encontrado el Objeto Panel
         panel = p;
 
-        // Cambiamos su posición por la nueva a la que va
+        // Cambiamos su posición por la nueva a la que va (p de this.panelService.panels también cambia su posición)
         panel.position = currentPosition;
 
         return panel;
