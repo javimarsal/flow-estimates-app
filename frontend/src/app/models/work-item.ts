@@ -1,8 +1,8 @@
 export interface WorkItem {
-    _id: string
+    _id?: string
     name: string
     panel: string
     position: number
-    createdAt: string
-    updatedAt: string
+    createdAt?: string
+    updatedAt?: string
 }

@@ -31,10 +31,8 @@ export class PanelComponent implements OnInit {
   getPanels() {
     this.panelService.getPanels().subscribe(
       res => {
-        //this.panelService.panels = res;
         this.setPanelService_Panels(res);
         this.panelNames = this.getNames(res);
-        console.log(this.panelService.panels)
       },
       err => console.log(err)
     )
@@ -88,7 +86,7 @@ export class PanelComponent implements OnInit {
     return updatedPanels;
   }
 
-  getNames(panels: Panel[]) {
+  getNames(panels: Panel[]): string[] {
     let panelNames: string[] = [];
 
     // Ordenar los paneles por el número de posición
@@ -125,7 +123,10 @@ export class PanelComponent implements OnInit {
       let currentPosition = event.currentIndex;
       
       // Buscamos el Objeto Panel en el array panelService.panels
-      panel = this.getPanelByPosition(previousPosition, currentPosition);
+      panel = this.getPanelByPosition(previousPosition);
+
+      // Actualizamos la posición del panel
+      panel = this.changePosition(panel, currentPosition);
 
       // Actualizamos el panel en la bbdd
       this.updatePanel(panel);
@@ -133,7 +134,8 @@ export class PanelComponent implements OnInit {
       // Actualizar la posición del resto de paneles que se ven afectados
       let updatedPanels = this.updateAffectedPanels(panel._id, previousPosition, currentPosition);
 
-      updatedPanels.push(panel)
+      // Agregamos el panel que movemos para...
+      updatedPanels.push(panel);
 
       // Actualizar this.panelService.panels
       this.setPanelService_Panels(updatedPanels);
@@ -143,7 +145,7 @@ export class PanelComponent implements OnInit {
     
   }
 
-  getPanelByPosition(previousPosition: number, currentPosition: number): Panel {
+  getPanelByPosition(previousPosition: number): Panel {
     // Panel que devolvemos
     let panel: Panel = {
       name: '',
@@ -154,17 +156,20 @@ export class PanelComponent implements OnInit {
     for(let p of this.panelService.panels) {
       // Si encontramos la misma posición es el panel que buscamos
       if(p.position == previousPosition) {
-        // Hemos encontrado el Objeto Panel
+        // Hemos encontrado el Objeto Panel y le actualizamos la posición
         panel._id = p._id;
         panel.name = p.name;
         panel.position = p.position;
 
-        // Cambiamos su posición por la nueva a la que va (p de this.panelService.panels también cambia su posición)
-        panel.position = currentPosition;
-
         return panel;
       }
     }
+
+    return panel;
+  }
+
+  changePosition(panel: Panel, newPosition: number): Panel {
+    panel.position = newPosition;
 
     return panel;
   }
