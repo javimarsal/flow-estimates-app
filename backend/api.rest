@@ -7,23 +7,23 @@ POST http://localhost:4000/api/panels
 Content-Type: application/json
 
 {
-    "name": "Close",
-    "position": 4
+    "name": "Closed",
+    "position": 3
 }
 
 ###
-GET http://localhost:4000/api/panels/615f38f434f2c45eaca3d019
+GET http://localhost:4000/api/panels/616dbf79a615553ce68eac4f
 
 ###
-PUT http://localhost:4000/api/panels/615f3a3134f2c45eaca3d02a
+PUT http://localhost:4000/api/panels/616dbf79a615553ce68eac4f
 Content-Type: application/json
 
 {
-    "position": 2
+    "position": 5
 }
 
 ###
-DELETE http://localhost:4000/api/panels/616024919a8b70ff924341e1
+DELETE http://localhost:4000/api/panels/616dbf79a615553ce68eac4f
 
 
 
@@ -39,7 +39,7 @@ Content-Type: application/json
 {
     "name": "Walk dog",
     "panel": "Doing",
-    "position": 5
+    "position": 4
 }
 
 ###

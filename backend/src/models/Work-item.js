@@ -13,4 +13,4 @@ const workItemSchema = new Schema({
     versionKey: false
 })
 
-module.exports = model('work-item', workItemSchema);
+module.exports = model('workitem', workItemSchema);
