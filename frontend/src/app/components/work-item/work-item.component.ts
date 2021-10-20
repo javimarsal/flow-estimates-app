@@ -142,6 +142,7 @@ export class WorkItemComponent implements OnInit {
 
   drop(event: CdkDragDrop<string[]>) {
     //! la lista está vacía
+    console.log(this.panelName)
     console.log(this.workItemService.workItems)
 
     if(event.previousContainer === event.container) {
