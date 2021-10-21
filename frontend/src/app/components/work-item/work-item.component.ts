@@ -16,7 +16,8 @@ import { WorkItem } from 'src/app/models/work-item';
 })
 
 export class WorkItemComponent implements OnInit {
-  
+  private workItems: WorkItem[] = [];
+
   workItemNames: string[] = [];
 
   panelName: string = '';
@@ -39,8 +40,10 @@ export class WorkItemComponent implements OnInit {
         // Le llegan todos los workitems
         // Filtrar por el tablero que le corresponde y guardarlos
         let filteredWorkItems = this.filterWorkItems(res);
-        console.log(filteredWorkItems)
-        this.setWorkItemService_WorkItems(filteredWorkItems);
+        //console.log(filteredWorkItems)
+        this.workItems = filteredWorkItems;
+        console.log(this.workItems);
+        //this.setWorkItemService_WorkItems(filteredWorkItems);
         this.workItemNames = this.getNames(filteredWorkItems);
         
         //this.workItemNames = this.workItemService.workItems.map(obj=>obj.name);
@@ -56,46 +59,36 @@ export class WorkItemComponent implements OnInit {
     )
   }
 
-  updateAffectedWorkItems(idMovedWorkItems: string | undefined, previousPosition: number, currentPosition: number): WorkItem[] {
-    // WorkItems que devolvemos para luego actualizar this.workItemService.panels
-    let updatedWorkItems: WorkItem[] = [];
+  updateAffectedWorkItems(idMovedWorkItem: string | undefined, previousPosition: number, currentPosition: number) {
     
-    for(let wI of this.workItemService.workItems) {
+    for (let wI of this.workItems) {
       // No vamos a actualizar el workItem que hemos movido (porque ya está actualizado)
-      if(wI._id != idMovedWorkItems) {
-        let workItemToBeUpdated: WorkItem = {
-          _id: wI._id,
-          name: wI.name,
-          panel: wI.panel,
-          position: wI.position
-        };
-
+      if (wI._id != idMovedWorkItem) {
+        
         // Si currentPosition > previousPosition (hay que restar --)
-        if(currentPosition > previousPosition) {
-          if(workItemToBeUpdated.position>=previousPosition && workItemToBeUpdated.position<=currentPosition) {
-            workItemToBeUpdated.position--;
+        if (currentPosition > previousPosition) {
+          if (wI.position>=previousPosition && wI.position<=currentPosition) {
+            wI.position--;
 
             // Actualizamos el workItem
-            this.updateWorkItem(workItemToBeUpdated);
+            this.updateWorkItem(wI);
           }
         }
         
         // Si currentPosition < previousPosition (hay que sumar ++)
-        if(currentPosition < previousPosition) {
-          if(workItemToBeUpdated.position>=currentPosition && workItemToBeUpdated.position<=previousPosition) {
-            workItemToBeUpdated.position++;
+        if (currentPosition < previousPosition) {
+          if (wI.position>=currentPosition && wI.position<=previousPosition) {
+            wI.position++;
 
             // Actualizamos el workItem
-            this.updateWorkItem(workItemToBeUpdated);
+            this.updateWorkItem(wI);
           }
         }
 
-        updatedWorkItems.push(workItemToBeUpdated);
       }
 
     }
     
-    return updatedWorkItems;
   }
 
   filterWorkItems(workItems: WorkItem[]): WorkItem[] {
@@ -143,9 +136,10 @@ export class WorkItemComponent implements OnInit {
   drop(event: CdkDragDrop<string[]>) {
     //! la lista está vacía
     console.log(this.panelName)
-    console.log(this.workItemService.workItems)
+    //console.log(this.workItemService.workItems)
 
     if(event.previousContainer === event.container) {
+      console.log(this.workItems)
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
       // Actualizar la posición del workItem
@@ -161,23 +155,26 @@ export class WorkItemComponent implements OnInit {
         let currentPosition = event.currentIndex;
         
         // Buscamos el Objeto WorkItem en el array workItemService.workItems
-        workItem = this.getWorkItemByPosition(previousPosition, currentPosition);
+        workItem = this.getWorkItemByPosition(previousPosition);
 
         // Actualizamos su posición
-        workItem = this.changePosition(workItem, currentPosition);
+        //workItem = this.changePosition(workItem, currentPosition);
+        this.changePosition(workItem, currentPosition);
 
         // Actualizamos el workItem en la bbdd
         this.updateWorkItem(workItem);
         
         // Actualizar la posición del resto de workItems que se ven afectados
-        let updatedWorkItems = this.updateAffectedWorkItems(workItem._id, previousPosition, currentPosition);
+        //let updatedWorkItems = this.updateAffectedWorkItems(workItem._id, previousPosition, currentPosition);
+        this.updateAffectedWorkItems(workItem._id, previousPosition, currentPosition);
 
         // Agregamos el workItem que movemos para...
-        updatedWorkItems.push(workItem);
+        //updatedWorkItems.push(workItem);
 
-        // Actualizar this.workItemsService.workItems
+        // Actualizar this.workItemService.workItems
         //!(le viene vacío)
-        this.setWorkItemService_WorkItems(updatedWorkItems);
+        //this.setWorkItemService_WorkItems(updatedWorkItems);
+        console.log(this.workItems)
       }
     }
 
@@ -196,42 +193,37 @@ export class WorkItemComponent implements OnInit {
     
   }
 
-  getWorkItemByPosition(previousPosition: number, currentPosition: number): WorkItem {
-    // WorkItem que devolvemos
-    let workItem: WorkItem = {
+  getWorkItemByPosition(previousPosition: number): WorkItem {
+    // Buscamos el Objeto WorkItem que hemos movido en this.workItems
+    for (let wI of this.workItems) {
+      // Si encontramos la misma posición es el workItem que buscamos
+      if (wI.position == previousPosition) {
+        console.log("true")
+        
+        // Devolvemos el objeto
+        return wI;
+      }
+    }
+
+    // Si no encontrasemos el objeto, devolvemos un workItem vacío
+    let emptyWorkItem: WorkItem = {
       name: '',
       panel: '',
       position: 0
     };
-
-    // Buscamos el Objeto WorkItem en el array workItemService.workItems
-    console.log(this.workItemService.workItems)
-    for(let wI of this.workItemService.workItems) {
-      // Si encontramos la misma posición es el workItem que buscamos
-      if(wI.position == previousPosition) {
-        console.log("true")
-        // Hemos encontrado el Objeto WorkItem
-        workItem._id = wI._id;
-        workItem.name = wI.name;
-        workItem.panel = wI.panel;
-        workItem.position = wI.position;
-
-        return workItem;
-      }
-    }
-
-    return workItem;
+    
+    return emptyWorkItem;
   }
 
-  changePosition(workItem: WorkItem, newPosition: number): WorkItem {
+  changePosition(workItem: WorkItem, newPosition: number) {
     workItem.position = newPosition;
 
-    return workItem;
+    //return workItem;
   }
 
-  changePanel(workItem: WorkItem, newPanel: string): WorkItem {
+  changePanel(workItem: WorkItem, newPanel: string) {
     workItem.panel = newPanel;
 
-    return workItem;
+    //return workItem;
   }
 }
