@@ -18,6 +18,8 @@ import { WorkItem } from 'src/app/models/work-item';
 export class WorkItemComponent implements OnInit {
   private workItems: WorkItem[] = [];
 
+  private allWorkItems: WorkItem[] = [];
+
   workItemNames: string[] = [];
 
   panelName: string = '';
@@ -42,7 +44,8 @@ export class WorkItemComponent implements OnInit {
         let filteredWorkItems = this.filterWorkItems(res);
         //console.log(filteredWorkItems)
         this.workItems = filteredWorkItems;
-        console.log(this.workItems);
+        this.allWorkItems = res;
+        //console.log(this.workItems);
         //this.setWorkItemService_WorkItems(filteredWorkItems);
         this.workItemNames = this.getNames(filteredWorkItems);
         
@@ -52,7 +55,7 @@ export class WorkItemComponent implements OnInit {
     )
   }
 
-  updateWorkItem(workItem: WorkItem) {
+  updateWorkItem(workItem?: WorkItem) {
     this.workItemService.updateWorkItem(workItem).subscribe(
       res => console.log(res),
       err => console.log(err)
@@ -134,10 +137,6 @@ export class WorkItemComponent implements OnInit {
 
 
   drop(event: CdkDragDrop<string[]>) {
-    //! la lista está vacía
-    console.log(this.panelName)
-    //console.log(this.workItemService.workItems)
-
     if(event.previousContainer === event.container) {
       console.log(this.workItems)
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -172,18 +171,63 @@ export class WorkItemComponent implements OnInit {
         //updatedWorkItems.push(workItem);
 
         // Actualizar this.workItemService.workItems
-        //!(le viene vacío)
         //this.setWorkItemService_WorkItems(updatedWorkItems);
         console.log(this.workItems)
       }
     }
 
     else {
+
       transferArrayItem(event.previousContainer.data,
                         event.container.data,
                         event.previousIndex,
                         event.currentIndex);
+      
       // Actualizar la posición y el panel del workItem
+
+      /* Obtener la lista de datos de los contenedores (después del movimiento) */
+      // Lista desde donde movemos el workItem (primer panel)
+      let fromList = event.previousContainer.data;
+
+      // Lista hacia donde movemos el workItem (segundo panel)
+      let toList = event.container.data;
+
+      /* Nombre de los paneles */
+      // Nombre del panel desde donde movemos el workItem
+      let fromPanelName = event.previousContainer.id;
+
+      // Nombre del panel hacia donde movemos el workItem
+      let toPanelName = event.container.id;
+
+      // Texto del workItem que movemos
+      let movedWorkItemName = event.item.element.nativeElement.innerText;
+
+      // console.log("fromList:")
+      // console.log(fromPanelName)
+      // console.log(fromList)
+      // console.log("toList:")
+      // console.log(toPanelName)
+      // console.log(toList)
+
+      /* Actualizar el panel del workItem que movemos */
+      // Obtenemos el workItem
+      let workItem = this.getWorkItemByName(this.allWorkItems, movedWorkItemName);
+      
+      // Cambiamos su panel
+      this.changePanel(workItem, toPanelName);
+
+      // Lo actualizamos en la bbdd
+      this.updateWorkItem(workItem);
+      
+
+      /* Actualizar los workItems de los 2 paneles */
+      // Actualizar los workItems del primer panel
+      this.updateWorkItems_Position(this.allWorkItems, fromList);
+
+      // Actualizar los workItems del segundo panel
+      this.updateWorkItems_Position(this.allWorkItems, toList);
+      
+      
     }
     // PRUEBAS
     console.log(`PreviousContainer: ${event.previousContainer.id}`)
@@ -191,6 +235,23 @@ export class WorkItemComponent implements OnInit {
     console.log(`PreviousIndex: ${event.previousIndex}`);
     console.log(`CurrentIndex: ${event.currentIndex}`);
     
+  }
+
+  updateWorkItems_Position(workItemList: WorkItem[], workItemNamesList: string[]) {
+    // Recorremos la lista de nombres de workItems
+    for (let i=0; i<workItemNamesList.length; i++) {
+      // Usamos el nombre (string) para encontrar el objeto WorkItem
+      let workItem = workItemList.find(wI => wI.name == workItemNamesList[i]);
+      
+      // Si su posición ha cambiado actualizamos el objeto
+      if (workItem?.position != i  &&  workItem) {
+        // Cambiamos la posición del objeto
+        workItem.position = i;
+
+        // Actualizamos el objeto en la bbdd
+        this.updateWorkItem(workItem);
+      }
+    }
   }
 
   getWorkItemByPosition(previousPosition: number): WorkItem {
@@ -213,6 +274,24 @@ export class WorkItemComponent implements OnInit {
     };
     
     return emptyWorkItem;
+  }
+
+  getWorkItemByName(workItemList: WorkItem[], name: string): WorkItem {
+    // Buscamos el workItem en la lista dada
+    let workItem = workItemList.find(wI => wI.name == name)
+
+    if (workItem) {
+      return workItem;
+    }
+    else {
+      let emptyWorkItem: WorkItem = {
+        name: '',
+        panel: '',
+        position: 0
+      };
+      
+      return emptyWorkItem;
+    }
   }
 
   changePosition(workItem: WorkItem, newPosition: number) {
