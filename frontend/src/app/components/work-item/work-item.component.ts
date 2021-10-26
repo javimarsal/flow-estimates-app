@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import { ElementRef } from '@angular/core';
+import { Observable, of, Subject, Subscription } from 'rxjs';
 
 // Services
 import { WorkItemService } from 'src/app/services/work-item.service';
@@ -16,6 +17,8 @@ import { WorkItem } from 'src/app/models/work-item';
 })
 
 export class WorkItemComponent implements OnInit {
+  // subscription: Subscription = new Subscription();
+
   private workItems: WorkItem[] = [];
 
   private allWorkItems: WorkItem[] = [];
@@ -24,17 +27,39 @@ export class WorkItemComponent implements OnInit {
 
   panelName: string = '';
 
-  constructor(public workItemService: WorkItemService, private elRef: ElementRef) { }
+  // wI$: Observable<WorkItem[]> = new Observable();
+  //private wISubject = new Subject();
+
+  // https://docs.angular.lat/guide/observables-in-angular
+
+  constructor(public workItemService: WorkItemService, private elRef: ElementRef) {
+    // subscribe to messages
+    // this.subscription = this.workItemService.OnMessage().subscribe(message => {
+    //   if (message) {
+    //     this.allWorkItems = message;
+    //     console.log('yes')
+    //   }
+    // });
+  }
 
   ngOnInit(): void {
     this.panelName = this.elRef.nativeElement.parentElement.id;
     this.getWorkItems();
+
+    // this.wI$.subscribe(wIL => {
+    //   this.allWorkItems = wIL;
+    // });
+
+    this.workItemService.getWorkItems$().subscribe(workItems => {
+      this.allWorkItems = workItems;
+      this.workItems = this.filterWorkItems(workItems);
+    });
   }
 
-  setWorkItemService_WorkItems(workItems: WorkItem[]) {
-    this.workItemService.workItems = workItems;
-    console.log(this.workItemService.workItems);
-  }
+  // setWorkItemService_WorkItems(workItems: WorkItem[]) {
+  //   this.workItemService.workItems = workItems;
+  //   console.log(this.workItemService.workItems);
+  // }
 
   getWorkItems() {
     this.workItemService.getWorkItems().subscribe(
@@ -54,6 +79,21 @@ export class WorkItemComponent implements OnInit {
       err => console.log(err)
     )
   }
+
+
+  getWorkItems2() {
+    this.workItemService.getWorkItems().subscribe(
+      res => {
+        // Le llegan todos los workitems
+        // Filtrar por el tablero que le corresponde y guardarlos
+        let filteredWorkItems = this.filterWorkItems(res);
+        this.workItems = filteredWorkItems;
+        this.allWorkItems = res;
+      },
+      err => console.log(err)
+    )
+  }
+
 
   updateWorkItem(workItem?: WorkItem) {
     this.workItemService.updateWorkItem(workItem).subscribe(
@@ -137,6 +177,11 @@ export class WorkItemComponent implements OnInit {
 
 
   drop(event: CdkDragDrop<string[]>) {
+    // Actualizar las dos variables
+    // this.workItems = Parent.getworkItems()
+    // this.allWorkItems = Parent.getAllWorkItems
+    //this.getWorkItems2();
+
     if(event.previousContainer === event.container) {
       console.log(this.workItems)
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -226,7 +271,12 @@ export class WorkItemComponent implements OnInit {
 
       // Actualizar los workItems del segundo panel
       this.updateWorkItems_Position(this.allWorkItems, toList);
-      
+
+      console.log(this.allWorkItems);
+
+      // this.wI$ = of(this.allWorkItems);
+
+      this.workItemService.sendWorkItems(this.allWorkItems);
       
     }
     // PRUEBAS
@@ -234,8 +284,15 @@ export class WorkItemComponent implements OnInit {
     console.log(`Container: ${event.container.id}`)
     console.log(`PreviousIndex: ${event.previousIndex}`);
     console.log(`CurrentIndex: ${event.currentIndex}`);
+    console.log(this.allWorkItems)
+    
     
   }
+
+  // sendMessage(): void {
+  //   // send message to subscribers via observable subject
+  //   this.workItemService.sendMessage(this.allWorkItems);
+  // }
 
   updateWorkItems_Position(workItemList: WorkItem[], workItemNamesList: string[]) {
     // Recorremos la lista de nombres de workItems

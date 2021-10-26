@@ -6,6 +6,7 @@ import { PanelService } from 'src/app/services/panel.service';
 
 // Models
 import { Panel } from 'src/app/models/panel';
+import { WorkItem } from 'src/app/models/work-item';
 
 
 @Component({
@@ -15,6 +16,7 @@ import { Panel } from 'src/app/models/panel';
 })
 
 export class PanelComponent implements OnInit {
+  private workItemList: WorkItem[] = [];
 
   panelNames: string[] = [];
 
@@ -23,6 +25,16 @@ export class PanelComponent implements OnInit {
   ngOnInit(): void {
     this.getPanels();
   }
+
+  /* PRUEBAS */
+  getWorkItemList() {
+    return this.workItemList;
+  }
+
+  setWorkItemList(wIList: WorkItem[]) {
+    this.workItemList = wIList;
+  }
+  /* PRUEBAS */
 
   setPanelService_Panels(panels: Panel[]) {
     this.panelService.panels = panels;
