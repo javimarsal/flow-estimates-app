@@ -1,8 +1,9 @@
 <div cdkDropList cdkDropListOrientation="horizontal" class="panelList" (cdkDropListDropped)="drop($event)">
     <div cdkDropListGroup>
+        <!-- Es posible que el id del div (panel) ya no sea necesario -->
         <div id={{panel}} class="panelContainer" *ngFor="let panel of panelNames" cdkDrag>
             <h2>{{panel}}</h2>
-            <app-work-item></app-work-item>
+            <app-work-item [panelName]="panel"></app-work-item>
         </div>
     </div>
 </div>

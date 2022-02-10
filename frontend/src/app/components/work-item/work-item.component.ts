@@ -17,8 +17,8 @@ import { WorkItem } from 'src/app/models/work-item';
 })
 
 export class WorkItemComponent implements OnInit {
-  // TODO: recibir el nombre del panel (componente padre)
-  // @Input() panelName: string;
+  // Nombre del panel, obtenido en la plantilla del panel al que pertenece (cuando se crea)
+  @Input() panelName?: string;
 
   private workItems: WorkItem[] = [];
 
@@ -26,12 +26,9 @@ export class WorkItemComponent implements OnInit {
 
   workItemNames: string[] = [];
 
-  panelName: string = '';
-
   constructor(public workItemService: WorkItemService, private elRef: ElementRef) { }
 
   ngOnInit(): void {
-    this.panelName = this.elRef.nativeElement.parentElement.id;
     this.getWorkItems();
 
     this.workItemService.getWorkItems$().subscribe(workItems => {
