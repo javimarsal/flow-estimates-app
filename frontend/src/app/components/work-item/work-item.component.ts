@@ -24,7 +24,7 @@ export class WorkItemComponent implements OnInit {
 
   private allWorkItems: WorkItem[] = [];
 
-  workItemNames: string[] = [];
+  workItemsOfPanelNames: string[] = [];
 
   constructor(public workItemService: WorkItemService, private elRef: ElementRef) { }
 
@@ -35,7 +35,8 @@ export class WorkItemComponent implements OnInit {
     // Filtrar allworkItems para obtener los workItems del panel correspondiente
     this.workItemsOfPanel = this.filterWorkItemsByPanelName();
 
-    // TODO: Obtenemos los nombres delos workItems del Panel
+    // Obtenemos los nombres de los workItems del Panel
+    this.workItemsOfPanelNames = this.workItemService.getWorkItemNames(this.workItemsOfPanel);
     // this.workItemNames = this.getNames(filteredWorkItems);
 
     // DEPRECATED
@@ -53,6 +54,11 @@ export class WorkItemComponent implements OnInit {
   // Filtrar los workItems por el panel correspondiente y los devuleve
   filterWorkItemsByPanelName() {
     return this.workItemService.filterWorkItemsByPanelName(this.allWorkItems, this.panelName);
+  }
+
+  // Obtener nombres de los workItems
+  getWorkItemsNames(workItems: WorkItem[]) {
+    return this.workItemService.getWorkItemNames(workItems);
   }
 
   // PUT WorkItem
@@ -112,26 +118,28 @@ export class WorkItemComponent implements OnInit {
   //   return workItemsOfPanel;
   // }
 
-  getNames(workItems: WorkItem[]): string[] {
-    let workItemsNames: string[] = [];
+  //! DEPRECATED
+  // getNames(workItems: WorkItem[]): string[] {
+  //   let workItemsNames: string[] = [];
 
-    // Ordenar los workItems por el número de posición
-    let sortedWorkItemsbyPosition = this.sortWorkItems(workItems);
+  //   // Ordenar los workItems por el número de posición
+  //   let sortedWorkItemsbyPosition = this.sortWorkItems(workItems);
 
-    // Obtiene el nombre de cada workItem
-    for(let workItem of sortedWorkItemsbyPosition) {
-      workItemsNames.push(workItem.name);
-    }
+  //   // Obtiene el nombre de cada workItem
+  //   for(let workItem of sortedWorkItemsbyPosition) {
+  //     workItemsNames.push(workItem.name);
+  //   }
 
-    return workItemsNames;
-  }
+  //   return workItemsNames;
+  // }
 
+  //! DEPRECATED
   // Ordena los workItems según el número de posición
-  sortWorkItems(workItems: WorkItem[]): WorkItem[] {
-    return workItems.sort(function(a, b) {
-      return a.position - b.position;
-    });
-  }
+  // sortWorkItems(workItems: WorkItem[]): WorkItem[] {
+  //   return workItems.sort(function(a, b) {
+  //     return a.position - b.position;
+  //   });
+  // }
 
 
   drop(event: CdkDragDrop<string[]>) {

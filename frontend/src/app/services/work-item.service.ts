@@ -7,10 +7,8 @@ import { Observable, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class WorkItemService {
-  // TODO: los workItems se deben filtrar aquí, abrá que pasarle el nombre del tablero por el que se quiere filtrar
   workItems: WorkItem[];
   workItems$: Subject<WorkItem[]>;
-
 
   workItemsUrl = 'http://localhost:4000/api/workitems';
 
@@ -50,8 +48,30 @@ export class WorkItemService {
         workItemsOfPanel.push(workItem);
       }
     }
-    
+
     return workItemsOfPanel;
+  }
+
+  // Obtiene los nombres de los workItems y los ordena por posición
+  getWorkItemNames(workItems: WorkItem[]): string[] {
+    let workItemsNames: string[] = [];
+
+    // Ordenar los workItems por el número de posición
+    let sortedWorkItemsByPosition = this.sortWorkItemsByPosition(workItems);
+
+    // Obtiene el nombre de cada workItem
+    for(let workItem of sortedWorkItemsByPosition) {
+      workItemsNames.push(workItem.name);
+    }
+
+    return workItemsNames;
+  }
+
+  // Ordena los workItems según el número de posición
+  sortWorkItemsByPosition(workItems: WorkItem[]): WorkItem[] {
+    return workItems.sort(function(a, b) {
+      return a.position - b.position;
+    });
   }
 
 }

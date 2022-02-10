@@ -1,6 +1,6 @@
 <!-- El componente NO es una tarea, sino las tareas de cada Panel -->
-<div id="{{panelName}}" cdkDropList [cdkDropListData]="workItemNames" class="itemList" (cdkDropListDropped)="drop($event)">
-    <div class="itemBox" *ngFor="let item of workItemNames" cdkDrag>
+<div id="{{panelName}}" cdkDropList [cdkDropListData]="workItemsOfPanelNames" class="itemList" (cdkDropListDropped)="drop($event)">
+    <div class="itemBox" *ngFor="let item of workItemsOfPanelNames" cdkDrag>
         {{item}}
     </div>
 </div>
