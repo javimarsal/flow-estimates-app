@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import { ElementRef } from '@angular/core';
 import { Observable, of, Subject, Subscription } from 'rxjs';
@@ -17,7 +17,8 @@ import { WorkItem } from 'src/app/models/work-item';
 })
 
 export class WorkItemComponent implements OnInit {
-  // subscription: Subscription = new Subscription();
+  // TODO: recibir el nombre del panel (componente padre)
+  // @Input() panelName: string;
 
   private workItems: WorkItem[] = [];
 
@@ -27,28 +28,11 @@ export class WorkItemComponent implements OnInit {
 
   panelName: string = '';
 
-  // wI$: Observable<WorkItem[]> = new Observable();
-  //private wISubject = new Subject();
-
-  // https://docs.angular.lat/guide/observables-in-angular
-
-  constructor(public workItemService: WorkItemService, private elRef: ElementRef) {
-    // subscribe to messages
-    // this.subscription = this.workItemService.OnMessage().subscribe(message => {
-    //   if (message) {
-    //     this.allWorkItems = message;
-    //     console.log('yes')
-    //   }
-    // });
-  }
+  constructor(public workItemService: WorkItemService, private elRef: ElementRef) { }
 
   ngOnInit(): void {
     this.panelName = this.elRef.nativeElement.parentElement.id;
     this.getWorkItems();
-
-    // this.wI$.subscribe(wIL => {
-    //   this.allWorkItems = wIL;
-    // });
 
     this.workItemService.getWorkItems$().subscribe(workItems => {
       this.allWorkItems = workItems;
@@ -56,45 +40,24 @@ export class WorkItemComponent implements OnInit {
     });
   }
 
-  // setWorkItemService_WorkItems(workItems: WorkItem[]) {
-  //   this.workItemService.workItems = workItems;
-  //   console.log(this.workItemService.workItems);
-  // }
-
+  // GET WorkItems
   getWorkItems() {
     this.workItemService.getWorkItems().subscribe(
       res => {
         // Le llegan todos los workitems
         // Filtrar por el tablero que le corresponde y guardarlos
         let filteredWorkItems = this.filterWorkItems(res);
-        //console.log(filteredWorkItems)
+
         this.workItems = filteredWorkItems;
         this.allWorkItems = res;
-        //console.log(this.workItems);
-        //this.setWorkItemService_WorkItems(filteredWorkItems);
+
         this.workItemNames = this.getNames(filteredWorkItems);
-        
-        //this.workItemNames = this.workItemService.workItems.map(obj=>obj.name);
       },
       err => console.log(err)
     )
   }
 
-
-  getWorkItems2() {
-    this.workItemService.getWorkItems().subscribe(
-      res => {
-        // Le llegan todos los workitems
-        // Filtrar por el tablero que le corresponde y guardarlos
-        let filteredWorkItems = this.filterWorkItems(res);
-        this.workItems = filteredWorkItems;
-        this.allWorkItems = res;
-      },
-      err => console.log(err)
-    )
-  }
-
-
+  // PUT WorkItem
   updateWorkItem(workItem?: WorkItem) {
     this.workItemService.updateWorkItem(workItem).subscribe(
       res => console.log(res),
@@ -103,7 +66,6 @@ export class WorkItemComponent implements OnInit {
   }
 
   updateAffectedWorkItems(idMovedWorkItem: string | undefined, previousPosition: number, currentPosition: number) {
-    
     for (let wI of this.workItems) {
       // No vamos a actualizar el workItem que hemos movido (porque ya está actualizado)
       if (wI._id != idMovedWorkItem) {
@@ -127,11 +89,8 @@ export class WorkItemComponent implements OnInit {
             this.updateWorkItem(wI);
           }
         }
-
       }
-
     }
-    
   }
 
   filterWorkItems(workItems: WorkItem[]): WorkItem[] {
@@ -180,7 +139,6 @@ export class WorkItemComponent implements OnInit {
     // Actualizar las dos variables
     // this.workItems = Parent.getworkItems()
     // this.allWorkItems = Parent.getAllWorkItems
-    //this.getWorkItems2();
 
     if(event.previousContainer === event.container) {
       console.log(this.workItems)

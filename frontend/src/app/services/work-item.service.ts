@@ -7,6 +7,7 @@ import { Observable, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class WorkItemService {
+  // TODO: los workItems se deben filtrar aquí, abrá que pasarle el nombre del tablero por el que se quiere filtrar
   workItems: WorkItem[];
   workItems$: Subject<WorkItem[]>;
 
