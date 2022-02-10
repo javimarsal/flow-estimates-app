@@ -32,11 +32,8 @@ export class WorkItemComponent implements OnInit {
     // Obtenemos todos los workItems
     this.getWorkItems();
 
-    // TODO: Obtenemos los workItems del panel que corresponde
-    //let filteredWorkItems = this.filterWorkItems(this.allWorkItems);
-
-
-    // this.workItemsOfPanel = filteredWorkItems;
+    // Filtrar allworkItems para obtener los workItems del panel correspondiente
+    this.workItemsOfPanel = this.filterWorkItemsByPanelName();
 
     // TODO: Obtenemos los nombres delos workItems del Panel
     // this.workItemNames = this.getNames(filteredWorkItems);
@@ -51,6 +48,11 @@ export class WorkItemComponent implements OnInit {
   // GET WorkItems
   getWorkItems() {
     this.workItemService.getWorkItems().subscribe(workItems => this.allWorkItems = workItems);
+  }
+
+  // Filtrar los workItems por el panel correspondiente y los devuleve
+  filterWorkItemsByPanelName() {
+    return this.workItemService.filterWorkItemsByPanelName(this.allWorkItems, this.panelName);
   }
 
   // PUT WorkItem
@@ -89,25 +91,26 @@ export class WorkItemComponent implements OnInit {
     }
   }
 
-  filterWorkItems(workItems: WorkItem[]): WorkItem[] {
-    // Nombre del id del panel en el que nos encontramos
-    let panelName = this.panelName;
+  // !DEPRECATED
+  // filterWorkItems(workItems: WorkItem[]): WorkItem[] {
+  //   // Nombre del id del panel en el que nos encontramos
+  //   let panelName = this.panelName;
 
-    // array de string donde guardaremos los nombres de los workItems
-    let workItemsOfPanel: WorkItem[] = [];
+  //   // array de string donde guardaremos los nombres de los workItems
+  //   let workItemsOfPanel: WorkItem[] = [];
 
-    for(let workItem of workItems) {
-      // Panel que le corresponde al workItem
-      let workItemPanel = workItem.panel;
+  //   for(let workItem of workItems) {
+  //     // Panel que le corresponde al workItem
+  //     let workItemPanel = workItem.panel;
 
-      // Si el panel del workItem corresponde con el que nos encontramos, lo guardamos
-      if(workItemPanel == panelName) {
-        workItemsOfPanel.push(workItem);
-      }
-    }
+  //     // Si el panel del workItem corresponde con el que nos encontramos, lo guardamos
+  //     if(workItemPanel == panelName) {
+  //       workItemsOfPanel.push(workItem);
+  //     }
+  //   }
 
-    return workItemsOfPanel;
-  }
+  //   return workItemsOfPanel;
+  // }
 
   getNames(workItems: WorkItem[]): string[] {
     let workItemsNames: string[] = [];

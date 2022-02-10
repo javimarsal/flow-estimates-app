@@ -37,4 +37,21 @@ export class WorkItemService {
     return this.http.put(this.workItemsUrl + `/${workItem?._id}`, workItem);
   }
 
+  filterWorkItemsByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
+    // array de workItem donde guardaremos los workItems del panel
+    let workItemsOfPanel: WorkItem[] = [];
+
+    for (let workItem of workItems) {
+      // nombre del panel del workItem
+      let workItemPanel = workItem.panel;
+
+      // Si el panel del workItem corresponde con panelName, lo guardamos
+      if (workItemPanel == panelName) {
+        workItemsOfPanel.push(workItem);
+      }
+    }
+    
+    return workItemsOfPanel;
+  }
+
 }
