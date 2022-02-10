@@ -12,7 +12,7 @@ export class WorkItemService {
   workItems$: Subject<WorkItem[]>;
 
 
-  URL_API = 'http://localhost:4000/api/workitems';
+  workItemsUrl = 'http://localhost:4000/api/workitems';
 
   //workItems: WorkItem[] = [];
 
@@ -29,12 +29,12 @@ export class WorkItemService {
     return this.workItems$.asObservable();
   }
 
-  getWorkItems() {
-    return this.http.get<WorkItem[]>(this.URL_API);
+  getWorkItems(): Observable<WorkItem[]> {
+    return this.http.get<WorkItem[]>(this.workItemsUrl);
   }
 
   updateWorkItem(workItem?: WorkItem) {
-    return this.http.put(this.URL_API + `/${workItem?._id}`, workItem);
+    return this.http.put(this.workItemsUrl + `/${workItem?._id}`, workItem);
   }
 
 }

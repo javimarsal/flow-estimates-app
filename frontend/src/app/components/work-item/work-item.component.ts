@@ -18,9 +18,9 @@ import { WorkItem } from 'src/app/models/work-item';
 
 export class WorkItemComponent implements OnInit {
   // Nombre del panel, obtenido en la plantilla del panel al que pertenece (cuando se crea)
-  @Input() panelName?: string;
+  @Input() panelName!: string;
 
-  private workItems: WorkItem[] = [];
+  private workItemsOfPanel: WorkItem[] = [];
 
   private allWorkItems: WorkItem[] = [];
 
@@ -29,29 +29,28 @@ export class WorkItemComponent implements OnInit {
   constructor(public workItemService: WorkItemService, private elRef: ElementRef) { }
 
   ngOnInit(): void {
+    // Obtenemos todos los workItems
     this.getWorkItems();
 
-    this.workItemService.getWorkItems$().subscribe(workItems => {
-      this.allWorkItems = workItems;
-      this.workItems = this.filterWorkItems(workItems);
-    });
+    // TODO: Obtenemos los workItems del panel que corresponde
+    //let filteredWorkItems = this.filterWorkItems(this.allWorkItems);
+
+
+    // this.workItemsOfPanel = filteredWorkItems;
+
+    // TODO: Obtenemos los nombres delos workItems del Panel
+    // this.workItemNames = this.getNames(filteredWorkItems);
+
+    // DEPRECATED
+    // this.workItemService.getWorkItems$().subscribe(workItems => {
+    //   this.allWorkItems = workItems;
+    //   this.workItems = this.filterWorkItems(workItems);
+    // });
   }
 
   // GET WorkItems
   getWorkItems() {
-    this.workItemService.getWorkItems().subscribe(
-      res => {
-        // Le llegan todos los workitems
-        // Filtrar por el tablero que le corresponde y guardarlos
-        let filteredWorkItems = this.filterWorkItems(res);
-
-        this.workItems = filteredWorkItems;
-        this.allWorkItems = res;
-
-        this.workItemNames = this.getNames(filteredWorkItems);
-      },
-      err => console.log(err)
-    )
+    this.workItemService.getWorkItems().subscribe(workItems => this.allWorkItems = workItems);
   }
 
   // PUT WorkItem
@@ -63,7 +62,7 @@ export class WorkItemComponent implements OnInit {
   }
 
   updateAffectedWorkItems(idMovedWorkItem: string | undefined, previousPosition: number, currentPosition: number) {
-    for (let wI of this.workItems) {
+    for (let wI of this.workItemsOfPanel) {
       // No vamos a actualizar el workItem que hemos movido (porque ya está actualizado)
       if (wI._id != idMovedWorkItem) {
         
@@ -138,7 +137,7 @@ export class WorkItemComponent implements OnInit {
     // this.allWorkItems = Parent.getAllWorkItems
 
     if(event.previousContainer === event.container) {
-      console.log(this.workItems)
+      console.log(this.workItemsOfPanel)
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
       // Actualizar la posición del workItem
@@ -172,7 +171,7 @@ export class WorkItemComponent implements OnInit {
 
         // Actualizar this.workItemService.workItems
         //this.setWorkItemService_WorkItems(updatedWorkItems);
-        console.log(this.workItems)
+        console.log(this.workItemsOfPanel)
       }
     }
 
@@ -268,7 +267,7 @@ export class WorkItemComponent implements OnInit {
 
   getWorkItemByPosition(previousPosition: number): WorkItem {
     // Buscamos el Objeto WorkItem que hemos movido en this.workItems
-    for (let wI of this.workItems) {
+    for (let wI of this.workItemsOfPanel) {
       // Si encontramos la misma posición es el workItem que buscamos
       if (wI.position == previousPosition) {
         console.log("true")
