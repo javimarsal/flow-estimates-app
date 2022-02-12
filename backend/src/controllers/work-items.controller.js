@@ -22,6 +22,12 @@ workItemController.getWorkItem = async (req, res) => {
     res.send(workItem)
 }
 
+workItemController.getWorkItem_ByName =  async (req, res) => {
+    let name = req.params.name;
+    const workItem = await WorkItem.findOne({ name });
+    res.send(workItem)
+}
+
 workItemController.editWorkItem = async (req, res) => {
     await WorkItem.findByIdAndUpdate(req.params.id, req.body)
     res.send({ message: 'Work item updated' })

@@ -12,6 +12,8 @@ router.post('/', workItemController.creatWorkItem);
 
 router.get('/:id', workItemController.getWorkItem);
 
+router.get('/name/:name', workItemController.getWorkItem_ByName);
+
 router.put('/:id', workItemController.editWorkItem);
 
 router.delete('/:id', workItemController.deleteWorkItem);

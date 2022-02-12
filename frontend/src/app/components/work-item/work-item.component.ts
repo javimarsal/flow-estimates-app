@@ -17,7 +17,6 @@ import { WorkItem } from 'src/app/models/work-item';
 })
 
 export class WorkItemComponent implements OnInit {
-  // TODO: recibir el nombre del panel (componente padre)
   @Input() panelName!: string;
 
   workItemsOfPanel: WorkItem[] = [];
@@ -50,10 +49,15 @@ export class WorkItemComponent implements OnInit {
 
   // PUT WorkItem
   updateWorkItem(workItem?: WorkItem) {
-    this.workItemService.updateWorkItem(workItem).subscribe(
-      res => console.log(res),
-      err => console.log(err)
-    )
+    this.workItemService.updateWorkItem(workItem).subscribe();
+  }
+
+  // Actualizar el workItem cuyo nombre coincida
+  updateWorkItem_Position(workItemName: string, newPosition: number) {
+    this.workItemService.getWorkItem_ByName(workItemName).subscribe(workItem => {
+      workItem.position = newPosition;
+      this.updateWorkItem(workItem);
+    })
   }
 
   updateAffectedWorkItems(idMovedWorkItem: string | undefined, previousPosition: number, currentPosition: number) {
@@ -94,56 +98,44 @@ export class WorkItemComponent implements OnInit {
 
 
   drop(event: CdkDragDrop<string[]>) {
-    // Actualizar las dos variables
-    // this.workItems = Parent.getworkItems()
-    // this.allWorkItems = Parent.getAllWorkItems
+    //let workItemName = event.item.element.nativeElement.innerText;
 
     if(event.previousContainer === event.container) {
-      console.log(this.workItemsOfPanel)
+      // Hacemos una copia de this.workItemsOfPanel_Names (sin referencia) porque al realizarse "moveItemInArray" también cambia this.workItemsOfPanel_Names y queremos obtener el estado antes de realizar ningún movimiento
+      let previousOrderNames = JSON.parse(JSON.stringify(this.workItemsOfPanel_Names));
+
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
-      // Actualizar la posición del workItem
-      // Comprobar que el workItem cambia de posición
-      if(event.previousIndex != event.currentIndex) {
-        // Necesitamos el workItem que queremos actualizar      
-        let workItem: WorkItem;
-
-        // Obtenemos la posición del workItem (antes de moverse)
-        let previousPosition = event.previousIndex;
-
-        // Posición a la que se mueve el workItem
-        let currentPosition = event.currentIndex;
-        
-        // Buscamos el Objeto WorkItem en el array workItemService.workItems
-        workItem = this.getWorkItemByPosition(previousPosition);
-
-        // Actualizamos su posición
-        //workItem = this.changePosition(workItem, currentPosition);
-        this.changePosition(workItem, currentPosition);
-
-        // Actualizamos el workItem en la bbdd
-        this.updateWorkItem(workItem);
-        
-        // Actualizar la posición del resto de workItems que se ven afectados
-        //let updatedWorkItems = this.updateAffectedWorkItems(workItem._id, previousPosition, currentPosition);
-        this.updateAffectedWorkItems(workItem._id, previousPosition, currentPosition);
-
-        // Agregamos el workItem que movemos para...
-        //updatedWorkItems.push(workItem);
-
-        // Actualizar this.workItemService.workItems
-        //this.setWorkItemService_WorkItems(updatedWorkItems);
-        console.log(this.workItemsOfPanel)
+      // Debemos comprobar que el índice del workItem cambia para ejecutar la acción
+      if (event.previousIndex != event.currentIndex) {
+        // Estado actual del panel (nombres)
+        let currentOrderNames = event.container.data;
+        console.log(currentOrderNames)
+  
+        // Estado previo del panel (nombres)
+        //let previousOrderNames = this.workItemsOfPanel_Names;
+        console.log(previousOrderNames)
+  
+        // Longitud del array de nombres
+        let orderNamesLength = currentOrderNames.length;
+  
+        for (let i = 0; i < orderNamesLength; i++) {
+          if (currentOrderNames[i] != previousOrderNames[i]) {
+            console.log('true')
+            this.updateWorkItem_Position(currentOrderNames[i], i);
+          }
+        }
       }
     }
 
     else {
-
       transferArrayItem(event.previousContainer.data,
                         event.container.data,
                         event.previousIndex,
                         event.currentIndex);
       
+      console.log(event.container.data)
+      console.log(event.previousContainer.data)
       // Actualizar la posición y el panel del workItem
 
       /* Obtener la lista de datos de los contenedores (después del movimiento) */
@@ -196,6 +188,7 @@ export class WorkItemComponent implements OnInit {
       
     }
     // PRUEBAS
+    console.log(this.workItemsOfPanel)
     console.log(`PreviousContainer: ${event.previousContainer.id}`)
     console.log(`Container: ${event.container.id}`)
     console.log(`PreviousIndex: ${event.previousIndex}`);
