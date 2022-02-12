@@ -7,10 +7,12 @@ import { Observable, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class WorkItemService {
+  // TODO: los workItems se deben filtrar aquí, abrá que pasarle el nombre del tablero por el que se quiere filtrar
   workItems: WorkItem[];
   workItems$: Subject<WorkItem[]>;
 
-  workItemsUrl = 'http://localhost:4000/api/workitems';
+
+  URL_API = 'http://localhost:4000/api/workitems';
 
   //workItems: WorkItem[] = [];
 
@@ -27,24 +29,24 @@ export class WorkItemService {
     return this.workItems$.asObservable();
   }
 
-  getWorkItems(): Observable<WorkItem[]> {
-    return this.http.get<WorkItem[]>(this.workItemsUrl);
+  getWorkItems() {
+    return this.http.get<WorkItem[]>(this.URL_API);
   }
 
   updateWorkItem(workItem?: WorkItem) {
-    return this.http.put(this.workItemsUrl + `/${workItem?._id}`, workItem);
+    return this.http.put(this.URL_API + `/${workItem?._id}`, workItem);
   }
 
-  filterWorkItemsByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
-    // array de workItem donde guardaremos los workItems del panel
+  filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
+    // array de WorkItem donde guardaremos los workItems, según el panelName
     let workItemsOfPanel: WorkItem[] = [];
 
-    for (let workItem of workItems) {
-      // nombre del panel del workItem
+    for(let workItem of workItems) {
+      // Nombre del Panel que le corresponde al workItem
       let workItemPanel = workItem.panel;
 
       // Si el panel del workItem corresponde con panelName, lo guardamos
-      if (workItemPanel == panelName) {
+      if(workItemPanel == panelName) {
         workItemsOfPanel.push(workItem);
       }
     }
@@ -52,15 +54,14 @@ export class WorkItemService {
     return workItemsOfPanel;
   }
 
-  // Obtiene los nombres de los workItems y los ordena por posición
-  getWorkItemNames(workItems: WorkItem[]): string[] {
+  getWorkItemsNames(workItems: WorkItem[]): string[] {
     let workItemsNames: string[] = [];
 
     // Ordenar los workItems por el número de posición
-    let sortedWorkItemsByPosition = this.sortWorkItemsByPosition(workItems);
+    let sortedWorkItems_ByPosition = this.sortWorkItems(workItems);
 
     // Obtiene el nombre de cada workItem
-    for(let workItem of sortedWorkItemsByPosition) {
+    for(let workItem of sortedWorkItems_ByPosition) {
       workItemsNames.push(workItem.name);
     }
 
@@ -68,7 +69,7 @@ export class WorkItemService {
   }
 
   // Ordena los workItems según el número de posición
-  sortWorkItemsByPosition(workItems: WorkItem[]): WorkItem[] {
+  sortWorkItems(workItems: WorkItem[]): WorkItem[] {
     return workItems.sort(function(a, b) {
       return a.position - b.position;
     });

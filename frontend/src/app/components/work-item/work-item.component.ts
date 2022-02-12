@@ -17,48 +17,35 @@ import { WorkItem } from 'src/app/models/work-item';
 })
 
 export class WorkItemComponent implements OnInit {
-  // Nombre del panel, obtenido en la plantilla del panel al que pertenece (cuando se crea)
+  // TODO: recibir el nombre del panel (componente padre)
   @Input() panelName!: string;
 
-  private workItemsOfPanel: WorkItem[] = [];
+  workItemsOfPanel: WorkItem[] = [];
 
-  private allWorkItems: WorkItem[] = [];
+  allWorkItems: WorkItem[] = [];
 
-  workItemsOfPanelNames: string[] = [];
+  workItemsOfPanel_Names: string[] = [];
+
 
   constructor(public workItemService: WorkItemService, private elRef: ElementRef) { }
 
   ngOnInit(): void {
-    // Obtenemos todos los workItems
     this.getWorkItems();
-
-    // Filtrar allworkItems para obtener los workItems del panel correspondiente
-    this.workItemsOfPanel = this.filterWorkItemsByPanelName();
-
-    // Obtenemos los nombres de los workItems del Panel
-    this.workItemsOfPanelNames = this.workItemService.getWorkItemNames(this.workItemsOfPanel);
-    // this.workItemNames = this.getNames(filteredWorkItems);
-
-    // DEPRECATED
-    // this.workItemService.getWorkItems$().subscribe(workItems => {
-    //   this.allWorkItems = workItems;
-    //   this.workItems = this.filterWorkItems(workItems);
-    // });
   }
 
   // GET WorkItems
   getWorkItems() {
-    this.workItemService.getWorkItems().subscribe(workItems => this.allWorkItems = workItems);
-  }
+    this.workItemService.getWorkItems().subscribe(workItems => {
+        // Le llegan todos los workitems, los guardamos
+        this.allWorkItems = workItems;
 
-  // Filtrar los workItems por el panel correspondiente y los devuleve
-  filterWorkItemsByPanelName() {
-    return this.workItemService.filterWorkItemsByPanelName(this.allWorkItems, this.panelName);
-  }
-
-  // Obtener nombres de los workItems
-  getWorkItemsNames(workItems: WorkItem[]) {
-    return this.workItemService.getWorkItemNames(workItems);
+        // Filtrar por el tablero que le corresponde y guardarlos
+        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+        
+        // Obtener los nombres de los workItems del Panel
+        this.workItemsOfPanel_Names = this.getWorkItemsNames(this.workItemsOfPanel);
+      }
+    )
   }
 
   // PUT WorkItem
@@ -97,49 +84,13 @@ export class WorkItemComponent implements OnInit {
     }
   }
 
-  // !DEPRECATED
-  // filterWorkItems(workItems: WorkItem[]): WorkItem[] {
-  //   // Nombre del id del panel en el que nos encontramos
-  //   let panelName = this.panelName;
+  filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
+    return this.workItemService.filterWorkItems_ByPanelName(workItems, panelName);
+  }
 
-  //   // array de string donde guardaremos los nombres de los workItems
-  //   let workItemsOfPanel: WorkItem[] = [];
-
-  //   for(let workItem of workItems) {
-  //     // Panel que le corresponde al workItem
-  //     let workItemPanel = workItem.panel;
-
-  //     // Si el panel del workItem corresponde con el que nos encontramos, lo guardamos
-  //     if(workItemPanel == panelName) {
-  //       workItemsOfPanel.push(workItem);
-  //     }
-  //   }
-
-  //   return workItemsOfPanel;
-  // }
-
-  //! DEPRECATED
-  // getNames(workItems: WorkItem[]): string[] {
-  //   let workItemsNames: string[] = [];
-
-  //   // Ordenar los workItems por el número de posición
-  //   let sortedWorkItemsbyPosition = this.sortWorkItems(workItems);
-
-  //   // Obtiene el nombre de cada workItem
-  //   for(let workItem of sortedWorkItemsbyPosition) {
-  //     workItemsNames.push(workItem.name);
-  //   }
-
-  //   return workItemsNames;
-  // }
-
-  //! DEPRECATED
-  // Ordena los workItems según el número de posición
-  // sortWorkItems(workItems: WorkItem[]): WorkItem[] {
-  //   return workItems.sort(function(a, b) {
-  //     return a.position - b.position;
-  //   });
-  // }
+  getWorkItemsNames(workItems: WorkItem[]): string[] {
+    return this.workItemService.getWorkItemsNames(workItems);
+  }
 
 
   drop(event: CdkDragDrop<string[]>) {
