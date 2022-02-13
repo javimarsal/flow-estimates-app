@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import { ElementRef } from '@angular/core';
-import { Observable, of, Subject, Subscription } from 'rxjs';
 
 // Services
 import { WorkItemService } from 'src/app/services/work-item.service';
@@ -110,25 +109,21 @@ export class WorkItemComponent implements OnInit {
 
       /* ESTADOS ANTERIORES de los Paneles */
 
-      // Estado anterior y longitud (nombres de los workItems) de previousContainer (desde donde se mueve)
+      // Estado anterior (nombres de los workItems) de previousContainer (desde donde se mueve)
       let previous_previousContainerNames = JSON.parse(JSON.stringify(event.previousContainer.data));
-      let previous_previousContainerNames_length = previous_previousContainerNames.length;
 
-      // Estado anterior y longitud (nombres de los workItems) de container (al que se mueve)
+      // Estado anterior (nombres de los workItems) de container (al que se mueve)
       let previous_containerNames = JSON.parse(JSON.stringify(event.container.data));
-      let previous_containerNames_length = previous_containerNames.length;
 
       transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
 
       /* ESTADOS ACTUALES de los Paneles */
 
-      // Estado actual y longitud (nombres de los workItems) de previousContainer (desde donde se mueve)
+      // Estado actual (nombres de los workItems) de previousContainer (desde donde se mueve)
       let current_previousContainerNames = event.previousContainer.data;
-      let current_previousContainerNames_length = current_previousContainerNames.length;
 
-      // Estado actual y longitud (nombres de los workItems) de container (al que se mueve)
+      // Estado actual (nombres de los workItems) de container (al que se mueve)
       let current_containerNames = event.container.data;
-      let current_containerNames_length = current_containerNames.length;
       
 
       /* Actualizamos el panel del workItem que se ha movido */
@@ -137,56 +132,53 @@ export class WorkItemComponent implements OnInit {
 
       /* Actualizamos la posición de los workItems de los dos paneles */
       // Primer panel: previousContainer
+      this.updateWorkItems_betweenPanels(current_previousContainerNames, previous_previousContainerNames, movedWorkItemName, containerPanelName);
       
-      // Al recorrer los arrays, podemos encontrarnos que el current tenga más workItems que el previous
-      // Hay que controlarlo para que no haya desbordamiento
-      let hayDesbordamiento = current_previousContainerNames_length > previous_previousContainerNames_length;
+      // Segundo panel: container
+      this.updateWorkItems_betweenPanels(current_containerNames, previous_containerNames, movedWorkItemName, containerPanelName);
+    }
+  }
 
-      // Vamos actualizando la posición de los workItems, si ésta ha cambiado
-      // es decir, en la posición que corresponda cambian los nombres
-      for (let i = 0; i < current_previousContainerNames_length; i++) {
-        if (i == (current_previousContainerNames_length - 1)  &&  hayDesbordamiento) {
-          // Si hay desbordamiento y se ha alcanzado la última posición de current
-          if (current_previousContainerNames[i] == movedWorkItemName) {
-            this.updateWorkItem_PanelName_Position(current_previousContainerNames[i], containerPanelName, i);
-          } else {
-            this.updateWorkItem_Position(current_previousContainerNames[i], i);
-          }
+  /**
+   * 
+   * @param currentNames nombres del panel en el estado actual
+   * @param previousNames nombres del panel en el estado anterior
+   * @param movedWorkItemName nombre del workItem que se ha movido
+   * @param movedPanelName nombre del panel hacia el que se ha movido el workItem
+   */
+  updateWorkItems_betweenPanels(currentNames: string[], previousNames: string[], movedWorkItemName: string, movedPanelName: string) {
+    // Longitudes de los arrays
+    let currentNames_length = currentNames.length;
+    let previousNames_length = previousNames.length;
+
+    // Al recorrer los arrays, podemos encontrarnos que el current tenga más workItems que el previous
+    // Hay que controlarlo para que no haya desbordamiento
+    let hayDesbordamiento = currentNames_length > previousNames_length;
+
+    // Vamos actualizando la posición de los workItems, si ésta ha cambiado
+    // es decir, en la posición que corresponda cambian los nombres
+    for (let i = 0; i < currentNames_length; i++) {
+      if (i == (currentNames_length - 1)  &&  hayDesbordamiento) {
+        // Si hay desbordamiento y se ha alcanzado la última posición de currentNames
+        // comprobamos si el currentName en la posición i es el que hemos movido
+        if (currentNames[i] == movedWorkItemName) {
+          // le cambiamos el nombre del panel y la posición
+          this.updateWorkItem_PanelName_Position(currentNames[i], movedPanelName, i);
         } else {
-          if (current_previousContainerNames[i] != previous_previousContainerNames[i]) {
-            if (current_previousContainerNames[i] == movedWorkItemName) {
-              this.updateWorkItem_PanelName_Position(current_previousContainerNames[i], containerPanelName, i);
-            } else {
-              this.updateWorkItem_Position(current_previousContainerNames[i], i);
-            }
+          this.updateWorkItem_Position(currentNames[i], i);
+        }
+      } else {
+        // comprobamos que el currentName en la posición i ha cambiado de posición con respecto a su estado anterior (previous)
+        if (currentNames[i] != previousNames[i]) {
+          // comprobamos si el currentName en la posición i es el que hemos movido
+          if (currentNames[i] == movedWorkItemName) {
+            // le cambiamos el nombre del panel y la posición
+            this.updateWorkItem_PanelName_Position(currentNames[i], movedPanelName, i);
+          } else {
+            this.updateWorkItem_Position(currentNames[i], i);
           }
         }
       }
-
-      // !DUPLICADO
-      hayDesbordamiento = current_containerNames_length > previous_containerNames_length;
-
-      // Vamos actualizando la posición de los workItems, si ésta ha cambiado
-      // es decir, en la posición que corresponda cambian los nombres
-      for (let i = 0; i < current_containerNames_length; i++) {
-        if (i == (current_containerNames_length - 1)  &&  hayDesbordamiento) {
-          // Si hay desbordamiento y se ha alcanzado la última posición de current
-          if (current_containerNames[i] == movedWorkItemName) {
-            this.updateWorkItem_PanelName_Position(current_containerNames[i], containerPanelName, i);
-          } else {
-            this.updateWorkItem_Position(current_containerNames[i], i);
-          }
-        } else {
-          if (current_containerNames[i] != previous_containerNames[i]) {
-            if (current_containerNames[i] == movedWorkItemName) {
-              this.updateWorkItem_PanelName_Position(current_containerNames[i], containerPanelName, i);
-            } else {
-              this.updateWorkItem_Position(current_containerNames[i], i);
-            }
-          }
-        }
-      }
-      
     }
   }
 
@@ -207,5 +199,5 @@ export class WorkItemComponent implements OnInit {
       return emptyWorkItem;
     }
   }
-  
+
 }
