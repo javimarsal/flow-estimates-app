@@ -33,10 +33,6 @@ export class WorkItemService {
     return this.http.get<WorkItem[]>(this.URL_API);
   }
 
-  getWorkItem_ByName(workItemName: string) {
-    return this.http.get<WorkItem>(`${this.URL_API}/name/${workItemName}`);
-  }
-
   updateWorkItem(workItem?: WorkItem) {
     return this.http.put(this.URL_API + `/${workItem?._id}`, workItem);
   }

@@ -33,6 +33,9 @@ DELETE http://localhost:4000/api/panels/616dbf79a615553ce68eac4f
 GET http://localhost:4000/api/workitems
 
 ###
+GET http://localhost:4000/api/workitems/name/Get%20up
+
+###
 POST http://localhost:4000/api/workitems
 Content-Type: application/json
 
