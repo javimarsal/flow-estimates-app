@@ -24,12 +24,12 @@ workItemController.getWorkItem = async (req, res) => {
 
 workItemController.editWorkItem = async (req, res) => {
     await WorkItem.findByIdAndUpdate(req.params.id, req.body)
-    res.send({ message: 'Work item updated' })
+    res.send({ message: `Work item with id="${req.params.id}" updated` })
 }
 
 workItemController.deleteWorkItem = async (req, res) => {
     await WorkItem.findByIdAndDelete(req.params.id)
-    res.send({ message: 'Work item deleted' })
+    res.send({ message: `Work item with id="${req.params.id}" deleted` })
 }
 
 module.exports = workItemController;

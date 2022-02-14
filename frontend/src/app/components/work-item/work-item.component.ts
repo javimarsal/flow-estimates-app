@@ -47,7 +47,10 @@ export class WorkItemComponent implements OnInit {
 
   // PUT WorkItem
   updateWorkItem(workItem: WorkItem) {
-    this.workItemService.updateWorkItem(workItem).subscribe();
+    this.workItemService.updateWorkItem(workItem).subscribe(
+      res => console.log(res),
+      err => console.log(err)
+    );
   }
 
   // Actualizar la posición del workItem cuyo nombre coincida

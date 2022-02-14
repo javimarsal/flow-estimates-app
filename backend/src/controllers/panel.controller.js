@@ -24,12 +24,12 @@ panelController.getPanel = async (req, res) => {
 
 panelController.editPanel = async (req, res) => {
     await Panel.findByIdAndUpdate(req.params.id, req.body)
-    res.send({ message: 'Panel updated' })
+    res.send({ message: `Panel with id="${req.params.id}" updated` })
 }
 
 panelController.deletePanel = async (req, res) => {
     await Panel.findByIdAndDelete(req.params.id)
-    res.send({ message: 'Panel deleted' })
+    res.send({ message: `Panel with id="${req.params.id}" deleted` })
 }
 
 module.exports = panelController;
