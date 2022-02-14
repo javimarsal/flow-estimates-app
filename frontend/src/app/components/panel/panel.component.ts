@@ -18,9 +18,14 @@ import { WorkItem } from 'src/app/models/work-item';
 export class PanelComponent implements OnInit {
   private workItemList: WorkItem[] = [];
 
-  panelNames: string[] = [];
+  panelNames: string[];
 
-  constructor(public panelService: PanelService) { }
+  panels: Panel[];
+
+  constructor(public panelService: PanelService) {
+    this.panelNames = [];
+    this.panels = [];
+  }
 
   ngOnInit(): void {
     this.getPanels();
@@ -36,17 +41,11 @@ export class PanelComponent implements OnInit {
   }
   /* PRUEBAS */
 
-  setPanelService_Panels(panels: Panel[]) {
-    this.panelService.panels = panels;
-  }
-
   getPanels() {
-    this.panelService.getPanels().subscribe(
-      res => {
-        this.setPanelService_Panels(res);
-        this.panelNames = this.getNames(res);
-      },
-      err => console.log(err)
+    this.panelService.getPanels().subscribe(panels => {
+        this.panels = panels;
+        this.panelNames = this.getNames(panels);
+      }
     )
   }
 
@@ -61,7 +60,7 @@ export class PanelComponent implements OnInit {
     // Paneles que devolvemos para luego actualizar this.panelService.panels
     let updatedPanels: Panel[] = [];
     
-    for(let p of this.panelService.panels) {
+    for(let p of this.panels) {
       // No vamos a actualizar el panel que hemos movido (porque ya está actualizado)
       if(p._id != idMovedPanel) {
         let panelToBeUpdated: Panel = {
@@ -150,7 +149,8 @@ export class PanelComponent implements OnInit {
       updatedPanels.push(panel);
 
       // Actualizar this.panelService.panels
-      this.setPanelService_Panels(updatedPanels);
+      // this.setPanelService_Panels(updatedPanels);
+      this.panels = updatedPanels;
       
     }
 
@@ -165,7 +165,7 @@ export class PanelComponent implements OnInit {
     };
 
     // Buscamos el Objeto Panel en el array panelService.panels
-    for(let p of this.panelService.panels) {
+    for(let p of this.panels) {
       // Si encontramos la misma posición es el panel que buscamos
       if(p.position == previousPosition) {
         // Hemos encontrado el Objeto Panel y le actualizamos la posición
