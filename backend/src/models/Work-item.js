@@ -4,7 +4,10 @@ const workItemSchema = new Schema({
     name: {type: String, required: true},
     panel: {type: String, required: true},
     position: {type: Number, required: true},
-    dateRegistry: {type: Map}
+    panelDateRegistry: [{
+        panel: {type: String, required: true},
+        date: {type: Date, required: true}
+    }]
 },
 {
     // Guardar fecha de creación y actualización

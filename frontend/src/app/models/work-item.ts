@@ -3,7 +3,10 @@ export interface WorkItem {
     name: string
     panel: string
     position: number
-    dateRegistry?: Date
+    panelDateRegistry: [{
+        panel: string,
+        date: Date
+    }]
     createdAt?: string
     updatedAt?: string
 }

@@ -62,14 +62,49 @@ export class WorkItemComponent implements OnInit {
     })
   }
 
-  // Actualizar la posición del workItem cuyo nombre coincida
+  // Actualizar la posición y el nombre de Panel del workItem cuyo nombre coincida
   updateWorkItem_PanelName_Position(workItemName: string, newPanelName: string, newPosition: number) {
     this.workItemService.getWorkItems().subscribe(workItems => {
+      // Obtenemos el workItem
       let workItem = this.getWorkItemByName(workItems, workItemName);
+
+      // Registrar fecha de entrada del workItem en el nuevo panel (si no existe para ese panel)
+      workItem = this.registerEntryDate(workItem, newPanelName)
+
+      // Cambiamos el nombre del panel (al que se mueve) y su nueva posición
       workItem.panel = newPanelName;
       workItem.position = newPosition;
+
+      // Actualizamos el workItem en la base de datos
       this.updateWorkItem(workItem);
     })
+  }
+
+  // Registrar fecha de entrada del workItem en el nuevo panel
+  registerEntryDate(workItem: WorkItem, newPanelName: string): WorkItem {
+    // Registramos la fecha de entrada en el panel, si esta no existe
+    if (!this.checkPanelEntryExist(workItem, newPanelName)) {
+      workItem.panelDateRegistry.push({
+        panel: newPanelName,
+        date: new Date()
+      });
+    }
+
+    // Tanto si añade la fecha al registro como si no, devolvemos el objeto workItem
+    return workItem;
+  }
+
+  checkPanelEntryExist(workItem: WorkItem, newPanelName: string) {
+    let panelDateRegistry = workItem.panelDateRegistry;
+
+    for (let panelRegistry of panelDateRegistry) {
+      if (panelRegistry.panel == newPanelName) {
+        // Si encuentra el panel, devolvemos el workItem
+        return workItem
+      }
+    }
+    // Si no encuentra el panel, devolvemos false (es decir, no existe el panel en el registro)
+    return false
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
@@ -226,7 +261,11 @@ export class WorkItemComponent implements OnInit {
       let emptyWorkItem: WorkItem = {
         name: '',
         panel: '',
-        position: 0
+        position: 0,
+        panelDateRegistry: [{
+          panel: '',
+          date: new Date()
+        }]
       };
       
       return emptyWorkItem;

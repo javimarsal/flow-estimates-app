@@ -48,65 +48,65 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         })
     ];
 
-    var dateRegistry = [];
-    dateRegistry = {
-        todo: [Date()]
-    };
+    var panelDateRegistry = [{
+        panel: 'ToDO',
+        date: new Date()
+    }];
 
     var workItems = [
         new WorkItem({
             name: 'Get to work',
             panel: 'ToDO',
             position: 0,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
             name: 'Pick up groceries',
             panel: 'ToDO',
             position: 1,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
             name: 'Go home',
             panel: 'ToDO',
             position: 2,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
             name: 'Fall asleep',
             panel: 'ToDO',
             position: 3,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
             name: 'Brush teeth',
             panel: 'ToDO',
             position: 4,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
             name: 'Get up',
             panel: 'ToDO',
             position: 5,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
             name: 'Take a shower',
             panel: 'ToDO',
             position: 6,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
             name: 'Check e-mail',
             panel: 'ToDO',
             position: 7,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
             name: 'Walk dog',
             panel: 'ToDO',
             position: 8,
-            dateRegistry: dateRegistry
+            panelDateRegistry: panelDateRegistry
         }),
     ];
 
