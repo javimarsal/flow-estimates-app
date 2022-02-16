@@ -3,6 +3,7 @@ export interface WorkItem {
     name: string
     panel: string
     position: number
+    dateRegistry?: Date
     createdAt?: string
     updatedAt?: string
 }

@@ -3,7 +3,8 @@ const { Schema, model }  = require('mongoose')
 const workItemSchema = new Schema({
     name: {type: String, required: true},
     panel: {type: String, required: true},
-    position: {type: Number, required: true}
+    position: {type: Number, required: true},
+    dateRegistry: {type: Map}
 },
 {
     // Guardar fecha de creación y actualización
