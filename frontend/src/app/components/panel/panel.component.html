@@ -3,6 +3,8 @@
         <!-- Es posible que el id del div (panel) ya no sea necesario -->
         <div id={{panel}} class="panelContainer" *ngFor="let panel of panelNames" cdkDrag>
             <h2>{{panel}}</h2>
+            <!-- Crear work-item -->
+            <app-create-work-item></app-create-work-item>
             <app-work-item [panelName]="panel"></app-work-item>
         </div>
     </div>

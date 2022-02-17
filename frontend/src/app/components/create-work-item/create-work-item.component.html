@@ -1,0 +1,20 @@
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+        <mat-panel-title>
+            Create a new work-item
+        </mat-panel-title>
+        </mat-expansion-panel-header>
+        <!-- Input to create new work-item -->
+        <form class="work-item">
+            <mat-form-field class="full-width" appearance="fill">
+                <!-- <mat-label>Name of work-item</mat-label> -->
+                <input type="text" matInput placeholder="Name of work-item" [(ngModel)]="value" [ngModelOptions]="{standalone: true}">
+                <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
+                    <mat-icon>X</mat-icon>
+                </button>
+            </mat-form-field>
+            <button mat-flat-button color="primary">Create</button>
+        </form>
+    </mat-expansion-panel>
+</mat-accordion>
