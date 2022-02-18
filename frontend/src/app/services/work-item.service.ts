@@ -18,4 +18,8 @@ export class WorkItemService {
     return this.http.put(this.URL_API + `/${workItem?._id}`, workItem);
   }
 
+  createWorkItem(workItem: WorkItem) {
+    return this.http.post(this.URL_API, workItem);
+  }
+
 }
