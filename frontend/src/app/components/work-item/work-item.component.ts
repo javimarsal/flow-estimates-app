@@ -108,20 +108,7 @@ export class WorkItemComponent implements OnInit {
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
-    // array de WorkItem donde guardaremos los workItems, según el panelName
-    let workItemsOfPanel: WorkItem[] = [];
-
-    for(let workItem of workItems) {
-      // Nombre del Panel que le corresponde al workItem
-      let workItemPanel = workItem.panel;
-
-      // Si el panel del workItem corresponde con panelName, lo guardamos
-      if(workItemPanel == panelName) {
-        workItemsOfPanel.push(workItem);
-      }
-    }
-
-    return workItemsOfPanel;
+    return this.workItemService.filterWorkItems_ByPanelName(workItems, panelName)
   }
 
   getWorkItemsNames(workItems: WorkItem[]): string[] {
