@@ -32,7 +32,7 @@ export class WorkItemService {
       let workItemPanel = workItem.panel;
 
       // Si el panel del workItem corresponde con panelName, lo guardamos
-      if(workItemPanel == panelName) {
+      if (workItemPanel == panelName) {
         workItemsOfPanel.push(workItem);
       }
     }

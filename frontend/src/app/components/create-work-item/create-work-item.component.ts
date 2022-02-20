@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WorkItem } from 'src/app/models/work-item';
 import { WorkItemService } from 'src/app/services/work-item.service';
+import { WorkItemComponent } from '../work-item/work-item.component';
 
 @Component({
   selector: 'app-create-work-item',
@@ -13,19 +14,23 @@ export class CreateWorkItemComponent implements OnInit {
   // Valor del input
   value = '';
 
-  allWorkItems: WorkItem[] = [];
+  allWorkItems!: WorkItem[];
+  @Input() workItemComponent!: WorkItemComponent;
 
   constructor(public workItemService: WorkItemService) { }
 
   ngOnInit(): void {
+    if (this.workItemComponent) {
+      console.log(this.workItemComponent)
+    }
   }
 
-  prueba() {
-    this.getWorkItems();
+  async prueba() {
+    await this.getWorkItems();
     console.log(this.allWorkItems)
   }
 
-  createWorkItem() {
+  async createWorkItem() {
     // Creamos un nuevo WorkItem si value no está vacío
     if (this.value == '') {
       return;
@@ -33,7 +38,7 @@ export class CreateWorkItemComponent implements OnInit {
 
     /* Actualizamos la posición del resto de workItems del panel. Lo hacemos antes para que no afecte al nuevo workItem */
     // Obtenemos todos los workItems
-    this.getWorkItems();
+    await this.getWorkItems();
     console.log(this.allWorkItems)
 
     // Obtenemos los que pertenecen al panel actual
@@ -54,26 +59,35 @@ export class CreateWorkItemComponent implements OnInit {
       }]
     };
 
-    // Creamos el objeto en la bdd
-    this.workItemService.createWorkItem(newWorkItem).subscribe(res => {
+    // Creamos el objeto en la bdd, y borramos el contenido de value (en finally)
+    await this.workItemService.createWorkItem(newWorkItem).toPromise()
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+      .finally(() => this.value = '');
+    
+    // Llamamos al método getWorkItems() del componente workItem para que actualice su lista
+    this.workItemComponent.getWorkItems();
+  }
+
+  async getWorkItems() {
+    try {
+      this.allWorkItems = await this.workItemService.getWorkItems().toPromise();
+      console.log(this.allWorkItems)
+    } catch (err) {
+      console.log(err);
+    }
+
+    //this.workItemService.getWorkItems().subscribe(workItems => {
+    //  this.allWorkItems = workItems;
+    //});
+  }
+
+  async updateWorkItem(workItem: WorkItem) {
+    await this.workItemService.updateWorkItem(workItem).toPromise()
+      .then((res) => {
         console.log(res);
-        // Al final, borrar el contenido de value
-        this.value = '';
-      }
-    );
-  }
-
-  getWorkItems() {
-    this.workItemService.getWorkItems().subscribe(workItems => {
-      this.allWorkItems = workItems;
-    });
-  }
-
-  updateWorkItem(workItem: WorkItem) {
-    this.workItemService.updateWorkItem(workItem).subscribe(
-      res => console.log(res),
-      err => console.log(err)
-    );
+      })
+      .catch((err) => console.log(err));
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
@@ -83,13 +97,10 @@ export class CreateWorkItemComponent implements OnInit {
   increasePositionByOne_ofWorkItems(workItems: WorkItem[]) {
     for (let wI of workItems) {
       // Incrementar en 1 su posición
-      console.log(wI.position)
       wI.position++;
-      console.log(wI.position)
 
       // Actualizarlo en la bdd
       this.updateWorkItem(wI);
-      break;
     }
   }
 
