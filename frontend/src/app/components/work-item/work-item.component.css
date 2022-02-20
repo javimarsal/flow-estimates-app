@@ -44,3 +44,9 @@
 .itemList.cdk-drop-list-dragging .itemBox:not(.cdk-drag-placeholder) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+div div {
+    margin: 10px;
+    border: solid 1px rgb(190, 190, 190);
+    border-radius: 4px;
+}

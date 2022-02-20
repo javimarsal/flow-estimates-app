@@ -1,21 +1,25 @@
-/* * {
-    background: aquamarine;
-    border: solid 1px rgb(90, 90, 90);
-    border-radius: 4px;
-} */
-
 mat-expansion-panel-header {
-    background-color: lightcyan;
+    background-color: rgb(191, 196, 199);
     border: solid 1px rgb(90, 90, 90);
     border-radius: 4px;
+    min-height: 30px;
+    margin: 5px;
 }
 
-.work-item {
+mat-label {
+    color: grey;
+}
+
+.create-work-item {
     min-width: 150px;
-    max-width: 250px;
+    max-width: 200px;
     width: 100%;
 }
-  
-.full-width {
-width: 100%;
+
+button {
+    margin-left: 10px;
+}
+
+input {
+    max-width: 200px;
 }

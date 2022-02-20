@@ -2,19 +2,21 @@
     <mat-expansion-panel>
         <mat-expansion-panel-header>
         <mat-panel-title>
-            Create a new work-item
+            Crear una nueva tarea
         </mat-panel-title>
         </mat-expansion-panel-header>
         <!-- Input to create new work-item -->
-        <form class="work-item">
+        <form class="create-work-item">
             <mat-form-field class="full-width" appearance="fill">
-                <!-- <mat-label>Name of work-item</mat-label> -->
-                <input type="text" matInput placeholder="Name of work-item" autocomplete="off" [(ngModel)]="value" [ngModelOptions]="{standalone: true}">
-                <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
-                    <mat-icon>X</mat-icon>
-                </button>
+                <mat-label>Nombre de la tarea</mat-label>
+                <input type="text" matInput autocomplete="off" [(ngModel)]="value" [ngModelOptions]="{standalone: true}">
+                <span>
+                    <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <button *ngIf="value" mat-flat-button color="primary" (click)="createWorkItem()">Crear</button>
+                </span>
             </mat-form-field>
-            <button *ngIf="value" mat-flat-button color="primary" (click)="createWorkItem()">Create</button>
         </form>
     </mat-expansion-panel>
 </mat-accordion>
