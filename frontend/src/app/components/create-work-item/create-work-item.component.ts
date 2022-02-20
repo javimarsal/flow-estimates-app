@@ -13,6 +13,7 @@ export class CreateWorkItemComponent implements OnInit {
   @Input() panelName!: string ;
   // Valor del input
   value = '';
+  nameExist !: Boolean;
 
   allWorkItems!: WorkItem[];
   @Input() workItemComponent!: WorkItemComponent;
@@ -20,14 +21,6 @@ export class CreateWorkItemComponent implements OnInit {
   constructor(public workItemService: WorkItemService) { }
 
   ngOnInit(): void {
-    if (this.workItemComponent) {
-      console.log(this.workItemComponent)
-    }
-  }
-
-  async prueba() {
-    await this.getWorkItems();
-    console.log(this.allWorkItems)
   }
 
   async createWorkItem() {
@@ -36,14 +29,21 @@ export class CreateWorkItemComponent implements OnInit {
       return;
     }
 
+    // Eliminar espacios no deseados en el valor del input
+    this.value = this.value.replace(/\s+/g,' ').trim();
+
     /* Actualizamos la posición del resto de workItems del panel. Lo hacemos antes para que no afecte al nuevo workItem */
     // Obtenemos todos los workItems
     await this.getWorkItems();
-    console.log(this.allWorkItems)
+
+    // Comprobar que el nombre del nuevo workItem no coincide con ninguno de los existentes
+    if (this.checkPanelNameExist(this.allWorkItems, this.value)) {
+      this.nameExist = true;
+      return;
+    }
 
     // Obtenemos los que pertenecen al panel actual
     let workItemsOfPanel = this.filterWorkItems_ByPanelName(this.allWorkItems, this.panelName);
-    console.log(workItemsOfPanel)
 
     // Incrementamos la posición de cada workItem en 1
     this.increasePositionByOne_ofWorkItems(workItemsOfPanel);
@@ -72,14 +72,9 @@ export class CreateWorkItemComponent implements OnInit {
   async getWorkItems() {
     try {
       this.allWorkItems = await this.workItemService.getWorkItems().toPromise();
-      console.log(this.allWorkItems)
     } catch (err) {
       console.log(err);
     }
-
-    //this.workItemService.getWorkItems().subscribe(workItems => {
-    //  this.allWorkItems = workItems;
-    //});
   }
 
   async updateWorkItem(workItem: WorkItem) {
@@ -102,6 +97,21 @@ export class CreateWorkItemComponent implements OnInit {
       // Actualizarlo en la bdd
       this.updateWorkItem(wI);
     }
+  }
+
+  checkPanelNameExist(workItems: WorkItem[], workItemName: string) {
+    for (let wI of workItems) {
+      // Convertir los string a lowercase para también cubrir esa posibilidad
+      let wINamelw = wI.name.toLowerCase();
+      let workItemNamelw = workItemName.toLowerCase();
+
+      if (wINamelw == workItemNamelw) {
+        // Si encuentra el nombre
+        return true
+      }
+    }
+    // Si no encuentra el nombre, devolvemos false
+    return false
   }
 
 }
