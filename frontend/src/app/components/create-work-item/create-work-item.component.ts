@@ -13,7 +13,6 @@ export class CreateWorkItemComponent implements OnInit {
   @Input() panelName!: string ;
   // Valor del input
   value = '';
-  nameExist !: Boolean;
 
   allWorkItems!: WorkItem[];
   @Input() workItemComponent!: WorkItemComponent;
@@ -38,7 +37,7 @@ export class CreateWorkItemComponent implements OnInit {
 
     // Comprobar que el nombre del nuevo workItem no coincide con ninguno de los existentes
     if (this.checkPanelNameExist(this.allWorkItems, this.value)) {
-      this.nameExist = true;
+      alert("El nombre de la tarea no debe coincidir con una ya existente.");
       return;
     }
 

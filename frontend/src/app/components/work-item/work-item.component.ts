@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import { ElementRef } from '@angular/core';
 
 // Services
 import { WorkItemService } from 'src/app/services/work-item.service';
@@ -24,7 +23,7 @@ export class WorkItemComponent implements OnInit {
 
   workItemsOfPanel_Names: string[] = [];
 
-  constructor(public workItemService: WorkItemService, private elRef: ElementRef) { }
+  constructor(public workItemService: WorkItemService) { }
 
   ngOnInit(): void {
     this.getWorkItems();

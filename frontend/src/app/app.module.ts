@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDialogModule } from '@angular/material/dialog';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 // Components
 import { AppComponent } from './app.component';
@@ -36,7 +36,7 @@ import { CreateWorkItemComponent } from './components/create-work-item/create-wo
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatDialogModule,
+    MatToolbarModule,
     FormsModule,
     HttpClientModule
   ],
