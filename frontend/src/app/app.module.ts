@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { AppRoutingModule } from './modules/app-routing/app-routing.module';
 
 // Material
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -12,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import {MatToolbarModule} from '@angular/material/toolbar';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 // Components
 import { AppComponent } from './app.component';
@@ -38,6 +39,7 @@ import { CreateWorkItemComponent } from './components/create-work-item/create-wo
     MatFormFieldModule,
     MatToolbarModule,
     FormsModule,
+    AppRoutingModule,
     HttpClientModule
   ],
   entryComponents: [PanelComponent, WorkItemComponent],
