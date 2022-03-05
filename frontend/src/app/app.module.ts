@@ -20,13 +20,15 @@ import { AppComponent } from './app.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { WorkItemComponent } from './components/work-item/work-item.component';
 import { CreateWorkItemComponent } from './components/create-work-item/create-work-item.component';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PanelComponent,
     WorkItemComponent,
-    CreateWorkItemComponent
+    CreateWorkItemComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
