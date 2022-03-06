@@ -4,6 +4,8 @@ require('dotenv').config();
 mongoose.Promise = global.Promise;
 
 // Modelo de Datos
+var User = require('./models/User');
+var Project = require('./models/Project');
 var Panel = require('./models/Panel');
 var WorkItem = require('./models/Work-item');
 
@@ -29,6 +31,19 @@ db.on('error', function (err) {
 });
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(function () {
+    var user = new User({
+        name: 'Javier',
+        surname: 'Martínez',
+        email: 'javier@correo.es',
+        projects: []
+    });
+
+    var project = new Project({
+        name: 'Proyecto Casa Blanca',
+        panels: [],
+        workItems: []
+    });
+
     var panels = [
         new Panel({
             name: 'ToDO',
@@ -113,12 +128,41 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     return WorkItem.deleteMany().then(function () {
         return Panel.deleteMany();
     }).then(function () {
-        Panel.insertMany(panels);
+        return Project.deleteMany();
     }).then(function () {
-        WorkItem.insertMany(workItems);
-    });/*.then(function () {
+        return User.deleteMany();
+    }).then(function () {
+        return Panel.insertMany(panels);
+    }).then(function () {
+        return WorkItem.insertMany(workItems);
+    }).then(async function () {
+        let panels = await Panel.find();
+        for (let p of panels) {
+            project.panels.push(p._id);
+        }
+
+        let workItems = await WorkItem.find();
+        for (let wI of workItems) {
+            project.workItems.push(wI._id);
+        }
+
+        return project.save();
+    }).then(async function () {
+        let projects = await Project.find();
+        for (let p of projects) {
+            console.log(p._id);
+            user.projects.push({
+                role: 'Project Manager',
+                project: p._id
+            });
+        }
+        
+        user.openedProject = projects[0]._id;
+
+        return user.save();
+    }).then(function () {
         return mongoose.disconnect();
-    });*/
+    });
 
 }).catch(function (err) {
     console.log('Error:', err.message);
