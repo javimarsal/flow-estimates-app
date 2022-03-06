@@ -5,6 +5,7 @@ import { Panel } from 'src/app/models/panel';
 @Injectable({
   providedIn: 'root'
 })
+
 export class PanelService {
 
   URL_API = 'http://localhost:4000/api/panels';

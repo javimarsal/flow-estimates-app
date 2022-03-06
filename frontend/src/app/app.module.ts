@@ -21,6 +21,7 @@ import { PanelComponent } from './components/panel/panel.component';
 import { WorkItemComponent } from './components/work-item/work-item.component';
 import { CreateWorkItemComponent } from './components/create-work-item/create-work-item.component';
 import { LoginComponent } from './components/login/login.component';
+import { MyProjectsComponent } from './components/my-projects/my-projects.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { LoginComponent } from './components/login/login.component';
     PanelComponent,
     WorkItemComponent,
     CreateWorkItemComponent,
-    LoginComponent
+    LoginComponent,
+    MyProjectsComponent
   ],
   imports: [
     BrowserModule,

@@ -13,11 +13,14 @@ export class LoginComponent implements OnInit {
   signin(event: any, name: string, password: string, form: any) {
     event.preventDefault();
 
+    // Comprobar que los datos requeridos del formulario han sido 
     if (!form.checkValidity()) {
       form.classList.add('was-validated');
-      return false;
+      return
     }
-    return true
+
+    
+    
   }
 
   ngOnInit(): void {
