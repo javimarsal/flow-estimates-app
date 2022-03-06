@@ -4,6 +4,7 @@ const userSchema = new Schema({
     name: {type: String, required: true},
     surname: {type: String, required: true},
     email: {type: String, required: true},
+    password: {type: String, required: true},
     openedProject: {type: Schema.Types.ObjectId, ref: 'project'},
     projects: [{
         role: {type: String, required: true},

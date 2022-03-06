@@ -24,6 +24,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // Rutas del servidor
 // se pueden usar las rutas del archivo requerido si antes llevan (en la ruta) "api/workitems"
+app.use("/api/projects", require('./routes/projects.routes'))
+app.use("/api/users", require('./routes/users.routes'))
 app.use("/api/workitems", require('./routes/work-items.routes'))
 app.use("/api/panels", require('./routes/panels.routes'))
 
