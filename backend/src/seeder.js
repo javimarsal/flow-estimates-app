@@ -151,7 +151,6 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     }).then(async function () {
         let projects = await Project.find();
         for (let p of projects) {
-            console.log(p._id);
             user.projects.push({
                 role: 'Project Manager',
                 project: p._id
