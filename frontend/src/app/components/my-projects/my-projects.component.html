@@ -1,1 +1,6 @@
-<p>my-projects works!</p>
+<h2>My Projects</h2>
+<ul>
+    <li *ngFor="let uP of userProjects">
+        nombre: {{uP.project.name}} rol: {{uP.role}}
+    </li>
+</ul>

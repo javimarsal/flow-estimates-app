@@ -31,7 +31,7 @@ db.on('error', function (err) {
 });
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(function () {
-    var user = new User({
+    var user1 = new User({
         name: 'Javier',
         surname: 'Martínez',
         email: 'javier@correo.es',
@@ -39,13 +39,19 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         projects: []
     });
 
-    var project = new Project({
+    var project1 = new Project({
         name: 'Proyecto Casa Blanca',
         panels: [],
         workItems: []
     });
 
-    var panels = [
+    var project2 = new Project({
+        name: 'Proyecto Astro',
+        panels: [],
+        workItems: []
+    });
+
+    var panels1 = [
         new Panel({
             name: 'ToDO',
             position: 0
@@ -69,7 +75,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         date: new Date()
     }];
 
-    var workItems = [
+    var workItems1 = [
         new WorkItem({
             name: 'Get to work',
             panel: 'ToDO',
@@ -126,6 +132,39 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         }),
     ];
 
+    // var workItems2 = [
+    //     new WorkItem({
+    //         name: 'Plant seeds',
+    //         panel: 'ToDO',
+    //         position: 0,
+    //         panelDateRegistry: panelDateRegistry
+    //     }),
+    //     new WorkItem({
+    //         name: 'Pick up groceries',
+    //         panel: 'ToDO',
+    //         position: 1,
+    //         panelDateRegistry: panelDateRegistry
+    //     }),
+    //     new WorkItem({
+    //         name: 'Wash the rover',
+    //         panel: 'ToDO',
+    //         position: 2,
+    //         panelDateRegistry: panelDateRegistry
+    //     }),
+    //     new WorkItem({
+    //         name: 'Check vital signs',
+    //         panel: 'ToDO',
+    //         position: 3,
+    //         panelDateRegistry: panelDateRegistry
+    //     }),
+    //     new WorkItem({
+    //         name: 'Communicate with martians ',
+    //         panel: 'ToDO',
+    //         position: 4,
+    //         panelDateRegistry: panelDateRegistry
+    //     }),
+    // ];
+
     return WorkItem.deleteMany().then(function () {
         return Panel.deleteMany();
     }).then(function () {
@@ -133,33 +172,43 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     }).then(function () {
         return User.deleteMany();
     }).then(function () {
-        return Panel.insertMany(panels);
+        return Panel.insertMany(panels1);
     }).then(function () {
-        return WorkItem.insertMany(workItems);
+        return WorkItem.insertMany(workItems1);
     }).then(async function () {
         let panels = await Panel.find();
         for (let p of panels) {
-            project.panels.push(p._id);
+            project1.panels.push(p._id);
         }
 
         let workItems = await WorkItem.find();
         for (let wI of workItems) {
-            project.workItems.push(wI._id);
+            project1.workItems.push(wI._id);
         }
 
-        return project.save();
+        return project1.save();
+    }).then(async function () {
+        let panels = await Panel.find();
+        for (let p of panels) {
+            project2.panels.push(p._id);
+        }
+
+        return project2.save();
     }).then(async function () {
         let projects = await Project.find();
-        for (let p of projects) {
-            user.projects.push({
-                role: 'Project Manager',
-                project: p._id
-            });
-        }
-        
-        user.openedProject = projects[0]._id;
+        user1.projects.push({
+            role: 'Project Manager',
+            project: projects[0]._id
+        })
 
-        return user.save();
+        user1.projects.push({
+            role: 'Desarrollador',
+            project: projects[1]._id
+        })
+        
+        user1.openedProject = projects[0]._id;
+
+        return user1.save();
     }).then(function () {
         return mongoose.disconnect();
     });

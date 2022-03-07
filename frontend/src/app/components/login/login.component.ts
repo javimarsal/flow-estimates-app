@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
+import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { MyProjectsComponent } from '../my-projects/my-projects.component';
 
@@ -11,7 +12,7 @@ import { MyProjectsComponent } from '../my-projects/my-projects.component';
 
 export class LoginComponent implements OnInit {
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService, private router: Router, private cookieService: CookieService) { }
 
   async signin(event: Event, email: string, password: string, form: any) {
     // Comprobar que los datos requeridos del formulario han sido 
@@ -22,9 +23,10 @@ export class LoginComponent implements OnInit {
 
     await this.userService.signin(email, password).toPromise()
       .then(res => {
-        console.log(res.message)
+        // set cookie uid
+        this.setCookie(res.user._id);
         
-        // si las credenciales coinciden navegamos a /my-projects
+        // las credenciales coinciden, navegamos a /my-projects
         // Ruta registrada en app-routing.module
         this.router.navigate(['/my-projects'])
           .catch(error => console.log(error))
@@ -33,6 +35,10 @@ export class LoginComponent implements OnInit {
         console.error(error)
       })
     
+  }
+
+  setCookie(value: string) {
+    this.cookieService.set('uid', value);
   }
 
   ngOnInit(): void {

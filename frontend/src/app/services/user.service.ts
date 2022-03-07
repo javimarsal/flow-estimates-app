@@ -12,6 +12,10 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
+  getUser(uid: string): Observable<User> {
+    return this.http.get<User>(`${this.URL_API}/${uid}`)
+  }
+
   signin(email: string, password: string): Observable<any> {
     return this.http.post(`${this.URL_API}/signin`, {email: email, password: password});
   }

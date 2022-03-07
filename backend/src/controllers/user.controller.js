@@ -18,7 +18,12 @@ userController.createUser = async (req, res) => {
 }
 
 userController.getUser = async (req, res) => {
-    const user = await User.findById(req.params.id)
+    const user = await User.findById(req.params.id).populate({
+        path: 'projects',
+        populate: {
+            path: 'project'
+        }
+    })
     res.send(user)
 }
 
