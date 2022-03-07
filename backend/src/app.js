@@ -1,7 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const cookieParser = require('cookie-parser')
 
 // Permite usar variables de entorno
 require('dotenv').config();
@@ -10,9 +9,6 @@ const app = express()
 
 // Variable port usada en index.js
 app.set('port', process.env.PORT || 4000);
-
-// Para trabajar con cookies
-app.use(cookieParser());
 
 // Permite aceptar peticiones que vienen de otros servidores (app de angular)
 app.use(cors())

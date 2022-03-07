@@ -38,9 +38,7 @@ userController.signin = async (req, res) => {
 
     await User.findOne({ email, password })
         .then(user => {
-            // establecer la cookie en el navegador
-            // res.cookie('uid', user._id);
-            res.send({ message: `Valid User with id="${user._id}"` })
+            res.send({ user })
         })
         .catch(() => {
             res.status(401).send({ message: 'Invalid credentials' })
