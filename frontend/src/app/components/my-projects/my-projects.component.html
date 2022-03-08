@@ -1,6 +1,8 @@
 <h2>My Projects</h2>
 <ul>
     <li *ngFor="let uP of userProjects">
-        nombre: {{uP.project.name}} rol: {{uP.role}}
+        nombre: 
+            <a routerLink="/project/{{uP.project._id}}">{{ uP.project.name }}</a>
+        rol: {{ uP.role }}
     </li>
 </ul>

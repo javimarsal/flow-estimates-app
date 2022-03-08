@@ -10,8 +10,6 @@ export class PanelService {
 
   URL_API = 'http://localhost:4000/api/panels';
 
-  panels: Panel[] = [];
-
   constructor(private http: HttpClient) { }
 
   getPanels() {

@@ -32,4 +32,21 @@ projectController.deleteProject = async (req, res) => {
     res.send({ message: `Project with id="${req.params.id}" deleted` })
 }
 
+projectController.getPanels = async (req, res) => {
+    const project = await Project.findById(req.params.id).populate({
+        path: 'panels',
+        populate: {
+            path: 'panel'
+        }
+    });
+    
+    // rellenamos el array panels para enviarlo como respuesta
+    let panels = [];
+    for (let p of project.panels) {
+        panels.push(p.panel)
+    }
+
+    res.send(panels);
+}
+
 module.exports = projectController;

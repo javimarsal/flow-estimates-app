@@ -178,19 +178,25 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     }).then(async function () {
         let panels = await Panel.find();
         for (let p of panels) {
-            project1.panels.push(p._id);
+            project1.panels.push({
+                panel: p._id
+            });
         }
 
         let workItems = await WorkItem.find();
         for (let wI of workItems) {
-            project1.workItems.push(wI._id);
+            project1.workItems.push({
+                workItem: wI._id
+            });
         }
 
         return project1.save();
     }).then(async function () {
         let panels = await Panel.find();
         for (let p of panels) {
-            project2.panels.push(p._id);
+            project2.panels.push({
+                panel: p._id
+            });
         }
 
         return project2.save();

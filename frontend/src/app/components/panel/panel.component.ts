@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ActivatedRoute } from '@angular/router';
 
 // Services
 import { PanelService } from 'src/app/services/panel.service';
+import { ProjectService } from 'src/app/services/project.service';
 
 // Models
 import { Panel } from 'src/app/models/panel';
@@ -17,24 +19,31 @@ import { WorkItem } from 'src/app/models/work-item';
 
 export class PanelComponent implements OnInit {
   panelNames: string[];
-
   panels: Panel[];
 
-  constructor(public panelService: PanelService) {
+  projectId: any = '';
+
+  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService) {
     this.panelNames = [];
     this.panels = [];
   }
 
   ngOnInit(): void {
-    this.getPanels();
+    this.getProjectId();
+    this.getPanelsOfProject();
   }
 
-  getPanels() {
-    this.panelService.getPanels().subscribe(panels => {
+  getProjectId() {
+    this.projectId = this.route.snapshot.paramMap.get('id');
+  }
+
+  getPanelsOfProject() {
+    this.projectService.getPanels(this.projectId).toPromise()
+      .then(panels => {
         this.panels = panels;
         this.panelNames = this.getNames(panels);
-      }
-    )
+      })
+      .catch(error => console.log(error));
   }
 
   updatePanel(panel: Panel) {

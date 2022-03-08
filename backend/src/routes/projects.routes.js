@@ -16,4 +16,7 @@ router.put('/:id', projectController.editProject);
 
 router.delete('/:id', projectController.deleteProject);
 
+// get panels of project
+router.get('/:id/panels', projectController.getPanels);
+
 module.exports = router;
