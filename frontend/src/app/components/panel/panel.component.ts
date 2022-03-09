@@ -8,7 +8,6 @@ import { ProjectService } from 'src/app/services/project.service';
 
 // Models
 import { Panel } from 'src/app/models/panel';
-import { WorkItem } from 'src/app/models/work-item';
 
 
 @Component({
@@ -47,10 +46,9 @@ export class PanelComponent implements OnInit {
   }
 
   updatePanel(panel: Panel) {
-    this.panelService.updatePanel(panel).subscribe(
-      res => console.log(res),
-      err => console.log(err)
-    )
+    this.panelService.updatePanel(panel).toPromise()
+      .then(res => console.log(res))
+      .catch(error => console.log(error));
   }
 
   updateAffectedPanels(idMovedPanel: string | undefined, previousPosition: number, currentPosition: number): Panel[] {
@@ -152,8 +150,8 @@ export class PanelComponent implements OnInit {
     
   }
 
-  getPanelByPosition(previousPosition: number): Panel {
-    // Panel que devolvemos
+  getPanelByPosition(targetPosition: number): Panel {
+    // Objeto Panel vacío, por si no lo encontrase
     let panel: Panel = {
       name: '',
       position: 0
@@ -162,13 +160,9 @@ export class PanelComponent implements OnInit {
     // Buscamos el Objeto Panel en el array this.panels
     for (let p of this.panels) {
       // Si encontramos la misma posición es el panel que buscamos
-      if (p.position == previousPosition) {
-        // Hemos encontrado el Objeto Panel y le actualizamos la posición
-        panel._id = p._id;
-        panel.name = p.name;
-        panel.position = p.position;
-
-        return panel;
+      if (p.position == targetPosition) {
+        // Hemos encontrado el Objeto Panel y lo devolvemos
+        return p;
       }
     }
 
