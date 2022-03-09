@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Panel } from '../models/panel';
-
-// Services
-import { PanelService } from './panel.service';
-import { WorkItemService } from './work-item.service';
 import { Observable } from 'rxjs';
+
+// Modelos
+import { Panel } from '../models/panel';
+import { WorkItem } from '../models/work-item';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class ProjectService {
   URL_API = 'http://localhost:4000/api/projects';
 
@@ -17,5 +17,13 @@ export class ProjectService {
 
   getPanels(projectId: string): Observable<Panel[]> {
     return this.http.get<Panel[]>(`${this.URL_API}/${projectId}/panels`);
+  }
+
+  getWorkItems(projectId: string): Observable<WorkItem[]> {
+    return this.http.get<WorkItem[]>(`${this.URL_API}/${projectId}/workitems`);
+  }
+
+  addWorkItem(projectId: string, workItem: WorkItem) {
+    return this.http.put(`${this.URL_API}/${projectId}/workitems`, workItem);
   }
 }

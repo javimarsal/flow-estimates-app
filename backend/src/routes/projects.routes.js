@@ -19,4 +19,10 @@ router.delete('/:id', projectController.deleteProject);
 // get panels of project
 router.get('/:id/panels', projectController.getPanels);
 
+// get workItems of project
+router.get('/:id/workitems', projectController.getWorkItems);
+
+// update list of workItems of project
+router.put('/:id/workitems', projectController.updateWorkItems);
+
 module.exports = router;

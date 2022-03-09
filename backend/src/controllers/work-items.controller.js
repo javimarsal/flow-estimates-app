@@ -12,9 +12,9 @@ workItemController.creatWorkItem = async (req, res) => {
     const newWorkItem = new WorkItem(req.body)
     
     // Guardamos el nuevo objeto
-    await newWorkItem.save()
+    let savedWorkItem = await newWorkItem.save();
 
-    res.send({ message: 'Work item created' })
+    res.send(savedWorkItem);
 }
 
 workItemController.getWorkItem = async (req, res) => {

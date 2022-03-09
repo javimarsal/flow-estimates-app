@@ -1,8 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { ActivatedRoute } from '@angular/router';
 
 // Services
 import { WorkItemService } from 'src/app/services/work-item.service';
+import { ProjectService } from 'src/app/services/project.service';
 
 // Models
 import { WorkItem } from 'src/app/models/work-item';
@@ -23,16 +25,24 @@ export class WorkItemComponent implements OnInit {
 
   workItemsOfPanel_Names: string[] = [];
 
-  constructor(public workItemService: WorkItemService) { }
+  projectId: any = '';
+
+  constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
   ngOnInit(): void {
-    this.getWorkItems();
+    this.getProjectId();
+    this.getWorkItemsOfProject();
+  }
+
+  getProjectId() {
+    this.projectId = this.route.snapshot.paramMap.get('id');
   }
 
   // GET WorkItems
-  getWorkItems() {
-    this.workItemService.getWorkItems().subscribe(workItems => {
-        // Le llegan todos los workitems, los guardamos
+  getWorkItemsOfProject() {
+    this.projectService.getWorkItems(this.projectId).toPromise()
+      .then(workItems => {
+        // Le llegan todos los workitems del proyecto, los guardamos
         this.allWorkItems = workItems;
 
         // Filtrar por el tablero que le corresponde y guardarlos
@@ -40,43 +50,46 @@ export class WorkItemComponent implements OnInit {
         
         // Obtener los nombres de los workItems del Panel
         this.workItemsOfPanel_Names = this.getWorkItemsNames(this.workItemsOfPanel);
-      }
-    )
+      })
+      .catch(error => console.log(error));
   }
 
   // PUT WorkItem
   updateWorkItem(workItem: WorkItem) {
-    this.workItemService.updateWorkItem(workItem).subscribe(
-      res => console.log(res),
-      err => console.log(err)
-    );
+    this.workItemService.updateWorkItem(workItem).toPromise()
+      .then(res => console.log(res))
+      .catch(error => console.log(error));
   }
 
   // Actualizar la posición del workItem cuyo nombre coincida
   updateWorkItem_Position(workItemName: string, newPosition: number) {
-    this.workItemService.getWorkItems().subscribe(workItems => {
-      let workItem = this.getWorkItemByName(workItems, workItemName);
-      workItem.position = newPosition;
-      this.updateWorkItem(workItem);
-    })
+    this.projectService.getWorkItems(this.projectId).toPromise()
+      .then(workItems => {
+        let workItem = this.getWorkItemByName(workItems, workItemName);
+        workItem.position = newPosition;
+        this.updateWorkItem(workItem);
+      })
+      .catch(error => console.log(error));
   }
 
   // Actualizar la posición y el nombre de Panel del workItem cuyo nombre coincida
   updateWorkItem_PanelName_Position(workItemName: string, newPanelName: string, newPosition: number) {
-    this.workItemService.getWorkItems().subscribe(workItems => {
-      // Obtenemos el workItem
-      let workItem = this.getWorkItemByName(workItems, workItemName);
+    this.projectService.getWorkItems(this.projectId).toPromise()
+      .then(workItems => {
+        // Obtenemos el workItem
+        let workItem = this.getWorkItemByName(workItems, workItemName);
 
-      // Registrar fecha de entrada del workItem en el nuevo panel (si no existe para ese panel)
-      workItem = this.registerEntryDate(workItem, newPanelName)
+        // Registrar fecha de entrada del workItem en el nuevo panel (si no existe para ese panel)
+        workItem = this.registerEntryDate(workItem, newPanelName)
 
-      // Cambiamos el nombre del panel (al que se mueve) y su nueva posición
-      workItem.panel = newPanelName;
-      workItem.position = newPosition;
+        // Cambiamos el nombre del panel (al que se mueve) y su nueva posición
+        workItem.panel = newPanelName;
+        workItem.position = newPosition;
 
-      // Actualizamos el workItem en la base de datos
-      this.updateWorkItem(workItem);
-    })
+        // Actualizamos el workItem en la base de datos
+        this.updateWorkItem(workItem);
+      })
+      .catch(error => console.log(error))
   }
 
   // Registrar fecha de entrada del workItem en el nuevo panel

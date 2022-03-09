@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
-import { MyProjectsComponent } from '../my-projects/my-projects.component';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +13,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private userService: UserService, private router: Router, private cookieService: CookieService) { }
 
-  async signin(event: Event, email: string, password: string, form: any) {
+  async signin(email: string, password: string, form: any) {
     // Comprobar que los datos requeridos del formulario han sido 
     if (!form.checkValidity()) {
       form.classList.add('was-validated');

@@ -1,7 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { WorkItem } from 'src/app/models/work-item';
+import { ActivatedRoute } from '@angular/router';
+
+// Services
 import { WorkItemService } from 'src/app/services/work-item.service';
+import { ProjectService } from 'src/app/services/project.service';
+
+// Components
 import { WorkItemComponent } from '../work-item/work-item.component';
+
+// Models
+import { WorkItem } from 'src/app/models/work-item';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-work-item',
@@ -17,9 +26,16 @@ export class CreateWorkItemComponent implements OnInit {
   allWorkItems!: WorkItem[];
   @Input() workItemComponent!: WorkItemComponent;
 
-  constructor(public workItemService: WorkItemService) { }
+  projectId: any = '';
+
+  constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
   ngOnInit(): void {
+    this.getProjectId();
+  }
+
+  getProjectId() {
+    this.projectId = this.route.snapshot.paramMap.get('id');
   }
 
   async createWorkItem() {
@@ -33,15 +49,20 @@ export class CreateWorkItemComponent implements OnInit {
 
     /* Actualizamos la posición del resto de workItems del panel. Lo hacemos antes para que no afecte al nuevo workItem */
     // Obtenemos todos los workItems
-    await this.getWorkItems();
+    await this.getWorkItems().toPromise()
+      .then(workItems => {
+        this.allWorkItems = workItems;
+      })
+      .catch(error => console.log(error))
+    console.log(this.allWorkItems);
 
     // Comprobar que el nombre del nuevo workItem no coincide con ninguno de los existentes
-    if (this.checkPanelNameExist(this.allWorkItems, this.value)) {
+    if (this.checkWorkItemNameExist(this.allWorkItems, this.value)) {
       alert("El nombre de la tarea no debe coincidir con una ya existente.");
       return;
     }
 
-    // Obtenemos los que pertenecen al panel actual
+    // Obtenemos los workItems que pertenecen al panel actual
     let workItemsOfPanel = this.filterWorkItems_ByPanelName(this.allWorkItems, this.panelName);
 
     // Incrementamos la posición de cada workItem en 1
@@ -59,21 +80,27 @@ export class CreateWorkItemComponent implements OnInit {
     };
 
     // Creamos el objeto en la bdd, y borramos el contenido de value (en finally)
+    let workItemOfDB!: WorkItem;
+
     await this.workItemService.createWorkItem(newWorkItem).toPromise()
-      .then(res => console.log(res))
+      .then(res => {
+        console.log(res);
+        workItemOfDB = res;
+      })
       .catch(err => console.log(err))
       .finally(() => this.value = '');
     
+    // Añadimos el nuevo workItem en la lista del proyecto
+    await this.projectService.addWorkItem(this.projectId, workItemOfDB).toPromise()
+      .then(res => console.log(res))
+      .catch(error => console.log(error));
+
     // Llamamos al método getWorkItems() del componente workItem para que actualice su lista
-    this.workItemComponent.getWorkItems();
+    this.workItemComponent.getWorkItemsOfProject();
   }
 
-  async getWorkItems() {
-    try {
-      this.allWorkItems = await this.workItemService.getWorkItems().toPromise();
-    } catch (err) {
-      console.log(err);
-    }
+  getWorkItems(): Observable<WorkItem[]> {
+    return this.projectService.getWorkItems(this.projectId);
   }
 
   async updateWorkItem(workItem: WorkItem) {
@@ -98,7 +125,7 @@ export class CreateWorkItemComponent implements OnInit {
     }
   }
 
-  checkPanelNameExist(workItems: WorkItem[], workItemName: string) {
+  checkWorkItemNameExist(workItems: WorkItem[], workItemName: string) {
     for (let wI of workItems) {
       // Convertir los string a lowercase para también cubrir esa posibilidad
       let wINamelw = wI.name.toLowerCase();
