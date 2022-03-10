@@ -23,6 +23,6 @@ router.get('/:id/panels', projectController.getPanels);
 router.get('/:id/workitems', projectController.getWorkItems);
 
 // update list of workItems of project
-router.put('/:id/workitems', projectController.updateWorkItems);
+router.put('/:id/workitems', projectController.addWorkItems);
 
 module.exports = router;

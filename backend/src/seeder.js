@@ -158,7 +158,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     //         panelDateRegistry: panelDateRegistry
     //     }),
     //     new WorkItem({
-    //         name: 'Communicate with martians ',
+    //         name: 'Communicate with martians',
     //         panel: 'ToDO',
     //         position: 4,
     //         panelDateRegistry: panelDateRegistry
