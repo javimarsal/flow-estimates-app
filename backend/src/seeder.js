@@ -212,7 +212,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             project: projects[1]._id
         })
         
-        user1.openedProject = projects[0]._id;
+        //user1.openedProject = projects[0]._id;
 
         return user1.save();
     }).then(function () {

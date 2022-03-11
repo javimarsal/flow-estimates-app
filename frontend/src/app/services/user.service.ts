@@ -19,4 +19,8 @@ export class UserService {
   signin(email: string, password: string): Observable<any> {
     return this.http.post(`${this.URL_API}/signin`, {email: email, password: password});
   }
+
+  setOpenedProject(projectId: string, uid: string) {
+    return this.http.post(`${this.URL_API}/openedProject`, {projectId: projectId, uid: uid});
+  }
 }

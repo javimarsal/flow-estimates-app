@@ -21,14 +21,18 @@ export class LoginComponent implements OnInit {
     }
 
     await this.userService.signin(email, password).toPromise()
-      .then(res => {
+      .then(user => {
         // set cookie uid
-        this.setCookie(res.user._id);
+        this.setCookie(user._id);
         
         // las credenciales coinciden, navegamos a /my-projects
         // Ruta registrada en app-routing.module
-        this.router.navigate(['/my-projects'])
-          .catch(error => console.log(error))
+        if (user.openedProject) {
+          this.router.navigate([`/project/${user.openedProject}`]);
+        }
+        else {
+          this.router.navigate(['/my-projects']);
+        }
       })
       .catch(error => {
         console.error(error)

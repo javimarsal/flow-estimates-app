@@ -18,4 +18,6 @@ router.delete('/:id', userController.deleteUser);
 
 router.post('/signin', userController.signin);
 
+router.post('/openedProject', userController.setOpenedProject);
+
 module.exports = router;

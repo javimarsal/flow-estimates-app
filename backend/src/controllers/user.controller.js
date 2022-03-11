@@ -1,5 +1,6 @@
 const userController = {}
 
+const mongoose = require('mongoose');
 const User = require('../models/User');
 
 userController.getUsers = async (req, res) => {
@@ -43,11 +44,25 @@ userController.signin = async (req, res) => {
 
     await User.findOne({ email, password })
         .then(user => {
-            res.send({ user })
+            res.send(user)
         })
         .catch(() => {
             res.status(401).send({ message: 'Invalid credentials' })
         })
+}
+
+userController.setOpenedProject = async (req, res) => {
+    let projectId = req.body.projectId;
+    let uid = req.body.uid;
+
+    let user = await User.findById(uid)
+        .catch(error => console.log(error));
+
+    user.openedProject = new mongoose.Types.ObjectId(projectId);
+    await user.save()
+        .catch(error => console.log(error));
+    
+    res.send({ message: `Now project with id="${projectId}" is the openedProject of user with id="${uid}"` });
 }
 
 module.exports = userController;

@@ -3,8 +3,10 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 
 // Services
+import { CookieService } from 'ngx-cookie-service';
 import { PanelService } from 'src/app/services/panel.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { UserService } from 'src/app/services/user.service';
 
 // Models
 import { Panel } from 'src/app/models/panel';
@@ -22,18 +24,26 @@ export class PanelComponent implements OnInit {
 
   projectId: any = '';
 
-  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService) {
+  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService) {
     this.panelNames = [];
     this.panels = [];
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.getProjectId();
+    await this.setOpenedProjectOfUser().toPromise()
+      .then(res => console.log(res))
+      .catch(error => console.log(error));
     this.getPanelsOfProject();
   }
 
   getProjectId() {
     this.projectId = this.route.snapshot.paramMap.get('id');
+  }
+
+  setOpenedProjectOfUser() {
+    let uid = this.cookieService.get('uid');
+    return this.userService.setOpenedProject(this.projectId, uid)
   }
 
   getPanelsOfProject() {
