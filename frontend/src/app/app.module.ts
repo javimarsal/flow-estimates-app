@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
 
 // Components
 import { AppComponent } from './app.component';
@@ -46,6 +47,7 @@ import { HomeComponent } from './components/home/home.component';
     MatButtonModule,
     MatFormFieldModule,
     MatToolbarModule,
+    MatCardModule,
     FormsModule,
     AppRoutingModule,
     HttpClientModule
