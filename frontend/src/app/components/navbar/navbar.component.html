@@ -1,0 +1,52 @@
+<header>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <!-- Brand Logo -->
+        <mat-icon routerLink="/">home</mat-icon>
+        <a class="navbar-brand" routerLink="/">{{title}}</a>
+  
+        <!-- Menu button (when menu is collapsed) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+  
+        <!-- Navigation bar -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+          <ul class="navbar-nav mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Usuario</a>
+              
+              <!-- User dropdown items -->
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-
+              labelledby="userDropdown">
+                <div *ngIf="!uid">
+                  <li>
+                    <a class="dropdown-item" routerLink="/login">Iniciar sesión</a>
+                  </li>
+                
+                  <li>
+                    <a class="dropdown-item">Registrarse</a>
+                  </li>
+                </div>
+  
+                <div *ngIf="uid">
+                  <li>
+                    <a class="dropdown-item" routerLink="/my-projects">Mis proyectos</a>
+                  </li>  
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a class="dropdown-item" (click)="signOut()">Cerrar sesión</a>
+                  </li>
+                </div>
+  
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  
+</header>

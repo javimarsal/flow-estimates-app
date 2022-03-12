@@ -1,8 +1,10 @@
+<app-navbar></app-navbar>
+
 <div cdkDropList cdkDropListOrientation="horizontal" class="panelList" (cdkDropListDropped)="drop($event)">
     <div cdkDropListGroup>
         <!-- Es posible que el id del div (panel) ya no sea necesario -->
         <div id={{panel}} class="panelContainer" *ngFor="let panel of panelNames" cdkDrag>
-            <h2>{{panel}}</h2>
+            <h2 class="panelName">{{panel}}</h2>
             <!-- Crear work-item -->
             <app-create-work-item [panelName]="panel" [workItemComponent]="wIC"></app-create-work-item>
             <app-work-item [panelName]="panel" #wIC></app-work-item>

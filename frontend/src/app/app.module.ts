@@ -22,6 +22,8 @@ import { WorkItemComponent } from './components/work-item/work-item.component';
 import { CreateWorkItemComponent } from './components/create-work-item/create-work-item.component';
 import { LoginComponent } from './components/login/login.component';
 import { MyProjectsComponent } from './components/my-projects/my-projects.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { MyProjectsComponent } from './components/my-projects/my-projects.compon
     WorkItemComponent,
     CreateWorkItemComponent,
     LoginComponent,
-    MyProjectsComponent
+    MyProjectsComponent,
+    NavbarComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

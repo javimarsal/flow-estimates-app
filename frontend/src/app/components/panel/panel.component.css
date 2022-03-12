@@ -1,6 +1,11 @@
 .panelList {
     overflow: auto;
     white-space: nowrap;
+    margin-top: 15px;
+}
+
+.panelName {
+    font-size: 25px;
 }
 
 .panelContainer {
