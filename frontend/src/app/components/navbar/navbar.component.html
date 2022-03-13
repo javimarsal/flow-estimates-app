@@ -14,36 +14,15 @@
         <!-- Navigation bar -->
         <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
           <ul class="navbar-nav mb-2 mb-md-0">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Usuario</a>
-              
-              <!-- User dropdown items -->
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-
-              labelledby="userDropdown">
-                <div *ngIf="!uid">
-                  <li>
-                    <a class="dropdown-item" routerLink="/login">Iniciar sesión</a>
-                  </li>
-                
-                  <li>
-                    <a class="dropdown-item">Registrarse</a>
-                  </li>
-                </div>
-  
-                <div *ngIf="uid">
-                  <li>
-                    <a class="dropdown-item" routerLink="/my-projects">Mis proyectos</a>
-                  </li>  
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <a class="dropdown-item" (click)="signOut()">Cerrar sesión</a>
-                  </li>
-                </div>
-  
-              </ul>
-            </li>
+            <div *ngIf="!uid">
+              <button type="button" class="btn btn-success login boton" routerLink="/login">Iniciar Sesión</button>
+              <button type="button" class="btn btn-info signup boton">Registrarse</button>
+            </div>
+
+            <div *ngIf="uid">
+              <button type="button" class="btn btn-light mis-proyectos boton" routerLink="/my-projects">Mis proyectos</button>
+              <button type="button" class="btn btn-danger signOut boton" (click)="signOut()">Cerrar sesión</button>
+            </div>
           </ul>
         </div>
       </div>

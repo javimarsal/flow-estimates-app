@@ -13,6 +13,25 @@
 .navbar-collapse {
     background-color: #307df8;
     border-radius: 4px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 10px 5px;
+}
+
+.boton {
+    margin-left: 10px;
+}
+
+.login {
+    border: solid 1px #12613c;
+}
+
+.signup {
+    border: solid 1px #0a7e96;
+}
+
+.mis-proyectos {
+    border: solid 1px #353535;
+}
+
+.signOut {
+    border: solid 1px #751c25;
 }
