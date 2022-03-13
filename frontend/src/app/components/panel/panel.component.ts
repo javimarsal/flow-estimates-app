@@ -23,6 +23,7 @@ export class PanelComponent implements OnInit {
   panels: Panel[];
 
   projectId: any = '';
+  projectName: string = '';
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService) {
     this.panelNames = [];
@@ -31,14 +32,26 @@ export class PanelComponent implements OnInit {
 
   async ngOnInit() {
     this.getProjectId();
+    
+    // Obtener el nombre del proyecto para mostrarlo en la interfaz
+    await this.getProject(this.projectId).toPromise()
+      .then(project => this.projectName = project.name)
+      .catch(error => console.log(error));
+
+    // Cuando el usuario abre el proyecto, registramos el id en la propiedad openedProject del usuario
     await this.setOpenedProjectOfUser().toPromise()
       .then(res => console.log(res))
       .catch(error => console.log(error));
+    
     this.getPanelsOfProject();
   }
 
   getProjectId() {
     this.projectId = this.route.snapshot.paramMap.get('id');
+  }
+
+  getProject(projectId: string) {
+    return this.projectService.getProject(projectId);
   }
 
   setOpenedProjectOfUser() {

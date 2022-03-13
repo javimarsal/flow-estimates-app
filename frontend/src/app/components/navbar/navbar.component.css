@@ -7,5 +7,12 @@
 .navbar-brand {
     color: inherit;
     font-size: xx-large;
-    margin-left: 10px;
+    padding-left: 20px;
+}
+
+.navbar-collapse {
+    background-color: #307df8;
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
 }

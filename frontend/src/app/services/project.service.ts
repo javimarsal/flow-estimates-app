@@ -15,6 +15,10 @@ export class ProjectService {
 
   constructor(private http: HttpClient) { }
 
+  getProject(projectId: string): Observable<Panel> {
+    return this.http.get<Panel>(`${this.URL_API}/${projectId}`);
+  }
+
   getPanels(projectId: string): Observable<Panel[]> {
     return this.http.get<Panel[]>(`${this.URL_API}/${projectId}/panels`);
   }
