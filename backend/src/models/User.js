@@ -7,7 +7,7 @@ const userSchema = new Schema({
     password: {type: String, required: true},
     openedProject: {type: Schema.Types.ObjectId, ref: 'project'},
     projects: [{
-        role: {type: String, required: true},
+        role: {type: String},
         project: {type: Schema.Types.ObjectId, ref: 'project'}
     }]
 },

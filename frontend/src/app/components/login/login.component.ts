@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit {
   constructor(private userService: UserService, private router: Router, private cookieService: CookieService) { }
 
   async signin(email: string, password: string, form: any) {
-    // Comprobar que los datos requeridos del formulario han sido 
+    // Comprobar que los datos requeridos del formulario han sido rellenados
     if (!form.checkValidity()) {
       form.classList.add('was-validated');
       return

@@ -1,0 +1,42 @@
+<body>
+    <app-navbar></app-navbar>
+
+    <h2 class="title">Nuevo Usuario</h2>
+    <mat-card class="signup">
+        <form #signupForm class="needs-validation" novalidate>
+            <div>
+                <label for="name" class="form-label">Nombre</label>
+                <input #name type="text" class="form-control input" name="name" placeholder="Nombre" required autofocus>
+                <div class="invalid-feedback">Por favor, proporciona un Nombre</div>
+            </div>
+
+            <div>
+                <label for="surname" class="form-label">Apellido</label>
+                <input #surname type="text" class="form-control input" name="surname" placeholder="Apellido" required>
+                <div class="invalid-feedback">Por favor, proporciona un Apellido</div>
+            </div>
+
+            <div>
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input #email type="email" class="form-control input" name="email" placeholder="email@ejemplo.com" required>
+                <div class="invalid-feedback">Por favor, proporciona un Correo Electrónico válido</div>
+            </div>
+    
+            <div>
+                <label for="password" class="form-label">Contraseña</label>
+                <input #password type="password" class="form-control input" name="password" placeholder="contraseña" required>
+                <div class="invalid-feedback">Por favor, proporciona una Contraseña</div>
+            </div>
+
+            <div>
+                <label for="confirm-password" class="form-label">Confirmar contraseña</label>
+                <input #confirmPassword type="password" class="form-control input" name="confirm-password" placeholder="contraseña" required>
+                <div class="invalid-feedback">Por favor, confirma tu Contraseña</div>
+            </div>
+    
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button class="mt-2 btn btn-primary" role="button" (click)="signup(name.value, surname.value, email.value, password.value, confirmPassword.value, signupForm)">Registrarse</button>
+            </div>
+        </form>
+    </mat-card>
+</body>

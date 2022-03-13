@@ -12,4 +12,8 @@
                 Rol: <span class="rol-name">{{ uP.role }}</span>
             </span>
         </div>
+
+        <div *ngIf="userProjects.length==0">
+            <p class="no-projects">Ningún proyecto que mostrar</p>
+        </div>
 </mat-card>

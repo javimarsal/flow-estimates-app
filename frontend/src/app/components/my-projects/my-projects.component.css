@@ -43,3 +43,9 @@
 .rol-name {
     font-weight: initial;
 }
+
+.no-projects {
+    font-size: 20px;
+    color: grey;
+    padding-left: 20px;
+}

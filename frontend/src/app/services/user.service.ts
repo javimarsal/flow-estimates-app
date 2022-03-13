@@ -20,6 +20,10 @@ export class UserService {
     return this.http.post(`${this.URL_API}/signin`, {email: email, password: password});
   }
 
+  signup(user: User) {
+    return this.http.post(`${this.URL_API}/signup`, user);
+  }
+
   setOpenedProject(projectId: string, uid: string) {
     return this.http.post(`${this.URL_API}/openedProject`, {projectId: projectId, uid: uid});
   }

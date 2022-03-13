@@ -51,6 +51,30 @@ userController.signin = async (req, res) => {
         })
 }
 
+userController.signup = async (req, res) => {
+    let email = req.body.email;
+    let userExist;
+
+    await User.findOne({ email })
+        .then(user => userExist = user);
+    
+    if (userExist) {
+        res.status(401).send({ message: 'El correo proporcionado ya está siendo usado por otro usuario' });
+        return;
+    }
+
+    // si no existe, se crea el nuevo usuario
+    let newUser = new User(req.body);
+
+    await newUser.save()
+        .then((user) => {
+            console.log(user);
+            res.send({ message: `Se ha creado un nuevo usuario con correo:"${req.body.email}"` });
+        })
+        .catch(() => res.send({ message: 'No se pudo crear el usuario' }));
+    
+}
+
 userController.setOpenedProject = async (req, res) => {
     let projectId = req.body.projectId;
     let uid = req.body.uid;
