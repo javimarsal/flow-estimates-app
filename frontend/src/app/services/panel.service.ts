@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Panel } from 'src/app/models/panel';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,7 @@ import { Panel } from 'src/app/models/panel';
 
 export class PanelService {
 
-  URL_API = 'http://localhost:4000/api/panels';
+  URL_API = `${environment.URL_API}/api/panels`;
 
   constructor(private http: HttpClient) { }
 

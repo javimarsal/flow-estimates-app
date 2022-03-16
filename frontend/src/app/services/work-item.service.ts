@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { WorkItem } from 'src/app/models/work-item';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class WorkItemService {
-  URL_API = 'http://localhost:4000/api/workitems';
+  URL_API = `${environment.URL_API}/api/workitems`;
 
   constructor(private http: HttpClient) { }
 

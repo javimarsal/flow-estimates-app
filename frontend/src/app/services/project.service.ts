@@ -5,13 +5,14 @@ import { Observable } from 'rxjs';
 // Modelos
 import { Panel } from '../models/panel';
 import { WorkItem } from '../models/work-item';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class ProjectService {
-  URL_API = 'http://localhost:4000/api/projects';
+  URL_API = `${environment.URL_API}/api/projects`;
 
   constructor(private http: HttpClient) { }
 
