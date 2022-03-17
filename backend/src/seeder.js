@@ -11,7 +11,7 @@ var WorkItem = require('./models/Work-item');
 
 // URI
 // const uri = process.env.DB_MONGO;
-const uri = process.env.DB_MONGO_ATLAS;
+const uri = process.env.DB_MONGO;
 
 var db = mongoose.connection;
 
