@@ -10,7 +10,8 @@ var Panel = require('./models/Panel');
 var WorkItem = require('./models/Work-item');
 
 // URI
-const uri = process.env.DB_MONGO;
+// const uri = process.env.DB_MONGO;
+const uri = process.env.DB_MONGO_ATLAS;
 
 var db = mongoose.connection;
 
