@@ -30,8 +30,7 @@ jobs:
         npm run build
       working-directory: ./frontend
 
-    - name: save results from build
-      uses: actions/upload-artifact@v3
-      with:
-        name: public
-        path: backend/public
+    - name: Login to Heroku Container registry
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku container:login
