@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  title = 'Flows Estimates';
+  title = 'Flow Estimates';
   uid = '';
 
   constructor(private cookieService: CookieService, private router: Router) {}
