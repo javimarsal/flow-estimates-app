@@ -25,6 +25,10 @@ export class WorkItemService {
     return this.http.post(this.URL_API, workItem);
   }
 
+  deleteWorkItem(id?: string): Observable<any> {
+    return this.http.delete(`${this.URL_API}/${id}`);
+  }
+
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
     // array de WorkItem donde guardaremos los workItems, según el panelName
     let workItemsOfPanel: WorkItem[] = [];

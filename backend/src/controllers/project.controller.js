@@ -66,7 +66,7 @@ projectController.getWorkItems = async (req, res) => {
     res.send(workItems);
 }
 
-projectController.addWorkItems = async (req, res) => {
+projectController.addWorkItem = async (req, res) => {
     const project = await Project.findById(req.params.id);
     const workItem = req.body;
     console.log(workItem);

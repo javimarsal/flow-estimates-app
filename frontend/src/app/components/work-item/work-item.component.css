@@ -59,6 +59,10 @@
     display: none;
 }
 
-.itemBox:hover .btn {
+.itemBox:hover .notEditing {
     display: inline-block;
+}
+
+.editing {
+    display: none;
 }

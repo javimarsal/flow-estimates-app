@@ -21,8 +21,6 @@ export class WorkItemComponent implements OnInit {
 
   workItemsOfPanel: WorkItem[] = [];
 
-  allWorkItems: WorkItem[] = [];
-
   workItemsOfPanel_Names: string[] = [];
 
   projectId: any = '';
@@ -42,9 +40,6 @@ export class WorkItemComponent implements OnInit {
   getWorkItemsOfProject() {
     this.projectService.getWorkItems(this.projectId).toPromise()
       .then(workItems => {
-        // Le llegan todos los workitems del proyecto, los guardamos
-        this.allWorkItems = workItems;
-
         // Filtrar por el tablero que le corresponde y guardarlos
         this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
         
@@ -90,6 +85,20 @@ export class WorkItemComponent implements OnInit {
         this.updateWorkItem(workItem);
       })
       .catch(error => console.log(error))
+  }
+
+  // Eliminar workItem
+  deleteWorkItem(element: HTMLElement) {
+    // Nombre del workItem
+    let workItemName = element.innerText;
+
+    // Obtener workItem por el nombre
+    let workItem = this.getWorkItemByName(this.workItemsOfPanel, workItemName);
+
+    // Eliminar el workItem
+    this.workItemService.deleteWorkItem(workItem._id);
+
+    //
   }
 
   // Registrar fecha de entrada del workItem en el nuevo panel
@@ -142,6 +151,21 @@ export class WorkItemComponent implements OnInit {
     return workItems.sort(function(a, b) {
       return a.position - b.position;
     });
+  }
+
+  // Cambiar etiqueta por un input manteniendo su value
+  tagToInput(element: HTMLElement, editButton: HTMLElement, deleteButton: HTMLElement, acceptButton: HTMLElement, cancelButton: HTMLElement) {
+    let value = element.innerText;
+    console.log(element.innerHTML)
+    element.innerHTML = `<input value="${value}"/>`;
+    
+    // Ocultamos los botones de editar y eliminar
+    editButton.style.display = "none";
+    deleteButton.style.display = "none";
+
+    // Mostramos los botones de aceptar y cancelar la edición
+    acceptButton.style.display = "inline-block";
+    cancelButton.style.display = "inline-block";
   }
 
 
