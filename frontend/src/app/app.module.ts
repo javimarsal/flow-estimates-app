@@ -26,6 +26,7 @@ import { MyProjectsComponent } from './components/my-projects/my-projects.compon
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
 import { SignupComponent } from './components/signup/signup.component';
+import { ReadDeleteWorkItemComponent } from './components/read-delete-work-item/read-delete-work-item.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { SignupComponent } from './components/signup/signup.component';
     MyProjectsComponent,
     NavbarComponent,
     HomeComponent,
-    SignupComponent
+    SignupComponent,
+    ReadDeleteWorkItemComponent
   ],
   imports: [
     BrowserModule,

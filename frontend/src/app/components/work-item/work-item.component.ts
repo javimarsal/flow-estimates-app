@@ -87,20 +87,6 @@ export class WorkItemComponent implements OnInit {
       .catch(error => console.log(error))
   }
 
-  // Eliminar workItem
-  deleteWorkItem(element: HTMLElement) {
-    // Nombre del workItem
-    let workItemName = element.innerText;
-
-    // Obtener workItem por el nombre
-    let workItem = this.getWorkItemByName(this.workItemsOfPanel, workItemName);
-
-    // Eliminar el workItem
-    this.workItemService.deleteWorkItem(workItem._id);
-
-    //
-  }
-
   // Registrar fecha de entrada del workItem en el nuevo panel
   registerEntryDate(workItem: WorkItem, newPanelName: string): WorkItem {
     // Registramos la fecha de entrada en el panel, si esta no existe
@@ -152,22 +138,6 @@ export class WorkItemComponent implements OnInit {
       return a.position - b.position;
     });
   }
-
-  // Cambiar etiqueta por un input manteniendo su value
-  tagToInput(element: HTMLElement, editButton: HTMLElement, deleteButton: HTMLElement, acceptButton: HTMLElement, cancelButton: HTMLElement) {
-    let value = element.innerText;
-    console.log(element.innerHTML)
-    element.innerHTML = `<input value="${value}"/>`;
-    
-    // Ocultamos los botones de editar y eliminar
-    editButton.style.display = "none";
-    deleteButton.style.display = "none";
-
-    // Mostramos los botones de aceptar y cancelar la edición
-    acceptButton.style.display = "inline-block";
-    cancelButton.style.display = "inline-block";
-  }
-
 
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {

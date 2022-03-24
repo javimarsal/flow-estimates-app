@@ -53,16 +53,3 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.btn {
-    margin-right: 8px;
-    display: none;
-}
-
-.itemBox:hover .notEditing {
-    display: inline-block;
-}
-
-.editing {
-    display: none;
-}
