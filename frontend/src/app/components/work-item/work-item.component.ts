@@ -19,9 +19,7 @@ import { WorkItem } from 'src/app/models/work-item';
 export class WorkItemComponent implements OnInit {
   @Input() panelName!: string;
 
-  workItemsOfPanel: WorkItem[] = [];
-
-  workItemsOfPanel_Names: string[] = [];
+  workItemsOfPanel: any = {};
 
   projectId: any = '';
 
@@ -41,10 +39,14 @@ export class WorkItemComponent implements OnInit {
     this.projectService.getWorkItems(this.projectId).toPromise()
       .then(workItems => {
         // Filtrar por el tablero que le corresponde y guardarlos
-        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+        this.workItemsOfPanel.workItems = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+        console.log(this.workItemsOfPanel)
         
-        // Obtener los nombres de los workItems del Panel
-        this.workItemsOfPanel_Names = this.getWorkItemsNames(this.workItemsOfPanel);
+        // Obtener los nombres de los workItems del Panel, también se ordenan los objetos workItems en el método sortWorkItems
+        let workItemsOfPanel_Names = this.getWorkItemsNames(this.workItemsOfPanel.workItems);
+
+        // Asignamos los nombres al array de workItems del Panel
+        this.workItemsOfPanel.names = workItemsOfPanel_Names;
       })
       .catch(error => console.log(error));
   }
@@ -142,7 +144,7 @@ export class WorkItemComponent implements OnInit {
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       // Hacemos una copia de this.workItemsOfPanel_Names (sin referencia) porque al realizarse "moveItemInArray" también cambia this.workItemsOfPanel_Names y queremos obtener el estado antes de realizar ningún movimiento
-      let previousPanelNames = JSON.parse(JSON.stringify(this.workItemsOfPanel_Names));
+      let previousPanelNames = JSON.parse(JSON.stringify(event.container.data));
 
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 

@@ -9,9 +9,12 @@ import { ActivatedRoute } from '@angular/router';
 export class ReadDeleteWorkItemComponent implements OnInit {
   // Para recuperar el nombre del elemento
   @Input() workItemId!: string;
+
+  // Para eliminar el elemento
+  @Input() htmlWorkItem_Description!: HTMLElement;
   
   // Para eliminar el elemento
-  @Input() htmlWorkItemDiv!: HTMLElement;
+  @Input() htmlWorkItem_Box!: HTMLElement;
 
   // Id del Proyecto en el que nos encontramos
   projectId: any = '';
@@ -28,9 +31,8 @@ export class ReadDeleteWorkItemComponent implements OnInit {
 
   // Cambiar etiqueta por un input manteniendo su value
   tagToInput(editButton: HTMLElement, deleteButton: HTMLElement, acceptButton: HTMLElement, cancelButton: HTMLElement) {
-    // let value = element.innerText;
-    // console.log(element.innerHTML)
-    // element.innerHTML = `<input value="${value}"/>`;
+    let value = this.htmlWorkItem_Description.innerText;
+    this.htmlWorkItem_Description.innerHTML = `<input value="${value}"/>`;
     
     // Ocultamos los botones de editar y eliminar
     editButton.style.display = "none";
