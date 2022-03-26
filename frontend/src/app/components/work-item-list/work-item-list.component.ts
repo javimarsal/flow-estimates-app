@@ -11,23 +11,29 @@ import { WorkItem } from 'src/app/models/work-item';
 
 
 @Component({
-  selector: 'app-work-item',
-  templateUrl: './work-item.component.html',
-  styleUrls: ['./work-item.component.css']
+  selector: 'app-work-item-list',
+  templateUrl: './work-item-list.component.html',
+  styleUrls: ['./work-item-list.component.css']
 })
 
-export class WorkItemComponent implements OnInit {
+export class WorkItemListComponent implements OnInit {
   @Input() panelName!: string;
 
   workItemsOfPanel: any = {};
 
   projectId: any = '';
 
+  editing: boolean = false;
+
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
   ngOnInit(): void {
     this.getProjectId();
     this.getWorkItemsOfProject();
+  }
+
+  tagToParagraph(editButton: HTMLElement, deleteButton: HTMLElement) {
+    console.log("Hola")
   }
 
   getProjectId() {
@@ -40,7 +46,6 @@ export class WorkItemComponent implements OnInit {
       .then(workItems => {
         // Filtrar por el tablero que le corresponde y guardarlos
         this.workItemsOfPanel.workItems = this.filterWorkItems_ByPanelName(workItems, this.panelName);
-        console.log(this.workItemsOfPanel)
         
         // Obtener los nombres de los workItems del Panel, también se ordenan los objetos workItems en el método sortWorkItems
         let workItemsOfPanel_Names = this.getWorkItemsNames(this.workItemsOfPanel.workItems);

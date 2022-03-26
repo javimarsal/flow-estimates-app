@@ -1,0 +1,15 @@
+<!-- El componente NO es una tarea, sino las tareas de cada Panel -->
+<div cdkDropList [cdkDropListData]="workItemsOfPanel.names" class="itemList" (cdkDropListDropped)="drop($event)">
+    <div class="itemBox" *ngFor="let workItem of workItemsOfPanel.workItems" cdkDrag #workItemBox>
+        <div *ngIf="!editing">
+            <p class="description" title="{{workItem.name}}">
+                {{workItem.name}}
+            </p>
+            <app-update-delete-work-item [workItemComponet]="this" [workItemId]="workItem._id" [htmlWorkItem_Box]="workItemBox" #updateDelete></app-update-delete-work-item>
+        </div>
+
+        <div *ngIf="editing">
+            <input (blur)="editing = false" type="text" value="{{workItem.name}}">
+        </div>
+    </div>
+</div>

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReadDeleteWorkItemComponent } from './read-delete-work-item.component';
+import { UpdateDeleteWorkItemComponent } from './update-delete-work-item.component';
 
 describe('ReadDeleteWorkItemComponent', () => {
-  let component: ReadDeleteWorkItemComponent;
-  let fixture: ComponentFixture<ReadDeleteWorkItemComponent>;
+  let component: UpdateDeleteWorkItemComponent;
+  let fixture: ComponentFixture<UpdateDeleteWorkItemComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ReadDeleteWorkItemComponent ]
+      declarations: [ UpdateDeleteWorkItemComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ReadDeleteWorkItemComponent);
+    fixture = TestBed.createComponent(UpdateDeleteWorkItemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -19,27 +19,27 @@ import { MatCardModule } from '@angular/material/card';
 // Components
 import { AppComponent } from './app.component';
 import { PanelComponent } from './components/panel/panel.component';
-import { WorkItemComponent } from './components/work-item/work-item.component';
+import { WorkItemListComponent } from './components/work-item-list/work-item-list.component';
 import { CreateWorkItemComponent } from './components/create-work-item/create-work-item.component';
 import { LoginComponent } from './components/login/login.component';
 import { MyProjectsComponent } from './components/my-projects/my-projects.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
 import { SignupComponent } from './components/signup/signup.component';
-import { ReadDeleteWorkItemComponent } from './components/read-delete-work-item/read-delete-work-item.component';
+import { UpdateDeleteWorkItemComponent } from './components/update-delete-work-item/update-delete-work-item.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PanelComponent,
-    WorkItemComponent,
+    WorkItemListComponent,
     CreateWorkItemComponent,
     LoginComponent,
     MyProjectsComponent,
     NavbarComponent,
     HomeComponent,
     SignupComponent,
-    ReadDeleteWorkItemComponent
+    UpdateDeleteWorkItemComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +56,7 @@ import { ReadDeleteWorkItemComponent } from './components/read-delete-work-item/
     AppRoutingModule,
     HttpClientModule
   ],
-  entryComponents: [PanelComponent, WorkItemComponent],
+  entryComponents: [PanelComponent, WorkItemListComponent],
   providers: [],
   bootstrap: [AppComponent]
 })

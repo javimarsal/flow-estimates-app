@@ -6,7 +6,7 @@ import { WorkItemService } from 'src/app/services/work-item.service';
 import { ProjectService } from 'src/app/services/project.service';
 
 // Components
-import { WorkItemComponent } from '../work-item/work-item.component';
+import { WorkItemListComponent } from '../work-item-list/work-item-list.component';
 
 // Models
 import { WorkItem } from 'src/app/models/work-item';
@@ -24,7 +24,7 @@ export class CreateWorkItemComponent implements OnInit {
   value = '';
 
   allWorkItems!: WorkItem[];
-  @Input() workItemComponent!: WorkItemComponent;
+  @Input() workItemComponent!: WorkItemListComponent;
 
   projectId: any = '';
 
