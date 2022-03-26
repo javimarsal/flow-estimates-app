@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { WorkItemListComponent } from '../work-item-list/work-item-list.component';
+import { WorkItemComponent } from '../work-item/work-item.component';
 
 @Component({
   selector: 'app-update-delete-work-item',
@@ -9,10 +9,10 @@ import { WorkItemListComponent } from '../work-item-list/work-item-list.componen
 })
 export class UpdateDeleteWorkItemComponent implements OnInit {
   // Para recuperar el nombre del elemento
-  @Input() workItemId!: string;
+  @Input() workItemId: any;
 
   // Componente WorkItem
-  @Input() workItemComponet!: WorkItemListComponent;
+  @Input() workItemComponet!: WorkItemComponent;
   
   // Elemento HTML del workItem
   @Input() htmlWorkItem_Box!: HTMLElement;

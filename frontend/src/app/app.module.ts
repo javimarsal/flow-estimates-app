@@ -27,6 +27,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { UpdateDeleteWorkItemComponent } from './components/update-delete-work-item/update-delete-work-item.component';
+import { WorkItemComponent } from './components/work-item/work-item.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { UpdateDeleteWorkItemComponent } from './components/update-delete-work-i
     NavbarComponent,
     HomeComponent,
     SignupComponent,
-    UpdateDeleteWorkItemComponent
+    UpdateDeleteWorkItemComponent,
+    WorkItemComponent
   ],
   imports: [
     BrowserModule,

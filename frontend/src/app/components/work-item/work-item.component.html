@@ -1,0 +1,10 @@
+<div *ngIf="!editing">
+    <p class="description" title="{{workItemName}}">
+        {{workItemName}}
+    </p>
+    <!-- <app-update-delete-work-item [workItemComponet]="this" [workItemId]="workItem._id"></app-update-delete-work-item> -->
+</div>
+
+<div *ngIf="editing">
+    <input (blur)="editing = false" type="text" value="{{workItemName}}">
+</div>

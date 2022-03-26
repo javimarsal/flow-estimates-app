@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UpdateDeleteWorkItemComponent } from './update-delete-work-item.component';
 
-describe('ReadDeleteWorkItemComponent', () => {
+describe('UpdateDeleteWorkItemComponent', () => {
   let component: UpdateDeleteWorkItemComponent;
   let fixture: ComponentFixture<UpdateDeleteWorkItemComponent>;
 
