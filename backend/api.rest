@@ -67,3 +67,6 @@ Content-Type: application/json
     "email": "javier@correo.es",
     "password": "1234"
 }
+
+###
+DELETE http://localhost:4000/api/projects/624071964865941406f51bd7/workitems/624071964865941406f51bed

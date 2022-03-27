@@ -24,7 +24,7 @@ export class CreateWorkItemComponent implements OnInit {
   value = '';
 
   allWorkItems!: WorkItem[];
-  @Input() workItemComponent!: WorkItemListComponent;
+  @Input() workItemListComponent!: WorkItemListComponent;
 
   projectId: any = '';
 
@@ -96,7 +96,7 @@ export class CreateWorkItemComponent implements OnInit {
       .catch(error => console.log(error));
 
     // Llamamos al método getWorkItems() del componente workItem para que actualice su lista
-    this.workItemComponent.getWorkItemsOfProject();
+    this.workItemListComponent.getWorkItemsOfProject();
   }
 
   getWorkItems(): Observable<WorkItem[]> {

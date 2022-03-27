@@ -31,4 +31,8 @@ export class ProjectService {
   addWorkItem(projectId: string, workItem: WorkItem) {
     return this.http.put(`${this.URL_API}/${projectId}/workitems`, workItem);
   }
+
+  removeWorkItem(projectId: string, workItemId?: string) {
+    return this.http.delete(`${this.URL_API}/${projectId}/workitems/${workItemId}`);
+  }
 }

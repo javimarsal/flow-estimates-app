@@ -25,4 +25,7 @@ router.get('/:id/workitems', projectController.getWorkItems);
 // update list of workItems of project
 router.put('/:id/workitems', projectController.addWorkItem);
 
+// delete a workItem for the list of workItems
+router.delete('/:pid/workitems/:wid', projectController.deleteWorkItem)
+
 module.exports = router;

@@ -69,7 +69,6 @@ projectController.getWorkItems = async (req, res) => {
 projectController.addWorkItem = async (req, res) => {
     const project = await Project.findById(req.params.id);
     const workItem = req.body;
-    console.log(workItem);
 
     // Añadimos el workItem a la lista de project
     project.workItems.push({
@@ -79,6 +78,26 @@ projectController.addWorkItem = async (req, res) => {
     await project.save();
     
     res.send({ message: `work-item with id="${workItem._id}" has been added to project with id="${project._id}"` });
+}
+
+projectController.deleteWorkItem = async (req, res) => {
+    const project = await Project.findById(req.params.pid);
+    const workItemId = req.params.wid;
+
+    // Buscar el id del workItem en la lista de Project y eliminarlo
+    let workItemsOfProject = project.workItems;
+    let wIPLength = workItemsOfProject.length;
+    for (let i = 0; i < wIPLength; i++) {
+        if (workItemsOfProject[i].workItem.toString() == workItemId) {
+            workItemsOfProject.splice(i, 1);
+            break;
+        }
+    }
+
+    // Guardamos el Project con la lista actualizada
+    await project.save();
+
+    res.send({ message: `work-item with id="${workItemId}" has been removed from project with id="${project._id}"` });
 }
 
 module.exports = projectController;
