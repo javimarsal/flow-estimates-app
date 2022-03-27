@@ -27,6 +27,7 @@ export class UpdateDeleteWorkItemComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProjectId();
+    console.log(this.workItemId)
   }
 
   getProjectId() {

@@ -251,25 +251,7 @@ export class WorkItemListComponent implements OnInit {
   }
 
   getWorkItemByName(workItemList: WorkItem[], name: string): WorkItem {
-    // Buscamos el workItem en la lista dada
-    let workItem = workItemList.find(wI => wI.name == name)
-
-    if (workItem) {
-      return workItem;
-    }
-    else {
-      let emptyWorkItem: WorkItem = {
-        name: '',
-        panel: '',
-        position: 0,
-        panelDateRegistry: [{
-          panel: '',
-          date: new Date()
-        }]
-      };
-      
-      return emptyWorkItem;
-    }
+    return this.workItemService.getWorkItemByName(workItemList, name);
   }
 
 }

@@ -1,5 +1,19 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .description {
     cursor: default;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.btn {
+    margin-right: 8px;
+    display: none;
+}
+
+.editing {
+    display: none;
 }
