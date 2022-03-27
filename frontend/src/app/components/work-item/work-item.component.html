@@ -6,7 +6,7 @@
     <!-- <div *ngIf="workItem">
         <app-update-delete-work-item [workItemComponet]="this" [workItemId]="workItem._id"></app-update-delete-work-item>
     </div> -->
-    <input *ngIf="editing" (blur)="editing = false" type="text" value="{{workItemName}}">
+    <input *ngIf="editing" id="{{workItemName}}" (blur)="editing = false" type="text" value="{{workItemName}}" #input>
 
     <div>
         <!-- Botón para editar la descripción -->

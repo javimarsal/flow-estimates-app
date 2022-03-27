@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
 import { WorkItem } from 'src/app/models/work-item';
 
 // Servicios
@@ -49,6 +48,12 @@ export class WorkItemComponent implements OnInit {
   // EDITAR Y ELIMINAR WorkItem
   edit() {
     this.editing = true;
+    
+    // Necesitamos esperar unos instantes hasta que se crea el input en el DOM
+    setTimeout(() => {
+      document.getElementById(this.workItemName)?.focus();
+    }, 100);
+    
   }
 
 }
