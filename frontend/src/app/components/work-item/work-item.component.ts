@@ -56,4 +56,27 @@ export class WorkItemComponent implements OnInit {
     
   }
 
+  updateWorkItem(input: HTMLInputElement) {
+    this.editing = false;
+
+    let value = input.value;
+    // Creamos un nuevo WorkItem si value no está vacío
+    if (value == '') {
+      alert('El nombre de la tarea no puede estar vacío!');
+      return;
+    }
+
+    // Eliminar espacios no deseados en el valor del input
+    value = value.replace(/\s+/g,' ').trim();
+
+    // Actualizar el nombre del workItem en la interfaz
+    this.workItemName = value;
+
+    // Actualizar el workItem en la bdd
+    this.workItem.name = value;
+    this.workItemService.updateWorkItem(this.workItem).toPromise()
+      .then(res => console.log(res))
+      .catch(error => console.log(error));
+  }
+
 }
