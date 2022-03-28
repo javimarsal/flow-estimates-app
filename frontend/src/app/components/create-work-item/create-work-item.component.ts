@@ -53,8 +53,7 @@ export class CreateWorkItemComponent implements OnInit {
       .then(workItems => {
         this.allWorkItems = workItems;
       })
-      .catch(error => console.log(error))
-    console.log(this.allWorkItems);
+      .catch(error => console.log(error));
 
     // Comprobar que el nombre del nuevo workItem no coincide con ninguno de los existentes
     if (this.checkWorkItemNameExist(this.allWorkItems, this.value)) {

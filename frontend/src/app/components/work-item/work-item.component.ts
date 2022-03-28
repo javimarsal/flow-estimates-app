@@ -28,8 +28,15 @@ export class WorkItemComponent implements OnInit {
 
   constructor(private projectService: ProjectService, private workItemService: WorkItemService, private route: ActivatedRoute) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.getProjectId();
+
+    await this.getWorkItemsOfPanel().toPromise()
+      .then(workItems => {
+        this.workItem = this.getWorkItemByName(workItems, this.workItemName);
+        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+      })
+      .catch(error => console.log(error));
   }
 
   // INICIALIZAR EL COMPONENTE
@@ -50,9 +57,10 @@ export class WorkItemComponent implements OnInit {
     this.editing = true;
     
     // Necesitamos esperar unos instantes hasta que se crea el input en el DOM
+    document.getElementById(this.workItemName)?.focus();
     setTimeout(() => {
-      document.getElementById(this.workItemName)?.focus();
-    }, 100);
+      
+    }, 1000);
     
   }
 
@@ -107,6 +115,11 @@ export class WorkItemComponent implements OnInit {
 
     // Eliminar espacios no deseados en el valor del input
     value = value.replace(/\s+/g,' ').trim();
+
+    // Comprobamos que el nuevo nombre no es el mismo que el actual (no actualizamos)
+    if (value == this.workItem.name) {
+      return;
+    }
 
     // Actualizar el nombre del workItem en la interfaz
     this.workItemName = value;
