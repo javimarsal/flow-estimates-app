@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 import { WorkItem } from 'src/app/models/work-item';
 
 // Servicios
@@ -29,7 +30,6 @@ export class WorkItemComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProjectId();
-    this.getWorkItemsOfProject();
   }
 
   // INICIALIZAR EL COMPONENTE
@@ -37,15 +37,8 @@ export class WorkItemComponent implements OnInit {
     this.projectId = this.route.snapshot.paramMap.get('id');
   }
 
-  getWorkItemsOfProject() {
-    this.projectService.getWorkItems(this.projectId).toPromise()
-      .then(workItems => {
-        this.workItem = this.getWorkItemByName(workItems, this.workItemName);
-        
-        // Guardar todos los workItems del Panel
-        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
-      })
-      .catch(error => console.log(error));
+  getWorkItemsOfPanel(): Observable<WorkItem[]> {
+    return this.projectService.getWorkItems(this.projectId);
   }
 
   getWorkItemByName(workItemList: WorkItem[], name: string): WorkItem {
@@ -63,7 +56,14 @@ export class WorkItemComponent implements OnInit {
     
   }
 
-  deleteWorkItem() {
+  async deleteWorkItem() {
+    await this.getWorkItemsOfPanel().toPromise()
+      .then(workItems => {
+        this.workItem = this.getWorkItemByName(workItems, this.workItemName);
+        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+      })
+      .catch(error => console.log(error));
+
     // Reducir en 1 la posición de los workItems afectados
     let workItemPosition = this.workItem.position;
     for (let wI of this.workItemsOfPanel) {
@@ -92,7 +92,6 @@ export class WorkItemComponent implements OnInit {
       .catch(error => console.log(error));
 
     // Asegurarnos de que la interfaz se comporta bien
-    this.workItemListComponent.getWorkItemsOfProject();
     document.getElementById(this.workItemName)!.parentElement!.parentElement!.style.display = "none";
   }
 
