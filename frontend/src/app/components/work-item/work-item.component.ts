@@ -57,7 +57,7 @@ export class WorkItemComponent implements OnInit {
     this.editing = true;
     
     // Necesitamos esperar unos instantes hasta que se crea el input en el DOM
-    document.getElementById(this.workItemName)?.focus();
+    document.getElementById(this.workItem._id!)?.focus();
     setTimeout(() => {
       
     }, 1000);
