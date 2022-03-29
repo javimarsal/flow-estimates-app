@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/models/user';
 import { UserService } from 'src/app/services/user.service';
 import { Router } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -40,12 +41,14 @@ export class SignupComponent implements OnInit {
     }
 
     // Se comprobará si el email existe en la bdd
-    await this.userService.signup(newUser).toPromise()
-      .then(res => {
-        console.log(res);
-        this.router.navigate(['/login']);
-      })
-      .catch(error => console.log(error));
+    try {
+      let res = await lastValueFrom(this.userService.signup(newUser));
+      console.log(res);
+      this.router.navigate(['/login']);
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   ngOnInit(): void {

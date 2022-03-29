@@ -10,6 +10,7 @@ import { UserService } from 'src/app/services/user.service';
 
 // Models
 import { Panel } from 'src/app/models/panel';
+import { lastValueFrom } from 'rxjs';
 
 
 @Component({
@@ -34,14 +35,22 @@ export class PanelComponent implements OnInit {
     this.getProjectId();
     
     // Obtener el nombre del proyecto para mostrarlo en la interfaz
-    await this.getProject(this.projectId).toPromise()
-      .then(project => this.projectName = project.name)
-      .catch(error => console.log(error));
+    try {
+      let project = await lastValueFrom(this.getProject(this.projectId));
+      this.projectName = project.name;
+    }
+    catch (error) {
+      console.log(error)
+    }
 
     // Cuando el usuario abre el proyecto, registramos el id en la propiedad openedProject del usuario
-    await this.setOpenedProjectOfUser().toPromise()
-      .then(res => console.log(res))
-      .catch(error => console.log(error));
+    try {
+      let res = await lastValueFrom(this.setOpenedProjectOfUser());
+      console.log(res);
+    }
+    catch (error) {
+      console.log(error)
+    }
     
     this.getPanelsOfProject();
   }
@@ -59,19 +68,25 @@ export class PanelComponent implements OnInit {
     return this.userService.setOpenedProject(this.projectId, uid)
   }
 
-  getPanelsOfProject() {
-    this.projectService.getPanels(this.projectId).toPromise()
-      .then(panels => {
-        this.panels = panels;
-        this.panelNames = this.getNames(panels);
-      })
-      .catch(error => console.log(error));
+  async getPanelsOfProject() {
+    try {
+      let panels = await lastValueFrom(this.projectService.getPanels(this.projectId));
+      this.panels = panels;
+      this.panelNames = this. getNames(panels);
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
-  updatePanel(panel: Panel) {
-    this.panelService.updatePanel(panel).toPromise()
-      .then(res => console.log(res))
-      .catch(error => console.log(error));
+  async updatePanel(panel: Panel) {
+    try {
+      let res = await lastValueFrom(this.panelService.updatePanel(panel));
+      console.log(res);
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   updateAffectedPanels(idMovedPanel: string | undefined, previousPosition: number, currentPosition: number): Panel[] {

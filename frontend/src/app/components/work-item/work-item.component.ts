@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { WorkItem } from 'src/app/models/work-item';
 
 // Servicios
@@ -31,12 +31,14 @@ export class WorkItemComponent implements OnInit {
   async ngOnInit() {
     this.getProjectId();
 
-    await this.getWorkItemsOfPanel().toPromise()
-      .then(workItems => {
-        this.workItem = this.getWorkItemByName(workItems, this.workItemName);
-        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
-      })
-      .catch(error => console.log(error));
+    try {
+      let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
+      this.workItem = this.getWorkItemByName(workItems, this.workItemName);
+      this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+    }
+    catch (error) {
+      console.log(error);
+    }
   }
 
   // INICIALIZAR EL COMPONENTE
@@ -65,12 +67,14 @@ export class WorkItemComponent implements OnInit {
   }
 
   async deleteWorkItem() {
-    await this.getWorkItemsOfPanel().toPromise()
-      .then(workItems => {
-        this.workItem = this.getWorkItemByName(workItems, this.workItemName);
-        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
-      })
-      .catch(error => console.log(error));
+    try {
+      let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
+      this.workItem = this.getWorkItemByName(workItems, this.workItemName);
+      this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+    }
+    catch (error) {
+      console.log(error)
+    }
 
     // Reducir en 1 la posición de los workItems afectados
     let workItemPosition = this.workItem.position;
@@ -80,9 +84,13 @@ export class WorkItemComponent implements OnInit {
         wI.position--;
 
         // Actualizar el workItem
-        this.workItemService.updateWorkItem(wI).toPromise()
-          .then(res => console.log(res))
-          .catch(error => console.log(error));
+        try {
+          let res = await lastValueFrom(this.workItemService.updateWorkItem(wI));
+          console.log(res);
+        }
+        catch (error) {
+          console.log(error)
+        }
       }
     }
 
@@ -90,20 +98,28 @@ export class WorkItemComponent implements OnInit {
     let workItemId = this.workItem._id;
 
     // Eliminar workItem de la bdd
-    this.workItemService.deleteWorkItem(workItemId).toPromise()
-      .then(res => console.log(res))
-      .catch(error => console.log(error));
+    try {
+      let res = await lastValueFrom(this.workItemService.deleteWorkItem(workItemId));
+      console.log(res);
+    }
+    catch (error) {
+      console.log(error)
+    }
 
     // Eliminar la referencia de la lista del proyecto
-    this.projectService.removeWorkItem(this.projectId, workItemId).toPromise()
-      .then(res => console.log(res))
-      .catch(error => console.log(error));
+    try {
+      let res = await lastValueFrom(this.projectService.removeWorkItem(this.projectId, workItemId));
+      console.log(res);
+    }
+    catch (error) {
+      console.log(error)
+    }
 
     // Asegurarnos de que la interfaz se comporta bien
     document.getElementById(this.workItemName)!.parentElement!.parentElement!.style.display = "none";
   }
 
-  updateWorkItemName(input: HTMLInputElement) {
+  async updateWorkItemName(input: HTMLInputElement) {
     this.editing = false;
 
     let value = input.value;
@@ -126,9 +142,13 @@ export class WorkItemComponent implements OnInit {
 
     // Actualizar el workItem en la bdd
     this.workItem.name = value;
-    this.workItemService.updateWorkItem(this.workItem).toPromise()
-      .then(res => console.log(res))
-      .catch(error => console.log(error));
+    try {
+      let res = await lastValueFrom(this.workItemService.updateWorkItem(this.workItem));
+      console.log(res);
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
