@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
+
+// Services
 import { UserService } from 'src/app/services/user.service';
 import { CookieService } from 'ngx-cookie-service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -20,24 +23,24 @@ export class LoginComponent implements OnInit {
       return
     }
 
-    await this.userService.signin(email, password).toPromise()
-      .then(user => {
-        // set cookie uid
-        this.setCookie(user._id);
+    try {
+      let user = await lastValueFrom(this.userService.signin(email, password));
+
+      // set cookie uid
+      this.setCookie(user._id);
         
-        // las credenciales coinciden, navegamos a /my-projects
-        // Ruta registrada en app-routing.module
-        if (user.openedProject) {
-          this.router.navigate([`/project/${user.openedProject}`]);
-        }
-        else {
-          this.router.navigate(['/my-projects']);
-        }
-      })
-      .catch(error => {
-        console.error(error)
-      })
-    
+      // las credenciales coinciden, navegamos al proyecto abierto de user
+      if (user.openedProject) {
+        this.router.navigate([`/project/${user.openedProject}`]);
+      }
+      else {
+        // el usuario no todavía no ha abierto ningún proyecto
+        this.router.navigate(['/my-projects']);
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   setCookie(value: string) {

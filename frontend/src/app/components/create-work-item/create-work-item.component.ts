@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Observable, lastValueFrom } from 'rxjs';
 
 // Services
 import { WorkItemService } from 'src/app/services/work-item.service';
@@ -10,7 +11,6 @@ import { WorkItemListComponent } from '../work-item-list/work-item-list.componen
 
 // Models
 import { WorkItem } from 'src/app/models/work-item';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-work-item',
@@ -49,11 +49,13 @@ export class CreateWorkItemComponent implements OnInit {
 
     /* Actualizamos la posición del resto de workItems del panel. Lo hacemos antes para que no afecte al nuevo workItem */
     // Obtenemos todos los workItems
-    await this.getWorkItems().toPromise()
-      .then(workItems => {
-        this.allWorkItems = workItems;
-      })
-      .catch(error => console.log(error));
+    try {
+      let workItems = await lastValueFrom(this.getWorkItems());
+      this.allWorkItems = workItems;
+    }
+    catch (error) {
+      console.log(error)
+    }
 
     // Comprobar que el nombre del nuevo workItem no coincide con ninguno de los existentes
     if (this.checkWorkItemNameExist(this.allWorkItems, this.value)) {
@@ -81,21 +83,30 @@ export class CreateWorkItemComponent implements OnInit {
     // Creamos el objeto en la bdd, y borramos el contenido de value (en finally)
     let workItemOfDB!: WorkItem;
 
-    await this.workItemService.createWorkItem(newWorkItem).toPromise()
-      .then(res => {
-        console.log(res);
-        workItemOfDB = res;
-      })
-      .catch(err => console.log(err))
-      .finally(() => this.value = '');
+    try {
+      let res = await lastValueFrom(this.workItemService.createWorkItem(newWorkItem));
+      console.log(res);
+      workItemOfDB = res;
+    }
+    catch (error) {
+      console.log(error)
+    }
+    
+    this.value = '';
     
     // Añadimos el nuevo workItem en la lista del proyecto
-    await this.projectService.addWorkItem(this.projectId, workItemOfDB).toPromise()
-      .then(res => console.log(res))
-      .catch(error => console.log(error));
+    try {
+      let res = await lastValueFrom(this.projectService.addWorkItem(this.projectId, workItemOfDB));
+      console.log(res);
+    }
+    catch (error) {
+      console.log(error)
+    }
 
     // Llamamos al método getWorkItems() del componente workItem para que actualice su lista
     this.workItemListComponent.getWorkItemsOfProject();
+    // puede que no tenga tiempo suficiente
+    // hacer debug console.log
   }
 
   getWorkItems(): Observable<WorkItem[]> {
@@ -103,11 +114,13 @@ export class CreateWorkItemComponent implements OnInit {
   }
 
   async updateWorkItem(workItem: WorkItem) {
-    await this.workItemService.updateWorkItem(workItem).toPromise()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => console.log(err));
+    try {
+      let res = await lastValueFrom(this.workItemService.updateWorkItem(workItem));
+      console.log(res);
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {

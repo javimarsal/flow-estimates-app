@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
 
 // Services
 import { CookieService } from 'ngx-cookie-service';
@@ -10,7 +11,6 @@ import { UserService } from 'src/app/services/user.service';
 
 // Models
 import { Panel } from 'src/app/models/panel';
-import { lastValueFrom } from 'rxjs';
 
 
 @Component({

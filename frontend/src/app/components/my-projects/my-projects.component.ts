@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
+import { lastValueFrom } from 'rxjs';
+
+// Services
 import { UserService } from 'src/app/services/user.service';
-import { Project } from 'src/app/models/project';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-my-projects',
@@ -14,13 +16,14 @@ export class MyProjectsComponent implements OnInit {
 
   constructor(private userService: UserService, private cookieService: CookieService) { }
 
-  getUserProjects() {
-    this.userService.getUser(this.uid).toPromise()
-      .then(user => {
-        this.userProjects = user.projects;
-        console.log(this.userProjects)
-      })
-      .catch(error => console.log(error));
+  async getUserProjects() {
+    try {
+      let user = await lastValueFrom(this.userService.getUser(this.uid));
+      this.userProjects = user.projects;
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   ngOnInit(): void {

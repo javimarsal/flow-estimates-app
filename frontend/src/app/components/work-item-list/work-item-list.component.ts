@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
 
 // Services
 import { WorkItemService } from 'src/app/services/work-item.service';
@@ -8,7 +9,6 @@ import { ProjectService } from 'src/app/services/project.service';
 
 // Models
 import { WorkItem } from 'src/app/models/work-item';
-import { lastValueFrom } from 'rxjs';
 
 
 @Component({

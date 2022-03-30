@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from 'src/app/models/user';
-import { UserService } from 'src/app/services/user.service';
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
+
+// Services
+import { UserService } from 'src/app/services/user.service';
+
+// Models
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-signup',
