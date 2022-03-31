@@ -120,6 +120,15 @@ export class WorkItemComponent implements OnInit {
   }
 
   async updateWorkItemName(input: HTMLInputElement) {
+    // Obtenemos el workItem que se va a actualizar (por si ha sufrido alguna modificación antes)
+    try {
+      let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
+      this.workItem = this.getWorkItemByName(workItems, this.workItemName);
+    }
+    catch (error) {
+      console.log(error)
+    }
+
     this.editing = false;
 
     let value = input.value;
