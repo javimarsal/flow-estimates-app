@@ -16,8 +16,11 @@ export class NavbarComponent implements OnInit {
   constructor(private cookieService: CookieService, private router: Router) {}
 
   async signOut() {
-    this.uid = '';
     this.cookieService.deleteAll();
+    // si se elimina la cookie uid, borramos el valor de la variable
+    if (this.cookieService.get('uid')) {
+      this.uid = '';
+    }
     this.router.navigate(['/']);
   }
 
