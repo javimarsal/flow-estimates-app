@@ -18,7 +18,7 @@ export class NavbarComponent implements OnInit {
   async signOut() {
     this.cookieService.deleteAll();
     // si se elimina la cookie uid, borramos el valor de la variable
-    if (this.cookieService.get('uid')) {
+    if (this.cookieService.get('uid').length == 0) {
       this.uid = '';
     }
     this.router.navigate(['/']);
