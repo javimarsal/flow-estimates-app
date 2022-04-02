@@ -1,5 +1,12 @@
 <app-navbar></app-navbar>
 
-<div class="container">
-    <p>Aquí va el gráfico</p>
+<div class="chart">
+    <apx-chart
+        [series]="chartOptions.series!"
+        [chart]="chartOptions.chart!"
+        [xaxis]="chartOptions.xaxis!"
+        [yaxis]="chartOptions.yaxis!"
+        [dataLabels]="chartOptions.dataLabels!"
+        [grid]="chartOptions.grid!"
+    ></apx-chart>
 </div>

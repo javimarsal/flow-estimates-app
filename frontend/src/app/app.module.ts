@@ -5,6 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './modules/app-routing/app-routing.module';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 // Material
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -56,7 +57,8 @@ import { EstimateSingleComponent } from './components/estimate-single/estimate-s
     MatCardModule,
     FormsModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    NgApexchartsModule
   ],
   entryComponents: [PanelComponent, WorkItemListComponent],
   providers: [],

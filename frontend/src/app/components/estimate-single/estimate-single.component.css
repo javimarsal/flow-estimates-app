@@ -1,5 +1,5 @@
-.container {
-    margin-top: 75px;
-    margin-left: 10px;
-    margin-right: 10px;
+.chart {
+    max-width: 660px;
+    margin: auto;
+    margin-top: 100px;
 }
