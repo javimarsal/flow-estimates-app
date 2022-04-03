@@ -1,4 +1,12 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
+
+// Services
+import { ProjectService } from 'src/app/services/project.service';
+
+// Models
+import { WorkItem } from 'src/app/models/work-item';
 
 import {
   ChartComponent,
@@ -31,64 +39,148 @@ export class EstimateSingleComponent implements OnInit {
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: Partial<ChartOptions>;
 
-  constructor() { }
+  projectId: any = '';
 
-  ngOnInit(): void {
+  workItemsOfProject: WorkItem[] = [];
+
+  // Panel inicial y final para obtener las fechas y calcular el tiempo de ciclo
+  panelStart: string = '';
+  panelEnd: string = '';
+
+  // data de los workItems Hechos
+  dataDone: any[] = []
+
+  constructor(private route: ActivatedRoute, private projectService: ProjectService) { }
+
+  async ngOnInit() {
+    this.getProjectId();
+    // Establecer los paneles (inicial y final)
+    this.setPanelStart('Doing');
+    this.setPanelEnd('Closed');
+
+    // Obtener los workItems del Proyecto
+    await this.getWorkItemsOfProject();
+    this.dataDone = this.getWorkItemsFinished();
+
+    // TODO: si dataDone está vacío mostrar un mensaje (o reemplazar el mensaje de la estimación por ese mensaje)
+
+    // Iniciar el Gráfico con los datos obtenidos
     this.initChart();
+  }
+
+  getProjectId() {
+    this.projectId = this.route.snapshot.paramMap.get('id');
+  }
+
+  setPanelStart(panel: string) {
+    this.panelStart = panel;
+  }
+
+  setPanelEnd(panel: string) {
+    this.panelEnd = panel;
+  }
+
+  async getWorkItemsOfProject() {
+    this.workItemsOfProject = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
+  }
+
+  // Obtener los workItems que han finalizado y su tiempo de ciclo (data puede estar vacío)
+  getWorkItemsFinished() {
+    // Paneles inicial y final
+    let panelStart = this.panelStart;
+    let panelEnd = this.panelEnd;
+
+    // Array donde se van guardando los datos
+    let data: any[] = [];
+
+    // Recorremos los workItems del Project
+    for (let workItem of this.workItemsOfProject) {
+      let panelDateRegistry = workItem.panelDateRegistry;
+
+      // Fechas de start y end
+      let dateStart!: Date;
+      let dateEnd!: Date;
+
+      // Buscamos el panel
+      // registry.date es un string
+      for (let registry of panelDateRegistry) {
+        if (registry.panel == panelStart) {
+          // Obtener la fecha sin la hora
+          dateStart = this.getDateWithoutTime(registry.date);
+        }
+
+        if (registry.panel == panelEnd) {
+          // Obtener la fecha sin la hora
+          dateEnd = this.getDateWithoutTime(registry.date);
+        }
+      }
+
+      // Nos aseguramos de que ambas fechas no son null
+      if (dateStart && dateEnd) {
+        // calcular el tiempo de ciclo
+        let cycleTime = this.getDaysBetween(dateEnd, dateStart);
+
+        // añadir a data la dateEnd (x) y el cicleTime (y)
+        data.push([dateEnd, cycleTime]);
+      }
+    }
+    
+    return data
+  }
+
+  // TODO
+  getWorkItemsDoing() {
+
+  }
+
+  // TODO
+  // Para poder elegir panel inicial y final
+  // Solo los paneles en los que haya habido workItems??
+  getPanelNames() {
+
+  }
+
+  getDateWithoutTime(date: any): Date {
+    let fullDate = new Date(date);
+    return new Date(fullDate.toDateString());
+  }
+
+  getDaysBetween(dateEnd: any, dateStart: any): number {
+    // tiempo transcurrido en milisegundos
+    let daysInMiliseconds = dateEnd - dateStart;
+
+    // transformas a días y sumarle 1
+    return this.transformMsecToDays(daysInMiliseconds) + 1;
+  }
+
+  transformMsecToDays(milisecs: number): number {
+    let msecPerMinute = 1000 * 60;
+    let msecPerHour = msecPerMinute * 60;
+    let msecPerDay = msecPerHour * 24;
+
+    return (milisecs + msecPerDay) / msecPerDay;
   }
 
   initChart() {
     this.chartOptions = {
       series: [
         {
-          name: 'TEAM 1',
-          data: this.generateDayWiseTimeSeries(new Date("11 Feb 2017 GMT").getTime(), 20, 
-            {
-              min: 10,
-              max: 60
-            }
-          )
+          name: 'Closed',
+          data: this.dataDone
         },
-        {
-          name: 'TEAM 2',
-          data: this.generateDayWiseTimeSeries(new Date("11 Feb 2017 GMT").getTime(), 20, 
-            {
-              min: 10,
-              max: 60
-            }
-          )
-        },
-        {
-          name: 'TEAM 3',
-          data: this.generateDayWiseTimeSeries(new Date("11 Feb 2017 GMT").getTime(), 30, 
-            {
-              min: 10,
-              max: 60
-            }
-          )
-        },
-        {
-          name: 'TEAM 4',
-          data: this.generateDayWiseTimeSeries(new Date("11 Feb 2017 GMT").getTime(), 10, 
-            {
-              min: 10,
-              max: 60
-            }
-          )
-        },
-        {
-          name: 'TEAM 5',
-          data: this.generateDayWiseTimeSeries(new Date("11 Feb 2017 GMT").getTime(), 30, 
-            {
-              min: 10,
-              max: 60
-            }
-          )
-        },
+        // {
+        //   name: 'Doing',
+        //   data: this.generateDayWiseTimeSeries(new Date("11 Feb 2017 GMT").getTime(), 10, 
+        //     {
+        //       min: 10,
+        //       max: 60
+        //     }
+        //   )
+        // },
       ],
 
       chart: {
-        height: 350,
+        height: 550,
         type: 'scatter',
         zoom: {
           type: 'xy'
@@ -116,9 +208,9 @@ export class EstimateSingleComponent implements OnInit {
         type: 'datetime'
       },
 
-      yaxis: {
-        max: 70
-      }
+      // yaxis: {
+      //   max: 70
+      // }
     };
   }
 

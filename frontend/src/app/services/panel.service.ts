@@ -21,4 +21,25 @@ export class PanelService {
     return this.http.put(this.URL_API + `/${panel._id}`, panel);
   }
 
+  getNames(panels: Panel[]): string[] {
+    let panelNames: string[] = [];
+
+    // Ordenar los paneles por el número de posición
+    let sortedPanels_byPosition = this.sortPanels(panels);
+
+    // Obtiene el nombre de cada panel
+    for (let panel of sortedPanels_byPosition) {
+      panelNames.push(panel.name);
+    }
+
+    return panelNames;
+  }
+
+  // Ordena los panels según el número de posición
+  sortPanels(panels: Panel[]): Panel[] {
+    return panels.sort(function (a, b) {
+      return a.position - b.position;
+    });
+  }
+
 }

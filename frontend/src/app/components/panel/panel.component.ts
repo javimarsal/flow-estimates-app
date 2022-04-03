@@ -72,7 +72,7 @@ export class PanelComponent implements OnInit {
     try {
       let panels = await lastValueFrom(this.projectService.getPanels(this.projectId));
       this.panels = panels;
-      this.panelNames = this. getNames(panels);
+      this.panelNames = this.getNames(panels);
     }
     catch (error) {
       console.log(error)
@@ -131,24 +131,7 @@ export class PanelComponent implements OnInit {
   }
 
   getNames(panels: Panel[]): string[] {
-    let panelNames: string[] = [];
-
-    // Ordenar los paneles por el número de posición
-    let sortedPanels_byPosition = this.sortPanels(panels);
-
-    // Obtiene el nombre de cada panel
-    for (let panel of sortedPanels_byPosition) {
-      panelNames.push(panel.name);
-    }
-
-    return panelNames;
-  }
-
-  // Ordena los panels según el número de posición
-  sortPanels(panels: Panel[]): Panel[] {
-    return panels.sort(function (a, b) {
-      return a.position - b.position;
-    });
+    return this.panelService.getNames(panels);
   }
 
 

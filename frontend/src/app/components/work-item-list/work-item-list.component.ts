@@ -33,10 +33,6 @@ export class WorkItemListComponent implements OnInit {
     this.getWorkItemsOfProject();
   }
 
-  tagToParagraph(editButton: HTMLElement, deleteButton: HTMLElement) {
-    console.log("Hola")
-  }
-
   getProjectId() {
     this.projectId = this.route.snapshot.paramMap.get('id');
   }
