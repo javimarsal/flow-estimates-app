@@ -63,7 +63,9 @@ export class EstimateSingleComponent implements OnInit {
 
     // Obtener los workItems del Proyecto
     await this.getWorkItemsOfProject();
+    console.log(this.workItemsOfProject)
     this.dataDone = this.getWorkItemsFinished();
+    console.log(this.dataDone)
 
     // TODO: si dataDone está vacío mostrar un mensaje (o reemplazar el mensaje de la estimación por ese mensaje)
 
