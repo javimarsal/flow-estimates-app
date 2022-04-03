@@ -50,6 +50,9 @@ export class EstimateSingleComponent implements OnInit {
   // data de los workItems Hechos
   dataDone: any[] = []
 
+  // boolean para mostrar el chart cuando esté ready
+  isReady = false;
+
   constructor(private route: ActivatedRoute, private projectService: ProjectService) { }
 
   async ngOnInit() {
@@ -212,6 +215,8 @@ export class EstimateSingleComponent implements OnInit {
       //   max: 70
       // }
     };
+
+    this.isReady = true;
   }
 
   public generateDayWiseTimeSeries(baseval: number, count: number, yrange: any): number[] {

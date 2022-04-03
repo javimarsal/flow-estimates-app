@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<div class="chart">
+<div *ngIf="isReady" class="chart">
     <apx-chart
         [series]="chartOptions.series!"
         [chart]="chartOptions.chart!"
