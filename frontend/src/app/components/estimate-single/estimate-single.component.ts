@@ -62,15 +62,19 @@ export class EstimateSingleComponent implements OnInit {
     this.setPanelEnd('Closed');
 
     // Obtener los workItems del Proyecto
-    await this.getWorkItemsOfProject();
-    console.log(this.workItemsOfProject)
-    this.dataDone = this.getWorkItemsFinished();
-    console.log(this.dataDone)
+    
+    try {
+      await this.getWorkItemsOfProject();
+      this.dataDone = await this.getWorkItemsFinished();
+  
+      // Iniciar el Gráfico con los datos obtenidos
+      this.initChart();
+    }
+    catch(error) {
+      console.log(error);
+    }
 
     // TODO: si dataDone está vacío mostrar un mensaje (o reemplazar el mensaje de la estimación por ese mensaje)
-
-    // Iniciar el Gráfico con los datos obtenidos
-    this.initChart();
   }
 
   getProjectId() {
@@ -90,47 +94,52 @@ export class EstimateSingleComponent implements OnInit {
   }
 
   // Obtener los workItems que han finalizado y su tiempo de ciclo (data puede estar vacío)
-  getWorkItemsFinished() {
-    // Paneles inicial y final
-    let panelStart = this.panelStart;
-    let panelEnd = this.panelEnd;
-
-    // Array donde se van guardando los datos
-    let data: any[] = [];
-
-    // Recorremos los workItems del Project
-    for (let workItem of this.workItemsOfProject) {
-      let panelDateRegistry = workItem.panelDateRegistry;
-
-      // Fechas de start y end
-      let dateStart!: Date;
-      let dateEnd!: Date;
-
-      // Buscamos el panel
-      // registry.date es un string
-      for (let registry of panelDateRegistry) {
-        if (registry.panel == panelStart) {
-          // Obtener la fecha sin la hora
-          dateStart = this.getDateWithoutTime(registry.date);
+  getWorkItemsFinished(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Paneles inicial y final
+      let panelStart = this.panelStart;
+      let panelEnd = this.panelEnd;
+  
+      // Array donde se van guardando los datos
+      let data: any[] = [];
+  
+      // Recorremos los workItems del Project
+      for (let workItem of this.workItemsOfProject) {
+        let panelDateRegistry = workItem.panelDateRegistry;
+  
+        // Fechas de start y end
+        let dateStart!: Date;
+        let dateEnd!: Date;
+  
+        // Buscamos el panel
+        // registry.date es un string
+        for (let registry of panelDateRegistry) {
+          if (registry.panel == panelStart) {
+            // Obtener la fecha sin la hora
+            dateStart = this.getDateWithoutTime(registry.date);
+          }
+  
+          if (registry.panel == panelEnd) {
+            // Obtener la fecha sin la hora
+            dateEnd = this.getDateWithoutTime(registry.date);
+          }
+        }
+  
+        // Nos aseguramos de que ambas fechas no son null
+        if (dateStart && dateEnd) {
+          // calcular el tiempo de ciclo
+          let cycleTime = this.getDaysBetween(dateEnd, dateStart);
+          console.log(cycleTime)
+  
+          // añadir a data la dateEnd (x) y el cicleTime (y)
+          data.push([dateEnd, cycleTime]);
         }
 
-        if (registry.panel == panelEnd) {
-          // Obtener la fecha sin la hora
-          dateEnd = this.getDateWithoutTime(registry.date);
-        }
       }
+      
+      resolve(data);
+    })
 
-      // Nos aseguramos de que ambas fechas no son null
-      if (dateStart && dateEnd) {
-        // calcular el tiempo de ciclo
-        let cycleTime = this.getDaysBetween(dateEnd, dateStart);
-
-        // añadir a data la dateEnd (x) y el cicleTime (y)
-        data.push([dateEnd, cycleTime]);
-      }
-    }
-    
-    return data
   }
 
   // TODO
@@ -163,7 +172,7 @@ export class EstimateSingleComponent implements OnInit {
     let msecPerHour = msecPerMinute * 60;
     let msecPerDay = msecPerHour * 24;
 
-    return (milisecs + msecPerDay) / msecPerDay;
+    return Number((milisecs / msecPerDay).toFixed());
   }
 
   initChart() {
