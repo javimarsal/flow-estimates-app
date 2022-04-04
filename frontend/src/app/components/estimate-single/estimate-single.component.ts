@@ -129,7 +129,6 @@ export class EstimateSingleComponent implements OnInit {
         if (dateStart && dateEnd) {
           // calcular el tiempo de ciclo
           let cycleTime = this.getDaysBetween(dateEnd, dateStart);
-          console.log(cycleTime)
   
           // añadir a data la dateEnd (x) y el cicleTime (y)
           data.push([dateEnd, cycleTime]);
