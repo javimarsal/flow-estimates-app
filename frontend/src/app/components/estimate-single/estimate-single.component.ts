@@ -12,18 +12,18 @@ import {
   ChartComponent,
   ApexAxisChartSeries,
   ApexChart,
+  ApexAnnotations,
   ApexYAxis,
   ApexXAxis,
-  ApexDataLabels,
   ApexGrid
 } from 'ng-apexcharts';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
+  annotations: ApexAnnotations;
   xaxis: ApexXAxis;
   yaxis: ApexYAxis;
-  dataLabels: ApexDataLabels;
   grid: ApexGrid;
 };
 
@@ -36,6 +36,8 @@ export type ChartOptions = {
 export class EstimateSingleComponent implements OnInit {
   // https://apexcharts.com/javascript-chart-demos/scatter-charts/datetime/
   // https://apexcharts.com/docs/angular-charts/#
+  // https://apexcharts.com/docs/annotations/
+
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: Partial<ChartOptions>;
 
@@ -50,6 +52,9 @@ export class EstimateSingleComponent implements OnInit {
   // data de los workItems Hechos
   dataDone: any[] = []
 
+  // percentil para calcular
+  percentile: number = 0;
+
   // boolean para mostrar el chart cuando esté ready
   isReady = false;
 
@@ -61,14 +66,22 @@ export class EstimateSingleComponent implements OnInit {
     this.setPanelStart('Doing');
     this.setPanelEnd('Closed');
 
-    // Obtener los workItems del Proyecto
+    // Establecer el percentil
+    this.setPercentile(0.50);
     
     try {
+      // Obtener los workItems del Proyecto
       await this.getWorkItemsOfProject();
+
+      /* Obtenemos el conjunto de datos para el gráfico */
+      // Datos de workItems que han sido completados
       this.dataDone = await this.getWorkItemsFinished();
+
+      // Calcular la línea de percentil indicada
+      let yPercentile = this.calculatePercentile();
   
       // Iniciar el Gráfico con los datos obtenidos
-      this.initChart();
+      this.initChart(yPercentile);
     }
     catch(error) {
       console.log(error);
@@ -87,6 +100,10 @@ export class EstimateSingleComponent implements OnInit {
 
   setPanelEnd(panel: string) {
     this.panelEnd = panel;
+  }
+
+  setPercentile(p: number) {
+    this.percentile = p;
   }
 
   async getWorkItemsOfProject() {
@@ -174,7 +191,37 @@ export class EstimateSingleComponent implements OnInit {
     return Number((milisecs / msecPerDay).toFixed());
   }
 
-  initChart() {
+  calculatePercentile(): Number {
+    // Percentile a calcular
+    let percentile = this.percentile;
+
+    // No calcular el percentile si este es 0
+    if (percentile == 0) {
+      return 0;
+    }
+
+    /* ordenar los datos por fecha y cycleTime */
+    // se ordena this.dataDone
+    this.sortData_ByCycleTime(this.dataDone);
+
+    // Número de puntos que hay en los datos
+    let pointsNumber = this.dataDone.length;
+
+    /* Multiplicamos el percentil por el número de puntos */
+    // Redondeamos
+    let indexOfData = Number((pointsNumber * percentile).toFixed()) - 1;
+
+    // Devolver el tiempo de ciclo (cycleTime) del dato (punto) en la posición indexOfData
+    return this.dataDone[indexOfData][1];
+  }
+
+  sortData_ByCycleTime(data: any[]): any[] {
+    return data.sort(function (a, b) {
+      return a[1] - b[1]
+    })
+  }
+
+  initChart(yPercentile: any) {
     this.chartOptions = {
       series: [
         {
@@ -200,8 +247,23 @@ export class EstimateSingleComponent implements OnInit {
         }
       },
 
-      dataLabels: {
-        enabled: false
+      annotations: {
+        yaxis: [
+          {
+            y: yPercentile,
+            borderColor: '#e84c4c',
+            strokeDashArray: 0,
+            label: {
+              borderColor: '#e84c4c',
+              style: {
+                color: '#fff',
+                background: '#e84c4c',
+                fontSize: '15',
+              },
+              text: `Percentil ${this.percentile * 100}`,
+            }
+          }
+        ]
       },
 
       grid: {
@@ -218,12 +280,20 @@ export class EstimateSingleComponent implements OnInit {
       },
 
       xaxis: {
-        type: 'datetime'
+        type: 'datetime',
+        title: {
+          text: 'Fecha'
+        },
+        labels: {
+          show: true
+        }
       },
 
-      // yaxis: {
-      //   max: 70
-      // }
+      yaxis: {
+        title: {
+          text: 'Tiempo de Ciclo (días)'
+        }
+      }
     };
 
     this.isReady = true;
