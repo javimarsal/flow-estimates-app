@@ -1,12 +1,31 @@
 <app-navbar></app-navbar>
 
-<div *ngIf="isReady" class="chart">
-    <apx-chart
-        [series]="chartOptions.series!"
-        [chart]="chartOptions.chart!"
-        [annotations]="chartOptions.annotations!"
-        [xaxis]="chartOptions.xaxis!"
-        [yaxis]="chartOptions.yaxis!"
-        [grid]="chartOptions.grid!"
-    ></apx-chart>
-</div>
+<h2 class="title">Predicción para 1 Elemento, basada en el Tiempo de Ciclo de tus PBI</h2>
+
+<mat-card class="chart-card">
+    <div class="chart" *ngIf="isReady">
+        <p class="forecast">Según tus datos, un nuevo PBI tiene un <span class="forecast-important">{{percentile * 100}}%</span> de probabilidad de ser terminado en <span class="forecast-important">{{yValuePercentile}}</span> <span *ngIf="yValuePercentile != '1'"> días</span> <span *ngIf="yValuePercentile == '1'"> día</span> o menos</p>
+
+        <apx-chart
+            [series]="chartOptions.series!"
+            [chart]="chartOptions.chart!"
+            [title]="chartOptions.title!"
+            [annotations]="chartOptions.annotations!"
+            [xaxis]="chartOptions.xaxis!"
+            [yaxis]="chartOptions.yaxis!"
+            [grid]="chartOptions.grid!"
+        ></apx-chart>
+    </div>
+
+    <div class="options">
+        <!-- Elegir percentil -->
+        <div>
+            <label id="radio-group">Percentiles estándar</label>
+            <mat-radio-group aria-labelledby="radio-group" class="radio-group">
+                <mat-radio-button class="radio-button" [value]="0.5" [checked]="true" (click)="recalculate(0.5)">50%</mat-radio-button>
+                <mat-radio-button class="radio-button" [value]="0.85" (click)="recalculate(0.85)">85%</mat-radio-button>
+                <mat-radio-button class="radio-button" [value]="0.95" (click)="recalculate(0.95)">95%</mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </div>
+</mat-card>

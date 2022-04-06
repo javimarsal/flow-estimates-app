@@ -15,7 +15,8 @@ import {
   ApexAnnotations,
   ApexYAxis,
   ApexXAxis,
-  ApexGrid
+  ApexGrid,
+  ApexTitleSubtitle,
 } from 'ng-apexcharts';
 
 export type ChartOptions = {
@@ -25,6 +26,7 @@ export type ChartOptions = {
   xaxis: ApexXAxis;
   yaxis: ApexYAxis;
   grid: ApexGrid;
+  title: ApexTitleSubtitle;
 };
 
 @Component({
@@ -54,11 +56,39 @@ export class EstimateSingleComponent implements OnInit {
 
   // percentil para calcular
   percentile: number = 0;
+  yValuePercentile: string = '';
 
   // boolean para mostrar el chart cuando esté ready
   isReady = false;
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService) { }
+
+  recalculate(newPercentile: number) {
+    // Establecer el nuevo percentil
+    this.setPercentile(newPercentile);
+
+    // Calcular la línea de percentil indicada
+    this.yValuePercentile = this.calculatePercentile().toString();
+  
+    // Iniciar el Gráfico con los datos obtenidos
+    this.initChart();
+    // this.chart.clearAnnotations();
+    // this.chart.addYaxisAnnotation({
+    //   y: this.yValuePercentile,
+    //   borderColor: '#e84c4c',
+    //   strokeDashArray: 0,
+    //   label: {
+    //     borderColor: '#e84c4c',
+    //     style: {
+    //       color: '#fff',
+    //       background: '#e84c4c',
+    //       fontSize: '15',
+    //     },
+    //     text: `Percentil ${this.percentile * 100}`,
+    //   }
+    // })
+    // this.chart.render();
+  }
 
   async ngOnInit() {
     this.getProjectId();
@@ -67,7 +97,7 @@ export class EstimateSingleComponent implements OnInit {
     this.setPanelEnd('Closed');
 
     // Establecer el percentil
-    this.setPercentile(0.50);
+    this.setPercentile(0.5);
     
     try {
       // Obtener los workItems del Proyecto
@@ -78,10 +108,10 @@ export class EstimateSingleComponent implements OnInit {
       this.dataDone = await this.getWorkItemsFinished();
 
       // Calcular la línea de percentil indicada
-      let yPercentile = this.calculatePercentile();
+      this.yValuePercentile = this.calculatePercentile().toString();
   
       // Iniciar el Gráfico con los datos obtenidos
-      this.initChart(yPercentile);
+      this.initChart();
     }
     catch(error) {
       console.log(error);
@@ -221,23 +251,22 @@ export class EstimateSingleComponent implements OnInit {
     })
   }
 
-  initChart(yPercentile: any) {
+  initChart() {
     this.chartOptions = {
       series: [
         {
           name: 'Closed',
           data: this.dataDone
         },
-        // {
-        //   name: 'Doing',
-        //   data: this.generateDayWiseTimeSeries(new Date("11 Feb 2017 GMT").getTime(), 10, 
-        //     {
-        //       min: 10,
-        //       max: 60
-        //     }
-        //   )
-        // },
       ],
+
+      title: {
+        text: 'Tiempo de Ciclo de PBI hechos',
+        align: 'center',
+        style: {
+          fontSize: '18px'
+        }
+      },
 
       chart: {
         height: 550,
@@ -250,7 +279,8 @@ export class EstimateSingleComponent implements OnInit {
       annotations: {
         yaxis: [
           {
-            y: yPercentile,
+            id: 'percentile',
+            y: this.yValuePercentile,
             borderColor: '#e84c4c',
             strokeDashArray: 0,
             label: {
@@ -282,7 +312,10 @@ export class EstimateSingleComponent implements OnInit {
       xaxis: {
         type: 'datetime',
         title: {
-          text: 'Fecha'
+          text: 'Fecha',
+          style: {
+            fontSize: '15px'
+          }
         },
         labels: {
           show: true
@@ -291,7 +324,10 @@ export class EstimateSingleComponent implements OnInit {
 
       yaxis: {
         title: {
-          text: 'Tiempo de Ciclo (días)'
+          text: 'Tiempo de Ciclo (días)',
+          style: {
+            fontSize: '15px'
+          }
         }
       }
     };
