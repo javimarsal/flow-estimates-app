@@ -239,7 +239,7 @@ export class EstimateSingleComponent implements OnInit {
         let itemAge = this.getDaysBetween(todayDate, dateDoing);
 
         // Añadir los datos
-        data.push([dateDoing, itemAge]);
+        data.push([todayDate, itemAge]);
       }
     }
 
