@@ -176,8 +176,6 @@ export class EstimateSingleComponent implements OnInit {
         if (dateStart && dateEnd) {
           // calcular el tiempo de ciclo
           let cycleTime = this.getDaysBetween(dateEnd, dateStart);
-
-          console.log(dateEnd.toUTCString())
   
           // añadir a data la dateEnd (x) y el cicleTime (y)
           data.push([dateEnd, cycleTime]);
@@ -321,15 +319,10 @@ export class EstimateSingleComponent implements OnInit {
         },
         
         labels: {
-          datetimeFormatter: {
-            year: 'yyyy',
-            month: 'MMM \'yy',
-            day: 'dd MMM',
-            hour: 'HH:mm'
-          },
           formatter: function(value) {
-            return new Date(value).toLocaleDateString();
-          }
+            return new Date(value).toDateString();
+          },
+          show: false
         }
       },
 
