@@ -19,13 +19,19 @@
 
     <div class="options">
         <!-- Elegir percentil -->
-        <div>
-            <label id="radio-group">Percentiles estándar</label>
+        <div class="optionGroup">
+            <label class="optionTitle" id="radio-group">Percentiles estándar</label>
             <mat-radio-group aria-labelledby="radio-group" class="radio-group">
                 <mat-radio-button class="radio-button" [value]="0.5" [checked]="true" (click)="recalculate(0.5)">50%</mat-radio-button>
                 <mat-radio-button class="radio-button" [value]="0.85" (click)="recalculate(0.85)">85%</mat-radio-button>
                 <mat-radio-button class="radio-button" [value]="0.95" (click)="recalculate(0.95)">95%</mat-radio-button>
             </mat-radio-group>
+        </div>
+
+        <!-- Mostrar PBI Doing -->
+        <div class="optionGroup">
+            <h4 class="optionTitle">Mostrar</h4>
+            <mat-checkbox (change)="getWorkItemsDoing($event)">PBI Doing</mat-checkbox>
         </div>
     </div>
 </mat-card>

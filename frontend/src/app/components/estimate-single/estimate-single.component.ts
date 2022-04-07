@@ -18,6 +18,7 @@ import {
   ApexGrid,
   ApexTitleSubtitle,
 } from 'ng-apexcharts';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -50,9 +51,14 @@ export class EstimateSingleComponent implements OnInit {
   // Panel inicial y final para obtener las fechas y calcular el tiempo de ciclo
   panelStart: string = '';
   panelEnd: string = '';
+  // Panel considerado como Doing
+  panelDoing: string = '';
 
   // data de los workItems Hechos
-  dataDone: any[] = []
+  dataDone: any[] = [];
+
+  // data de los workItems que se están haciendo
+  dataDoing: any[] = [];
 
   // percentil para calcular
   percentile: number = 0;
@@ -96,6 +102,9 @@ export class EstimateSingleComponent implements OnInit {
     this.setPanelStart('Doing');
     this.setPanelEnd('Closed');
 
+    // Establecer el panel Doing
+    this.setPanelDoing('Doing');
+
     // Establecer el percentil
     this.setPercentile(0.5);
     
@@ -130,6 +139,10 @@ export class EstimateSingleComponent implements OnInit {
 
   setPanelEnd(panel: string) {
     this.panelEnd = panel;
+  }
+
+  setPanelDoing(panel: string) {
+    this.panelDoing = panel;
   }
 
   setPercentile(p: number) {
@@ -188,9 +201,51 @@ export class EstimateSingleComponent implements OnInit {
 
   }
 
-  // TODO
-  getWorkItemsDoing() {
+  getWorkItemsDoing(event: MatCheckboxChange) {
+    if (!event.checked) {
+      this.dataDoing = [];
+      this.initChart();
+      return
+    }
 
+    // Panel considerado como Doing
+    let panelDoing = this.panelDoing;
+
+    // Datos de los workItems que se están haciendo
+    let data: any[] = [];
+
+    // Recorremos los WorkItems del Project
+    for (let wI of this.workItemsOfProject) {
+      // Panel actual del WorkItem
+      let currentPanel = wI.panel;
+
+      // Fecha en la que entró en el panel Doing
+      let dateDoing!: Date;
+
+      if (currentPanel == panelDoing) {
+        /* Si el panel actual es el panel Doing, buscar la fecha en la que entró */
+        // Recorrer el panelDateRegistry del WorkItem
+        let panelDateRegistry = wI.panelDateRegistry;
+        for (let registry of panelDateRegistry) {
+          if (registry.panel == currentPanel) {
+            // Guardamos la fecha en la que entró en Doing
+            dateDoing = this.getDateWithoutTime(registry.date);
+            break;
+          }
+        }
+
+        // Calculamos el tiempo que lleva en el panel Doing (itemAge)
+        let todayDate = this.getDateWithoutTime(new Date());
+        let itemAge = this.getDaysBetween(todayDate, dateDoing);
+
+        // Añadir los datos
+        data.push([dateDoing, itemAge]);
+      }
+    }
+
+    // Establecemos los datos obtenidos
+    this.dataDoing = data;
+    this.initChart();
   }
 
   // TODO
@@ -256,8 +311,14 @@ export class EstimateSingleComponent implements OnInit {
       series: [
         {
           name: 'Closed',
-          data: this.dataDone
+          data: this.dataDone,
+          color: '#207cfc'
         },
+        {
+          name: 'Doing',
+          data: this.dataDoing,
+          color: '#fc9520'
+        }
       ],
 
       title: {

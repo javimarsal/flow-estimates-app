@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 // Components
 import { AppComponent } from './app.component';
@@ -57,6 +58,7 @@ import { EstimateSingleComponent } from './components/estimate-single/estimate-s
     MatToolbarModule,
     MatCardModule,
     MatRadioModule,
+    MatCheckboxModule,
     FormsModule,
     AppRoutingModule,
     HttpClientModule,

@@ -40,6 +40,15 @@
     border-radius: 4px;
 }
 
+.optionGroup {
+    margin-bottom: 20px;
+}
+
+.optionTitle {
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .radio-group {
     display: flex;
     flex-direction: column;
