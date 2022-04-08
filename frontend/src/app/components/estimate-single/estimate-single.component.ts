@@ -393,6 +393,15 @@ export class EstimateSingleComponent implements OnInit {
           style: {
             fontSize: '15px'
           }
+        },
+        max: this.dataDone[this.dataDone.length-1][1] + 1,
+        tickAmount: 2,
+        forceNiceScale: true,
+        tooltip: {
+          enabled: true
+        },
+        crosshairs: {
+          show: true
         }
       }
     };
