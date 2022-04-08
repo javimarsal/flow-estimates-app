@@ -307,6 +307,8 @@ export class EstimateSingleComponent implements OnInit {
   }
 
   initChart() {
+    console.log(this.dataDone[this.dataDone.length-1][1] + 1)
+
     this.chartOptions = {
       series: [
         {
@@ -394,7 +396,6 @@ export class EstimateSingleComponent implements OnInit {
             fontSize: '15px'
           }
         },
-        max: this.dataDone[this.dataDone.length-1][1] + 1,
         tooltip: {
           enabled: true
         },
