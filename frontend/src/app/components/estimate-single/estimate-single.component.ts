@@ -395,8 +395,6 @@ export class EstimateSingleComponent implements OnInit {
           }
         },
         max: this.dataDone[this.dataDone.length-1][1] + 1,
-        tickAmount: 2,
-        forceNiceScale: true,
         tooltip: {
           enabled: true
         },
