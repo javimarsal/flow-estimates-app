@@ -8,8 +8,9 @@ import { ProjectService } from 'src/app/services/project.service';
 // Models
 import { WorkItem } from 'src/app/models/work-item';
 
-// Material
+// Material Events
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 import {
   ChartComponent,
@@ -39,12 +40,6 @@ export type ChartOptions = {
 })
 
 export class EstimateSingleComponent implements OnInit {
-  // https://apexcharts.com/javascript-chart-demos/scatter-charts/datetime/
-  // https://apexcharts.com/docs/angular-charts/#
-  // https://apexcharts.com/docs/annotations/
-
-  // https://www.npmjs.com/package/ngx-mat-range-slider
-
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: Partial<ChartOptions>;
 
@@ -60,6 +55,8 @@ export class EstimateSingleComponent implements OnInit {
 
   // data de los workItems Hechos
   dataDone: any[] = [];
+  // para guardar todos los datos, así no se ven afectados cuando filtramos por fechas
+  allDataDone: any[] = [];
 
   // data de los workItems que se están haciendo
   dataDoing: any[] = [];
@@ -72,8 +69,12 @@ export class EstimateSingleComponent implements OnInit {
   isReady = false;
 
   // rango de fechas permitidas
-  minDate: Date = new Date('4/3/2022');
-  maxDate: Date = new Date('4/22/2022');
+  minDate!: Date;
+  maxDate!: Date;
+
+  // fechas con las que filtrar dataDone del gráfico
+  startDate!: Date;
+  endDate!: Date;
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService) { }
 
@@ -86,22 +87,6 @@ export class EstimateSingleComponent implements OnInit {
   
     // Iniciar el Gráfico con los datos obtenidos
     this.initChart();
-    // this.chart.clearAnnotations();
-    // this.chart.addYaxisAnnotation({
-    //   y: this.yValuePercentile,
-    //   borderColor: '#e84c4c',
-    //   strokeDashArray: 0,
-    //   label: {
-    //     borderColor: '#e84c4c',
-    //     style: {
-    //       color: '#fff',
-    //       background: '#e84c4c',
-    //       fontSize: '15',
-    //     },
-    //     text: `Percentil ${this.percentile * 100}`,
-    //   }
-    // })
-    // this.chart.render();
   }
 
   async ngOnInit() {
@@ -123,6 +108,7 @@ export class EstimateSingleComponent implements OnInit {
       /* Obtenemos el conjunto de datos para el gráfico */
       // Datos de workItems que han sido completados
       this.dataDone = await this.getWorkItemsFinished();
+      this.allDataDone = this.dataDone;
 
       // Calcular la línea de percentil indicada
       this.yValuePercentile = this.calculatePercentile().toString();
@@ -133,6 +119,10 @@ export class EstimateSingleComponent implements OnInit {
     catch(error) {
       console.log(error);
     }
+
+    // establecer el rango de fechas según las fechas de los workItems
+    this.setMinMaxDates();
+
 
     // TODO: si dataDone está vacío mostrar un mensaje (o reemplazar el mensaje de la estimación por ese mensaje)
   }
@@ -155,6 +145,115 @@ export class EstimateSingleComponent implements OnInit {
 
   setPercentile(p: number) {
     this.percentile = p;
+  }
+
+  setStartDate(event: MatDatepickerInputEvent<Date>) {
+    this.startDate = event.value!;
+  }
+
+  setEndDate(event: MatDatepickerInputEvent<Date>) {
+    if (!event.value) {
+      return;
+    }
+
+    this.endDate = event.value!;
+    
+    // Datos que entran dentro del rango de fechas
+    let dataInRange: any[] = [];
+
+    // Recorremos el array de dataDone y seleccionamos las que estén entre StartDate y EndDate
+    for (let data of this.allDataDone) {
+      if ((data[0] >= this.startDate) && (data[0] <= this.endDate)) {
+        dataInRange.push(data);
+      }
+    }
+
+    // Si el rango de fechas no contiene datos
+    if (dataInRange.length == 0) {
+      document.getElementById('warning')!.innerText = 'No hay datos que mostrar en ese rango de fechas';
+      return;
+    }
+
+    // Limpiamos el warning
+    document.getElementById('warning')!.innerText = '';
+
+    // Nuevos datos dentro del rango de fechas
+    this.dataDone = dataInRange;
+
+    // Recalculamos el percentil
+    this.yValuePercentile = this.calculatePercentile().toString();
+    console.log(this.dataDone)
+
+    // Volver a dibujar el gráfico
+    this.initChart();
+  }
+
+  setMinMaxDates() {
+    // Obtener las fechas del panel considerado como Done
+    let dates = this.getDatesOfWorkItems();
+
+    // Si no hay fechas (no hay workItems que hayan sido terminados)
+    if (dates.length == 0) {
+      return;
+    }
+
+    // Si hay fechas, establecemos los límites
+    this.maxDate = this.getMaxDate(dates);
+    this.minDate = this.getMinDate(dates);
+  }
+
+  getDatesOfWorkItems(): Date[] {
+    // Array donde guardamos las fechas
+    let dates = [];
+
+    // Panel considerado como done/end
+    let panelEnd = this.panelEnd;
+
+    // los workItems del Project
+    let workItem = this.workItemsOfProject;
+
+    for (let wI of workItem) {
+      // Recorremos el registro de paneles del workItem
+      for (let registry of wI.panelDateRegistry) {
+        if (registry.panel == panelEnd) {
+          // Añadimos la fecha
+          dates.push(this.getDateWithoutTime(registry.date));
+        }
+      }
+    }
+
+    // Devolvemos la lista de fechas
+    return dates;
+  }
+
+  getMaxDate(dates: Date[]): Date {
+    let auxDate = dates[0];
+
+    // longitud del array de dates
+    let lengthDates = dates.length;
+
+    for (let i = 1; i < lengthDates; i++) {
+      if (dates[i] > auxDate) {
+        auxDate = dates[i];
+      }
+    }
+
+    return auxDate;
+  }
+
+  getMinDate(dates: Date[]): Date {
+    let auxDate = dates[0];
+
+    // longitud del array de dates
+    let lengthDates = dates.length;
+
+    for (let i = 1; i < lengthDates; i++) {
+      if (dates[i] < auxDate) {
+        auxDate = dates[i];
+      }
+    }
+
+    return auxDate;
   }
 
   async getWorkItemsOfProject() {
@@ -298,11 +397,11 @@ export class EstimateSingleComponent implements OnInit {
     this.sortData_ByCycleTime(this.dataDone);
 
     // Número de puntos que hay en los datos
-    let pointsNumber = this.dataDone.length;
+    let numberOfPoints = this.dataDone.length;
 
     /* Multiplicamos el percentil por el número de puntos */
     // Redondeamos
-    let indexOfData = Number((pointsNumber * percentile).toFixed()) - 1;
+    let indexOfData = Number((numberOfPoints * percentile).toFixed()) - 1;
 
     // Devolver el tiempo de ciclo (cycleTime) del dato (punto) en la posición indexOfData
     return this.dataDone[indexOfData][1];
@@ -315,8 +414,6 @@ export class EstimateSingleComponent implements OnInit {
   }
 
   initChart() {
-    console.log(this.dataDone[this.dataDone.length-1][1] + 1)
-
     this.chartOptions = {
       series: [
         {

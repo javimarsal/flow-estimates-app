@@ -36,14 +36,16 @@
 
         <!-- Elegir fechas -->
         <div class="optionGroup">
+            <h4 class="optionTitle">Elegir rango de fechas</h4>
             <mat-form-field appearance="fill">
                 <mat-label>Rango de fechas</mat-label>
                 <mat-date-range-input [rangePicker]="picker" [min]="minDate" [max]="maxDate">
-                    <input matStartDate placeholder="Start date" disabled>
-                    <input matEndDate placeholder="End date" disabled>
+                    <input matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)">
+                    <input matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)">
                 </mat-date-range-input>
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
+                <p class="warning" id="warning"></p>
             </mat-form-field>
         </div>
     </div>

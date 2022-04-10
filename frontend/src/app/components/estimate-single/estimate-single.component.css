@@ -41,7 +41,7 @@
 }
 
 .optionGroup {
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .optionTitle {
@@ -55,5 +55,10 @@
 }
 
 .radio-button {
-    margin: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.warning {
+    color: #f85454;
 }
