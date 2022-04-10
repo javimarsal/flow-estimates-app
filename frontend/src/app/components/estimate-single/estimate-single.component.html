@@ -33,5 +33,18 @@
             <h4 class="optionTitle">Mostrar</h4>
             <mat-checkbox (change)="getWorkItemsDoing($event)">PBI Doing</mat-checkbox>
         </div>
+
+        <!-- Elegir fechas -->
+        <div class="optionGroup">
+            <mat-form-field appearance="fill">
+                <mat-label>Rango de fechas</mat-label>
+                <mat-date-range-input [rangePicker]="picker" [min]="minDate" [max]="maxDate">
+                    <input matStartDate placeholder="Start date" disabled>
+                    <input matEndDate placeholder="End date" disabled>
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
+            </mat-form-field>
+        </div>
     </div>
 </mat-card>

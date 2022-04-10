@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './modules/app-routing/app-routing.module';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
+
 // Material
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -18,6 +19,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 
 // Components
 import { AppComponent } from './app.component';
@@ -59,13 +62,17 @@ import { EstimateSingleComponent } from './components/estimate-single/estimate-s
     MatCardModule,
     MatRadioModule,
     MatCheckboxModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
     NgApexchartsModule
   ],
   entryComponents: [PanelComponent, WorkItemListComponent],
-  providers: [],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
+  ],
   bootstrap: [AppComponent]
 })
 

@@ -8,6 +8,9 @@ import { ProjectService } from 'src/app/services/project.service';
 // Models
 import { WorkItem } from 'src/app/models/work-item';
 
+// Material
+import { MatCheckboxChange } from '@angular/material/checkbox';
+
 import {
   ChartComponent,
   ApexAxisChartSeries,
@@ -18,7 +21,6 @@ import {
   ApexGrid,
   ApexTitleSubtitle,
 } from 'ng-apexcharts';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -40,6 +42,8 @@ export class EstimateSingleComponent implements OnInit {
   // https://apexcharts.com/javascript-chart-demos/scatter-charts/datetime/
   // https://apexcharts.com/docs/angular-charts/#
   // https://apexcharts.com/docs/annotations/
+
+  // https://www.npmjs.com/package/ngx-mat-range-slider
 
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: Partial<ChartOptions>;
@@ -66,6 +70,10 @@ export class EstimateSingleComponent implements OnInit {
 
   // boolean para mostrar el chart cuando esté ready
   isReady = false;
+
+  // rango de fechas permitidas
+  minDate: Date = new Date('4/3/2022');
+  maxDate: Date = new Date('4/22/2022');
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService) { }
 
