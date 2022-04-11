@@ -101,6 +101,8 @@ export class EstimateSingleComponent implements OnInit {
     // Establecer los paneles (inicial y final)
     this.setPanelStart('Doing');
     this.setPanelEnd('Closed');
+    this.panelStartSelectorValue = this.panelStart;
+    this.panelEndSelectorValue = this.panelEnd;
 
     // Establecer el panel Doing
     this.setPanelDoing('Doing');

@@ -54,13 +54,13 @@
             <h4 class="optionTitle">Elegir panel inicial y final</h4>
             <mat-form-field appearance="fill">
                 <mat-label>Panel de Inicio</mat-label>
-                <mat-select (selectionChange)="setPanelStartSelector($event)">
+                <mat-select (selectionChange)="setPanelStartSelector($event)" [(value)]="panelStart">
                     <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Panel de Fin</mat-label>
-                <mat-select (selectionChange)="setPanelEndSelector($event)">
+                <mat-select (selectionChange)="setPanelEndSelector($event)" [(value)]="panelEnd">
                     <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
                 </mat-select>
             </mat-form-field>
