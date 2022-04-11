@@ -35,7 +35,7 @@
         </div>
 
         <!-- Elegir fechas -->
-        <div class="optionGroup">
+        <div class="optionGroupFechas">
             <h4 class="optionTitle">Elegir rango de fechas</h4>
             <mat-form-field appearance="fill">
                 <mat-label>Rango de fechas</mat-label>
@@ -46,6 +46,29 @@
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
                 <p class="warning" id="warning"></p>
+            </mat-form-field>
+        </div>
+
+        <!-- Elegir cada tipo de panel -->
+        <div class="optionGroup">
+            <h4 class="optionTitle">Elegir panel inicial y final</h4>
+            <mat-form-field appearance="fill">
+                <mat-label>Panel de Inicio</mat-label>
+                <mat-select>
+                    <mat-option value="option1">ToDO</mat-option>
+                    <mat-option value="option2">Doing</mat-option>
+                    <mat-option value="option3">Done</mat-option>
+                    <mat-option value="option3">Closed</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Panel de Fin</mat-label>
+                <mat-select>
+                    <mat-option value="option1">ToDO</mat-option>
+                    <mat-option value="option2">Doing</mat-option>
+                    <mat-option value="option3">Done</mat-option>
+                    <mat-option value="option3">Closed</mat-option>
+                </mat-select>
             </mat-form-field>
         </div>
     </div>
