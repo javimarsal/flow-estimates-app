@@ -217,6 +217,7 @@ export class EstimateSingleComponent implements OnInit {
     // El orden es correcto y no coinciden
     document.getElementById('warningPanels')!.innerText = '';
 
+    // Establecemos el panelStart
     this.panelStart = this.panelStartSelectorValue
 
     this.setDataForChart();
@@ -249,9 +250,9 @@ export class EstimateSingleComponent implements OnInit {
     // El orden es correcto y no coinciden
     document.getElementById('warningPanels')!.innerText = '';
 
+    // Establecemos el panelEnd
     this.panelEnd = this.panelEndSelectorValue
 
-    // Establecemos el panelEnd
     this.setDataForChart();
   }
 
