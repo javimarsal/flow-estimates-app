@@ -47,6 +47,9 @@ export class EstimateSingleComponent implements OnInit {
 
   workItemsOfProject: WorkItem[] = [];
 
+  // Los paneles del tablero
+  panelNames: string[] = [];
+
   // Panel inicial y final para obtener las fechas y calcular el tiempo de ciclo
   panelStart: string = '';
   panelEnd: string = '';
@@ -119,6 +122,8 @@ export class EstimateSingleComponent implements OnInit {
     catch(error) {
       console.log(error);
     }
+
+    await this.getPanelNames();
 
     // establecer el rango de fechas según las fechas de los workItems
     this.setMinMaxDates();
@@ -358,9 +363,24 @@ export class EstimateSingleComponent implements OnInit {
   // TODO
   // Para poder elegir panel inicial y final
   // Solo los paneles en los que haya habido workItems??
-  getPanelNames() {
+  async getPanelNames() {
+    try {
+      let panels = await lastValueFrom(this.projectService.getPanels(this.projectId));
 
+      // Recorremos los paneles y guardamos los nombres
+      let panelNames = [];
+      for (let p of panels) {
+        panelNames.push(p.name);
+      }
+      
+      this.panelNames = panelNames;
+    }
+    catch (error) {
+      console.log(error);
+    }
   }
+
+  
 
   getDateWithoutTime(date: any): Date {
     let fullDate = new Date(date);

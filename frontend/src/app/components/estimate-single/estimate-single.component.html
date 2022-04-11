@@ -55,19 +55,13 @@
             <mat-form-field appearance="fill">
                 <mat-label>Panel de Inicio</mat-label>
                 <mat-select>
-                    <mat-option value="option1">ToDO</mat-option>
-                    <mat-option value="option2">Doing</mat-option>
-                    <mat-option value="option3">Done</mat-option>
-                    <mat-option value="option3">Closed</mat-option>
+                    <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Panel de Fin</mat-label>
                 <mat-select>
-                    <mat-option value="option1">ToDO</mat-option>
-                    <mat-option value="option2">Doing</mat-option>
-                    <mat-option value="option3">Done</mat-option>
-                    <mat-option value="option3">Closed</mat-option>
+                    <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
                 </mat-select>
             </mat-form-field>
         </div>
