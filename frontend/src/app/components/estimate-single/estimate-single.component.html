@@ -45,7 +45,7 @@
                 </mat-date-range-input>
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
-                <p class="warning" id="warning"></p>
+                <p class="warning" id="warningDates"></p>
             </mat-form-field>
         </div>
 
@@ -54,16 +54,17 @@
             <h4 class="optionTitle">Elegir panel inicial y final</h4>
             <mat-form-field appearance="fill">
                 <mat-label>Panel de Inicio</mat-label>
-                <mat-select>
+                <mat-select (selectionChange)="setPanelStartSelector($event)">
                     <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Panel de Fin</mat-label>
-                <mat-select>
+                <mat-select (selectionChange)="setPanelEndSelector($event)">
                     <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
                 </mat-select>
             </mat-form-field>
+            <p class="warning" id="warningPanels"></p>
         </div>
     </div>
 </mat-card>

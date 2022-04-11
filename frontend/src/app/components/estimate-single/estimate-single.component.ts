@@ -53,6 +53,10 @@ export class EstimateSingleComponent implements OnInit {
   // Panel inicial y final para obtener las fechas y calcular el tiempo de ciclo
   panelStart: string = '';
   panelEnd: string = '';
+  // El valor de sus selectores
+  panelStartSelectorValue: string = '';
+  panelEndSelectorValue: string = '';
+
   // Panel considerado como Doing
   panelDoing: string = '';
 
@@ -132,6 +136,44 @@ export class EstimateSingleComponent implements OnInit {
     // TODO: si dataDone está vacío mostrar un mensaje (o reemplazar el mensaje de la estimación por ese mensaje)
   }
 
+  async setDataForChart() {
+    /* Obtenemos el conjunto de datos para el gráfico */
+    // Datos de workItems que han sido completados
+    let data = await this.getWorkItemsFinished();
+
+    // filtrar los datos si hay un rango de fechas establecido
+    if (this.startDate && this.endDate) {
+      let dataInRange: any[] = [];
+
+      for (let d of data) {
+        if ((d[0] >= this.startDate) && (d[0] <= this.endDate)) {
+          dataInRange.push(d);
+        }
+      }
+
+      // Si el rango de fechas no contiene datos
+      if (dataInRange.length == 0) {
+        document.getElementById('warningDates')!.innerText = 'No hay datos que mostrar en ese rango de fechas';
+        return;
+      }
+
+      // Limpiamos el warning
+      document.getElementById('warningDates')!.innerText = '';
+
+      this.dataDone = dataInRange;
+    }
+    else this.dataDone = data;
+
+    // Asignamos todos los datos (teniendo en cuenta los paneles Start y End)
+    this.allDataDone = data;
+
+    // Calcular la línea de percentil indicada
+    this.yValuePercentile = this.calculatePercentile().toString();
+
+    // Iniciar el Gráfico con los datos obtenidos
+    this.initChart();
+  }
+
   getProjectId() {
     this.projectId = this.route.snapshot.paramMap.get('id');
   }
@@ -146,6 +188,71 @@ export class EstimateSingleComponent implements OnInit {
 
   setPanelDoing(panel: string) {
     this.panelDoing = panel;
+  }
+
+  setPanelStartSelector(event: any) {
+    let panelName = event.value;
+    this.panelStartSelectorValue = panelName;
+
+    if (!this.panelEndSelectorValue) return;
+
+    // El panel no puede tener un index mayor que el de End
+    let indexOfPanelStart = this.getIndexFromPanelNamesArray(panelName);
+    let indexOfPanelEnd = this.getIndexFromPanelNamesArray(this.panelEndSelectorValue);
+    
+    // Si el index es mayor
+    if (indexOfPanelStart > indexOfPanelEnd) {
+      document.getElementById('warningPanels')!.innerText = 'El panel de Inicio no puede estar a la derecha del panel de Fin';
+      
+      return;
+    }
+
+    // Si los paneles coinciden
+    if (indexOfPanelStart == indexOfPanelEnd) {
+      document.getElementById('warningPanels')!.innerText = 'Los paneles de Inicio y de Fin no pueden coincidir';
+      
+      return;
+    }
+    
+    // El orden es correcto y no coinciden
+    document.getElementById('warningPanels')!.innerText = '';
+
+    this.panelStart = this.panelStartSelectorValue
+
+    this.setDataForChart();
+  }
+
+  setPanelEndSelector(event: any) {
+    let panelName = event.value;
+    this.panelEndSelectorValue = panelName;
+
+    if (!this.panelStartSelectorValue) return;
+
+    // El panel no puede tener un index menor que el de Start
+    let indexOfPanelStart = this.getIndexFromPanelNamesArray(this.panelStartSelectorValue);
+    let indexOfPanelEnd = this.getIndexFromPanelNamesArray(panelName);
+    
+    // Si el index es mayor
+    if (indexOfPanelEnd < indexOfPanelStart) {
+      document.getElementById('warningPanels')!.innerText = 'El panel de Fin no puede estar a la izquierda del panel de Inicio';
+      
+      return;
+    }
+
+    // Si los paneles coinciden
+    if (indexOfPanelStart == indexOfPanelEnd) {
+      document.getElementById('warningPanels')!.innerText = 'Los paneles de Inicio y de Fin no pueden coincidir';
+      
+      return;
+    }
+
+    // El orden es correcto y no coinciden
+    document.getElementById('warningPanels')!.innerText = '';
+
+    this.panelEnd = this.panelEndSelectorValue
+
+    // Establecemos el panelEnd
+    this.setDataForChart();
   }
 
   setPercentile(p: number) {
@@ -175,12 +282,12 @@ export class EstimateSingleComponent implements OnInit {
 
     // Si el rango de fechas no contiene datos
     if (dataInRange.length == 0) {
-      document.getElementById('warning')!.innerText = 'No hay datos que mostrar en ese rango de fechas';
+      document.getElementById('warningDates')!.innerText = 'No hay datos que mostrar en ese rango de fechas';
       return;
     }
 
     // Limpiamos el warning
-    document.getElementById('warning')!.innerText = '';
+    document.getElementById('warningDates')!.innerText = '';
 
     // Nuevos datos dentro del rango de fechas
     this.dataDone = dataInRange;
@@ -205,6 +312,18 @@ export class EstimateSingleComponent implements OnInit {
     // Si hay fechas, establecemos los límites
     this.maxDate = this.getMaxDate(dates);
     this.minDate = this.getMinDate(dates);
+  }
+
+  getIndexFromPanelNamesArray(panelName: string) {
+    let panelNames = this.panelNames;
+    let lengthPanelNames = this.panelNames.length;
+
+    for (let i = 0; i <  lengthPanelNames; i++) {
+      if (panelNames[i] == panelName) return i;
+    }
+
+    // No se ha encontrado
+    return -1;
   }
 
   getDatesOfWorkItems(): Date[] {
@@ -360,9 +479,6 @@ export class EstimateSingleComponent implements OnInit {
     this.initChart();
   }
 
-  // TODO
-  // Para poder elegir panel inicial y final
-  // Solo los paneles en los que haya habido workItems??
   async getPanelNames() {
     try {
       let panels = await lastValueFrom(this.projectService.getPanels(this.projectId));
@@ -379,8 +495,6 @@ export class EstimateSingleComponent implements OnInit {
       console.log(error);
     }
   }
-
-  
 
   getDateWithoutTime(date: any): Date {
     let fullDate = new Date(date);
@@ -531,20 +645,6 @@ export class EstimateSingleComponent implements OnInit {
     };
 
     this.isReady = true;
-  }
-
-  public generateDayWiseTimeSeries(baseval: number, count: number, yrange: any): number[] {
-    var i = 0;
-    var series: any[] = [];
-    while (i < count) {
-      var y: number =
-        Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-      
-      series.push([baseval, y]);
-      baseval += 86400000;
-      i++;
-    }
-    return series;
   }
 
 }
