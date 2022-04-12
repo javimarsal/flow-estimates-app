@@ -22,6 +22,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Components
 import { AppComponent } from './app.component';
@@ -66,6 +67,7 @@ import { EstimateSingleComponent } from './components/estimate-single/estimate-s
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatTooltipModule,
     FormsModule,
     AppRoutingModule,
     HttpClientModule,

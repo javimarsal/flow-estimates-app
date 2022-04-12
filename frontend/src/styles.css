@@ -10,3 +10,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .itemBox:hover .updateDelete {
     display: inline-block;
 }
+
+.mat-tooltip {
+    font-size: 18px;
+}
