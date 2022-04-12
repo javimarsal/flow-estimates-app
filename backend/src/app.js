@@ -26,6 +26,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + './../public/'));
 
 // Las rutas/páginas de la app
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + './../public/index.html'));
+});
+
 app.get('/home', function(req, res) {
     res.sendFile(path.join(__dirname + './../public/index.html'));
 });
