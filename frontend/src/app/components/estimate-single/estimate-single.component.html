@@ -29,9 +29,16 @@
         </div>
 
         <!-- Mostrar PBI Doing -->
-        <div class="optionGroup">
+        <div class="optionGroupDoing">
             <h4 class="optionTitle">Mostrar</h4>
-            <mat-checkbox (change)="getWorkItemsDoing($event)">PBI Doing</mat-checkbox>
+            <mat-checkbox class="doingCheck" (change)="getWorkItemsDoing($event.checked)">PBI Doing</mat-checkbox>
+            <h5 class="optionSubtitle">Elegir panel Doing</h5>
+            <mat-form-field appearance="fill">
+                <mat-label>Panel Doing</mat-label>
+                <mat-select (selectionChange)="setPanelDoing($event.value)" [(value)]="panelDoing">
+                    <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
+                </mat-select>
+            </mat-form-field>
         </div>
 
         <!-- Elegir fechas -->
@@ -49,15 +56,17 @@
             </mat-form-field>
         </div>
 
-        <!-- Elegir cada tipo de panel -->
+        <!-- Elegir Panel de Inicio y de Fin -->
         <div class="optionGroup">
-            <h4 class="optionTitle">Elegir panel inicial y final</h4>
+            <h4 class="optionTitle">Elegir panel Inicial y Final</h4>
+            <h5 class="optionSubtitle">Elegir panel Inicial</h5>
             <mat-form-field appearance="fill">
                 <mat-label>Panel de Inicio</mat-label>
                 <mat-select (selectionChange)="setPanelStartSelector($event)" [(value)]="panelStart">
                     <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
                 </mat-select>
             </mat-form-field>
+            <h5 class="optionSubtitle">Elegir panel Final</h5>
             <mat-form-field appearance="fill">
                 <mat-label>Panel de Fin</mat-label>
                 <mat-select (selectionChange)="setPanelEndSelector($event)" [(value)]="panelEnd">

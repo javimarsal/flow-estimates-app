@@ -57,6 +57,9 @@ export class EstimateSingleComponent implements OnInit {
   panelStartSelectorValue: string = '';
   panelEndSelectorValue: string = '';
 
+  // Para saber si el mostrar PBI Doing está marcado o no
+  showPBIDoing: boolean = false;
+
   // Panel considerado como Doing
   panelDoing: string = '';
 
@@ -190,6 +193,10 @@ export class EstimateSingleComponent implements OnInit {
 
   setPanelDoing(panel: string) {
     this.panelDoing = panel;
+
+    if (this.showPBIDoing) {
+      this.getWorkItemsDoing(true);
+    }
   }
 
   setPanelStartSelector(event: any) {
@@ -435,12 +442,16 @@ export class EstimateSingleComponent implements OnInit {
 
   }
 
-  getWorkItemsDoing(event: MatCheckboxChange) {
-    if (!event.checked) {
+  getWorkItemsDoing(isChecked: boolean) {
+    if (!isChecked) {
+      this.showPBIDoing = false;
       this.dataDoing = [];
       this.initChart();
-      return
+      return;
     }
+
+    // El checkbox está marcado
+    this.showPBIDoing = true;
 
     // Panel considerado como Doing
     let panelDoing = this.panelDoing;
