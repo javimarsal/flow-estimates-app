@@ -2,18 +2,18 @@ const { Router } = require('express');
 const panelController = require('../controllers/panel.controller')
 
 // enrutador que permite guardar rutas (URLs del servidor)
-const router = Router();
+const panelRouter = Router();
 
 // Para utilizar estas rutas deben requerirse en app.js
 // CRUD (Create - Read - Update - Delete)
-router.get('/', panelController.getPanels);
+panelRouter.get('/', panelController.getPanels);
 
-router.post('/', panelController.creatPanel);
+panelRouter.post('/', panelController.creatPanel);
 
-router.get('/:id', panelController.getPanel);
+panelRouter.get('/:id', panelController.getPanel);
 
-router.put('/:id', panelController.editPanel);
+panelRouter.put('/:id', panelController.editPanel);
 
-router.delete('/:id', panelController.deletePanel);
+panelRouter.delete('/:id', panelController.deletePanel);
 
-module.exports = router;
+module.exports = panelRouter;

@@ -2,24 +2,24 @@ const { Router } = require('express');
 const userController = require('../controllers/user.controller')
 
 // enrutador que permite guardar rutas (URLs del servidor)
-const router = Router();
+const userRouter = Router();
 
 // Para utilizar estas rutas deben requerirse en app.js
 // CRUD (Create - Read - Update - Delete)
-router.get('/', userController.getUsers);
+userRouter.get('/', userController.getUsers);
 
-router.post('/', userController.createUser);
+userRouter.post('/', userController.createUser);
 
-router.get('/:id', userController.getUser);
+userRouter.get('/:id', userController.getUser);
 
-router.put('/:id', userController.editUser);
+userRouter.put('/:id', userController.editUser);
 
-router.delete('/:id', userController.deleteUser);
+userRouter.delete('/:id', userController.deleteUser);
 
-router.post('/signin', userController.signin);
+userRouter.post('/signin', userController.signin);
 
-router.post('/signup', userController.signup);
+userRouter.post('/signup', userController.signup);
 
-router.post('/openedProject', userController.setOpenedProject);
+userRouter.post('/openedProject', userController.setOpenedProject);
 
-module.exports = router;
+module.exports = userRouter;

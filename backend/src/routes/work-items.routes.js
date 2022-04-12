@@ -2,18 +2,18 @@ const { Router } = require('express');
 const workItemController = require('../controllers/work-items.controller')
 
 // enrutador que permite guardar rutas (URLs del servidor)
-const router = Router();
+const workItemRouter = Router();
 
 // Para utilizar estas rutas deben requerirse en app.js
 // CRUD (Create - Read - Update - Delete)
-router.get('/', workItemController.getWorkItems);
+workItemRouter.get('/', workItemController.getWorkItems);
 
-router.post('/', workItemController.creatWorkItem);
+workItemRouter.post('/', workItemController.creatWorkItem);
 
-router.get('/:id', workItemController.getWorkItem);
+workItemRouter.get('/:id', workItemController.getWorkItem);
 
-router.put('/:id', workItemController.editWorkItem);
+workItemRouter.put('/:id', workItemController.editWorkItem);
 
-router.delete('/:id', workItemController.deleteWorkItem);
+workItemRouter.delete('/:id', workItemController.deleteWorkItem);
 
-module.exports = router;
+module.exports = workItemRouter;

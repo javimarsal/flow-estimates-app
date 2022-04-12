@@ -2,30 +2,30 @@ const { Router } = require('express');
 const projectController = require('../controllers/project.controller')
 
 // enrutador que permite guardar rutas (URLs del servidor)
-const router = Router();
+const projectRouter = Router();
 
 // Para utilizar estas rutas deben requerirse en app.js
 // CRUD (Create - Read - Update - Delete)
-router.get('/', projectController.getProjects);
+projectRouter.get('/', projectController.getProjects);
 
-router.post('/', projectController.createProject);
+projectRouter.post('/', projectController.createProject);
 
-router.get('/:id', projectController.getProject);
+projectRouter.get('/:id', projectController.getProject);
 
-router.put('/:id', projectController.editProject);
+projectRouter.put('/:id', projectController.editProject);
 
-router.delete('/:id', projectController.deleteProject);
+projectRouter.delete('/:id', projectController.deleteProject);
 
 // get panels of project
-router.get('/:id/panels', projectController.getPanels);
+projectRouter.get('/:id/panels', projectController.getPanels);
 
 // get workItems of project
-router.get('/:id/workitems', projectController.getWorkItems);
+projectRouter.get('/:id/workitems', projectController.getWorkItems);
 
 // update list of workItems of project
-router.put('/:id/workitems', projectController.addWorkItem);
+projectRouter.put('/:id/workitems', projectController.addWorkItem);
 
 // delete a workItem for the list of workItems
-router.delete('/:pid/workitems/:wid', projectController.deleteWorkItem)
+projectRouter.delete('/:pid/workitems/:wid', projectController.deleteWorkItem)
 
-module.exports = router;
+module.exports = projectRouter;
