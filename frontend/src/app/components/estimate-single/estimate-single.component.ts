@@ -21,6 +21,7 @@ import {
   ApexXAxis,
   ApexGrid,
   ApexTitleSubtitle,
+  ApexTooltip
 } from 'ng-apexcharts';
 
 export type ChartOptions = {
@@ -31,6 +32,7 @@ export type ChartOptions = {
   yaxis: ApexYAxis;
   grid: ApexGrid;
   title: ApexTitleSubtitle;
+  tooltip: ApexTooltip;
 };
 
 @Component({
@@ -407,6 +409,9 @@ export class EstimateSingleComponent implements OnInit {
       // Recorremos los workItems del Project
       for (let workItem of this.workItemsOfProject) {
         let panelDateRegistry = workItem.panelDateRegistry;
+
+        // Descripción del pbi
+        let description = workItem.name;
   
         // Fechas de start y end
         let dateStart!: Date;
@@ -432,7 +437,7 @@ export class EstimateSingleComponent implements OnInit {
           let cycleTime = this.getDaysBetween(dateEnd, dateStart);
   
           // añadir a data la dateEnd (x) y el cicleTime (y)
-          data.push([dateEnd, cycleTime]);
+          data.push([dateEnd, cycleTime, description]);
         }
 
       }
@@ -467,6 +472,9 @@ export class EstimateSingleComponent implements OnInit {
       // Fecha en la que entró en el panel Doing
       let dateDoing!: Date;
 
+      // Descripción del pbi
+      let description = wI.name;
+
       if (currentPanel == panelDoing) {
         /* Si el panel actual es el panel Doing, buscar la fecha en la que entró */
         // Recorrer el panelDateRegistry del WorkItem
@@ -484,7 +492,7 @@ export class EstimateSingleComponent implements OnInit {
         let itemAge = this.getDaysBetween(todayDate, dateDoing);
 
         // Añadir los datos
-        data.push([todayDate, itemAge]);
+        data.push([todayDate, itemAge, description]);
       }
     }
 
@@ -617,11 +625,6 @@ export class EstimateSingleComponent implements OnInit {
           lines: {
             show: true
           }
-        },
-        yaxis: {
-          lines: {
-            show: true
-          }
         }
       },
 
@@ -654,6 +657,18 @@ export class EstimateSingleComponent implements OnInit {
         },
         crosshairs: {
           show: true
+        }
+      },
+
+      tooltip: {
+        custom: function({ seriesIndex, dataPointIndex, w }) {
+          let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+          return '<div style="padding: 10px 10px;">' +
+            '<div><b>Fecha de Fin:</b> ' + data[0].toDateString() + '</div>' +
+            '<div><b>Tiempo de Ciclo:</b> ' + data[1] + '</div>' +
+            '<div><b>Descripción:</b> ' + data[2] + '</div>' +
+            '</div>';
         }
       }
     };
