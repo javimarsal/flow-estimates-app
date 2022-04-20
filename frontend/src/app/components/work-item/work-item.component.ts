@@ -1,12 +1,27 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
 import { WorkItem } from 'src/app/models/work-item';
+
+// Material
+import { MatDialog } from '@angular/material/dialog';
 
 // Servicios
 import { ProjectService } from 'src/app/services/project.service';
 import { WorkItemService } from 'src/app/services/work-item.service';
 import { WorkItemListComponent } from '../work-item-list/work-item-list.component';
+
+@Component({
+  selector: 'work-item-dialog',
+  templateUrl: './work-item-dialog.html',
+  styleUrls: ['./work-item-dialog.css']
+})
+export class WorkItemDialogComponent {
+  @Input() workItemName: string = '';
+
+  ngOnInit() {
+  }
+}
 
 @Component({
   selector: 'app-work-item',
@@ -26,7 +41,7 @@ export class WorkItemComponent implements OnInit {
 
   workItemsOfPanel!: WorkItem[];
 
-  constructor(private projectService: ProjectService, private workItemService: WorkItemService, private route: ActivatedRoute) { }
+  constructor(private projectService: ProjectService, private workItemService: WorkItemService, private route: ActivatedRoute, public dialog: MatDialog) { }
 
   async ngOnInit() {
     this.getProjectId();
@@ -52,6 +67,18 @@ export class WorkItemComponent implements OnInit {
 
   getWorkItemByName(workItemList: WorkItem[], name: string): WorkItem {
     return this.workItemService.getWorkItemByName(workItemList, name);
+  }
+
+  // Diálogo que se abre al pinchar en el workItem
+  openDialog() {
+    // WorkItemDialogComponent.workItemName = this.workItemName;
+    const dialogRef = this.dialog.open(WorkItemDialogComponent);
+
+    dialogRef.componentInstance.workItemName = this.workItemName;
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 
   // EDITAR Y ELIMINAR WorkItem

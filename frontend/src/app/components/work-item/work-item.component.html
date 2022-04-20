@@ -1,11 +1,8 @@
-<div id="{{workItemName}}" class="container">
+<div mat-button (click)="openDialog()" id="{{workItemName}}" class="container">
     <p *ngIf="!editing" class="description" title="{{workItemName}}">
         {{workItemName}}
     </p>
     
-    <!-- <div *ngIf="workItem">
-        <app-update-delete-work-item [workItemComponet]="this" [workItemId]="workItem._id"></app-update-delete-work-item>
-    </div> -->
     <input *ngIf="editing" id="{{workItem._id}}" (blur)="updateWorkItemName(input)" type="text" value="{{workItemName}}" #input>
 
     <div>

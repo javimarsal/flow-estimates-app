@@ -23,6 +23,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
 
 // Components
 import { AppComponent } from './app.component';
@@ -34,7 +35,7 @@ import { MyProjectsComponent } from './components/my-projects/my-projects.compon
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
 import { SignupComponent } from './components/signup/signup.component';
-import { WorkItemComponent } from './components/work-item/work-item.component';
+import { WorkItemComponent, WorkItemDialogComponent } from './components/work-item/work-item.component';
 import { EstimateSingleComponent } from './components/estimate-single/estimate-single.component';
 
 @NgModule({
@@ -49,6 +50,7 @@ import { EstimateSingleComponent } from './components/estimate-single/estimate-s
     HomeComponent,
     SignupComponent,
     WorkItemComponent,
+    WorkItemDialogComponent,
     EstimateSingleComponent
   ],
   imports: [
@@ -68,6 +70,7 @@ import { EstimateSingleComponent } from './components/estimate-single/estimate-s
     MatNativeDateModule,
     MatSelectModule,
     MatTooltipModule,
+    MatDialogModule,
     FormsModule,
     AppRoutingModule,
     HttpClientModule,

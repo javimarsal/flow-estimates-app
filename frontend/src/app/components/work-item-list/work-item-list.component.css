@@ -8,12 +8,12 @@
 }
 
 .itemBox {
-    padding: 20px 10px;
+    /* padding: 20px 10px; */
     color: rgba(0, 0, 0, 0.87);
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
-    cursor: move;
+    cursor: pointer;
     background: white;
     font-size: 14px;
     margin: 10px;
