@@ -1,29 +1,25 @@
-# Flow Estimates App
+![](https://i.ibb.co/fGcdQ5V/logo-title.png)
 
-<img src="./frontend/src/assets/logo.png" title="" alt="" width="119"> 
+A web application to organize your project and the correct way to estimate *when it will be done*!
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.0.
+You can access using the [Flow Estimates website](https://flow-estimates.herokuapp.com/) (on development).
 
-## Development server
+## About the Application
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Project based on the book "When will it be done!" by Daniel Vacanti.
 
-## Code scaffolding
+## How to make it run locally!
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Backend
 
-## Build
+Go to directory *backend* and open the `.env.example` file. You must change the content between "..." and there write the URL from your Mongo database. You can also rename the file to `.env`.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+After that, open a terminal in the same directory and run the following commands:
 
-## Running unit tests
+- `npm run seed` to have some data in the database.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- `npm run dev` to run the server.
 
-## Running end-to-end tests
+### Frontend
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+The backend server must be running. If you have it, go to directory *frontend*, open another terminal and run `ng serve` to run the Angular application. Once the compilation process has been completed successfully, open the web browser of your choice and navigate to `http://localhost:4200/`.
