@@ -12,7 +12,9 @@
     color: inherit;
     font-size: xx-large;
     padding-left: 10px;
-    font-family: 'Pacifico', cursive;
+    padding-top: 15px;
+    font-family: 'Style Script', cursive;
+    font-size: 40px;
 }
 
 .navbar-collapse {

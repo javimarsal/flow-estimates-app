@@ -1,15 +1,17 @@
 <h2 mat-dialog-title>{{workItemName}} #id</h2>
-<mat-dialog-content class="mat-typography">
+<mat-dialog-content class="mat-typography dialog">
+<!-- <mat-dialog-content class="dialog"> -->
   <h3>Título</h3>
-  <form class="form">
-    <mat-form-field class="full-width" appearance="fill">
-      <mat-label>Título</mat-label>
-      <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
-    </mat-form-field>
-  </form>
+  <mat-form-field appearance="fill">
+    <mat-label>Título</mat-label>
+    <textarea class="form" matInput placeholder="Ex. It makes me feel..."></textarea>
+  </mat-form-field>
   
   <h3>Descripción</h3>
-  <input value="Learn one way to build applications with Angular and reuse your code and abilities to build apps for any deployment target. For web, mobile web, native mobile and native desktop">
+  <mat-form-field appearance="fill">
+    <mat-label>Descripción</mat-label>
+    <textarea class="form" matInput placeholder="Ex. It makes me feel..."></textarea>
+  </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>
