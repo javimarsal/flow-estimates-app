@@ -4,10 +4,15 @@
     max-height: 60px;
 }
 
+.navbar-logo {
+    width: 40px;
+}
+
 .navbar-brand {
     color: inherit;
     font-size: xx-large;
     padding-left: 10px;
+    font-family: 'Pacifico', cursive;
 }
 
 .navbar-collapse {

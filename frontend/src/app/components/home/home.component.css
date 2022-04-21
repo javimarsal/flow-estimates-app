@@ -2,6 +2,10 @@ body {
     background-color: #307df8;
 }
 
+.title {
+    font-family: 'Pacifico', cursive;
+}
+
 .welcome {
     color: white;
     margin: auto;
