@@ -1,0 +1,23 @@
+.mat-form-field {
+    display: flex;
+    flex-direction: column;
+    /* width: 500px; */
+}
+
+/* .dialog {
+    width: 100%;
+} */
+
+.title {
+    height: 20px;
+    /* width: 100%;
+    min-width: 100px;
+    max-width: 1000px; */
+    /* width: 1000px; */
+    resize: none;
+}
+
+.description {
+    height: 100px;
+    resize: vertical;
+}

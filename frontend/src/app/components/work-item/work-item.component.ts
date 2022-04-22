@@ -4,24 +4,16 @@ import { lastValueFrom, Observable } from 'rxjs';
 import { WorkItem } from 'src/app/models/work-item';
 
 // Material
-import { MatDialog } from '@angular/material/dialog';
+// MatDialog --> Servicio
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 // Servicios
 import { ProjectService } from 'src/app/services/project.service';
 import { WorkItemService } from 'src/app/services/work-item.service';
+
+// Componentes
 import { WorkItemListComponent } from '../work-item-list/work-item-list.component';
-
-@Component({
-  selector: 'work-item-dialog',
-  templateUrl: './work-item-dialog.html',
-  styleUrls: ['./work-item-dialog.css']
-})
-export class WorkItemDialogComponent {
-  @Input() workItemName: string = '';
-
-  ngOnInit() {
-  }
-}
+import { WorkItemDialogComponent } from '../work-item-dialog/work-item-dialog.component';
 
 @Component({
   selector: 'app-work-item',
@@ -41,7 +33,7 @@ export class WorkItemComponent implements OnInit {
 
   workItemsOfPanel!: WorkItem[];
 
-  constructor(private projectService: ProjectService, private workItemService: WorkItemService, private route: ActivatedRoute, public dialog: MatDialog) { }
+  constructor(private projectService: ProjectService, private workItemService: WorkItemService, private route: ActivatedRoute, private dialog: MatDialog) { }
 
   async ngOnInit() {
     this.getProjectId();
@@ -71,14 +63,23 @@ export class WorkItemComponent implements OnInit {
 
   // Diálogo que se abre al pinchar en el workItem
   openDialog() {
-    // WorkItemDialogComponent.workItemName = this.workItemName;
-    const dialogRef = this.dialog.open(WorkItemDialogComponent);
+    const dialogConfig = new MatDialogConfig();
 
-    dialogRef.componentInstance.workItemName = this.workItemName;
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
+    dialogConfig.width = '800px';
+
+    dialogConfig.data = {
+      id: 1,
+      title: this.workItemName
+    }
+
+    const dialogRef = this.dialog.open(WorkItemDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+      data => console.log('Dialog output', data)
+    );
   }
 
   // EDITAR Y ELIMINAR WorkItem

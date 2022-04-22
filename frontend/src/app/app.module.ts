@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './modules/app-routing/app-routing.module';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
@@ -35,8 +35,9 @@ import { MyProjectsComponent } from './components/my-projects/my-projects.compon
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
 import { SignupComponent } from './components/signup/signup.component';
-import { WorkItemComponent, WorkItemDialogComponent } from './components/work-item/work-item.component';
+import { WorkItemComponent } from './components/work-item/work-item.component';
 import { EstimateSingleComponent } from './components/estimate-single/estimate-single.component';
+import { WorkItemDialogComponent } from './components/work-item-dialog/work-item-dialog.component';
 
 @NgModule({
   declarations: [
@@ -72,11 +73,12 @@ import { EstimateSingleComponent } from './components/estimate-single/estimate-s
     MatTooltipModule,
     MatDialogModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
     NgApexchartsModule
   ],
-  entryComponents: [PanelComponent, WorkItemListComponent],
+  entryComponents: [PanelComponent, WorkItemListComponent, WorkItemDialogComponent],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
   ],
