@@ -12,7 +12,7 @@ Project based on the book "When will it be done!" by Daniel Vacanti.
 
 ### Backend
 
-Go to directory *backend* and open the `.env.example` file. You must change the content between "..." and there write the URL from your Mongo database. You can also rename the file to `.env`.
+Go to directory *backend* and open the `.env.example` file. You must change the content between "..." and write there the URL from your Mongo database. You must also rename the file to `.env`, in order to be recognised.
 
 After that, open a terminal in the same directory and run the following commands:
 
