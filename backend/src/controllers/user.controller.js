@@ -82,6 +82,11 @@ userController.setOpenedProject = async (req, res) => {
     let user = await User.findById(uid)
         .catch(error => console.log(error));
 
+    // Si el projectId es el que ya tiene, no se actualiza
+    if (projectId == user.openedProject) {
+        return res.send({ message: 'No opened project update' })
+    }
+
     user.openedProject = new mongoose.Types.ObjectId(projectId);
     await user.save()
         .catch(error => console.log(error));
