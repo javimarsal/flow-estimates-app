@@ -1,4 +1,3 @@
-<!-- El componente NO es una tarea, sino las tareas de cada Panel -->
 <div id="{{panelName}}" cdkDropList [cdkDropListData]="workItemsOfPanel.names" class="itemList" (cdkDropListDropped)="drop($event)">
     <div class="itemBox" *ngFor="let workItemName of workItemsOfPanel.names" cdkDrag #workItemBox>
         <!-- Las listas de nombres deben coincidir -->

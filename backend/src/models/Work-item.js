@@ -1,7 +1,9 @@
 const { Schema, model }  = require('mongoose')
 
 const workItemSchema = new Schema({
-    name: {type: String, required: true},
+    idNumber: {type: Number, required: true},
+    title: {type: String, required: true},
+    description: {type: String, required: false},
     panel: {type: String, required: true},
     position: {type: Number, required: true},
     panelDateRegistry: [{

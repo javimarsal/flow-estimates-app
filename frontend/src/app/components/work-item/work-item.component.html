@@ -1,4 +1,4 @@
-<div mat-button (click)="openDialog()" id="{{workItemName}}" class="container">
+<div (click)="openDialog()" id="{{workItemName}}" class="container">
     <p *ngIf="!editing" class="description" title="{{workItemName}}">
         {{workItemName}}
     </p>

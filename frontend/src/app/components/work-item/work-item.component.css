@@ -6,8 +6,9 @@
 
 .description {
     cursor: default;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
+    /* overflow-wrap: break-word; */
 }
 
 .btn {

@@ -19,6 +19,7 @@
     margin: 10px;
     border: solid 1px rgb(190, 190, 190);
     border-radius: 4px;
+    white-space: normal;
 }
 
 .cdk-drag-preview {

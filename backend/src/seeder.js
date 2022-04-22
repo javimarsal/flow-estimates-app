@@ -78,55 +78,66 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
 
     var workItems1 = [
         new WorkItem({
-            name: 'Get to work',
+            idNumber: 1,
+            title: 'Get to work',
+            description: 'Yes, let\'s go!',
             panel: 'ToDO',
             position: 0,
             panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
-            name: 'Pick up groceries',
+            idNumber: 2,
+            title: 'Pick up groceries',
             panel: 'ToDO',
             position: 1,
             panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
-            name: 'Go home',
+            idNumber: 3,
+            title: 'Go home',
             panel: 'ToDO',
             position: 2,
             panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
-            name: 'Fall asleep',
+            idNumber: 4,
+            title: 'Fall asleep',
             panel: 'ToDO',
             position: 3,
             panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
-            name: 'Brush teeth',
+            idNumber: 5,
+            title: 'Brush teeth',
             panel: 'ToDO',
             position: 4,
             panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
-            name: 'Get up',
+            idNumber: 6,
+            title: 'Get up',
             panel: 'ToDO',
             position: 5,
             panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
-            name: 'Take a shower',
+            idNumber: 7,
+            title: 'Take a shower',
             panel: 'ToDO',
             position: 6,
             panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
-            name: 'Check e-mail',
+            idNumber: 8,
+            title: 'Check e-mail',
             panel: 'ToDO',
             position: 7,
             panelDateRegistry: panelDateRegistry
         }),
         new WorkItem({
-            name: 'Walk dog',
+            idNumber: 9,
+            title: 'Walk dog',
+            description: 'Walk my dog Coffee',
             panel: 'ToDO',
             position: 8,
             panelDateRegistry: panelDateRegistry
