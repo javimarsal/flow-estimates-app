@@ -1,9 +1,10 @@
 <h2 mat-dialog-title>Title</h2>
 
-<mat-dialog-content [formGroup]="form">
+<mat-dialog-content class="container" [formGroup]="form">
     <mat-form-field>
-        <textarea class="title" matInput placeholder="Título" formControlName="title"></textarea>
+        <input class="title" matInput placeholder="Título" formControlName="title">
     </mat-form-field>
+    <p class="warning" id="warning"></p>
     <mat-form-field>
         <textarea class="description" matInput placeholder="Descripción" formControlName="description"></textarea>
     </mat-form-field>

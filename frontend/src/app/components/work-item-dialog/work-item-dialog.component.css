@@ -1,12 +1,18 @@
-.mat-form-field {
+/* .mat-form-field {
     display: flex;
     flex-direction: column;
-    /* width: 500px; */
+    word-wrap: break-word;
+} */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
 }
 
-/* .dialog {
-    width: 100%;
-} */
+.warning {
+    color: #f85454;
+}
 
 .title {
     height: 20px;

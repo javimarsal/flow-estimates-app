@@ -79,6 +79,7 @@ export class WorkItemComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(
       data => console.log('Dialog output', data)
+      // acceder a una propiedad de data --> data.title
     );
   }
 

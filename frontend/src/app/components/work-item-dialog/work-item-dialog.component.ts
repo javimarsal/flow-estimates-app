@@ -25,6 +25,18 @@ export class WorkItemDialogComponent implements OnInit {
   }
 
   save() {
+    // Forma de acceder a un campo
+    // console.log(this.form.value.description)
+    // console.log(this.form.get('description')!.value)
+
+    // Si el título está vacío, no hacer nada y warning
+    if (this.form.get('title')!.value == "") {
+      document.getElementById('warning')!.innerText = "El título no puede estar vacío";
+      return;
+    }
+
+    // El título no está vacío
+    document.getElementById('warning')!.innerText = "";
     this.dialogRef.close(this.form.value);
   }
 
