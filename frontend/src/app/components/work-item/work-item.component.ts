@@ -26,7 +26,7 @@ export class WorkItemComponent implements OnInit {
   @Input() workItemTitle: string = '';
   @Input() panelName: string = '';
   @Input() workItemListComponent!: WorkItemListComponent;
-  workItemIdNumber: number = 0;
+  workItemIdNumber!: number;
 
   projectId: any = '';
 
@@ -73,8 +73,9 @@ export class WorkItemComponent implements OnInit {
     dialogConfig.width = '800px';
 
     dialogConfig.data = {
-      idNumber: 1,
-      title: this.workItemTitle
+      idNumber: this.workItemIdNumber,
+      title: this.workItemTitle,
+      description: this.workItem.description
     }
 
     const dialogRef = this.dialog.open(WorkItemDialogComponent, dialogConfig);

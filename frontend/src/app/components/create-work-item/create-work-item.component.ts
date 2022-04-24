@@ -80,6 +80,7 @@ export class CreateWorkItemComponent implements OnInit {
     let newWorkItem: WorkItem = {
       idNumber: idNumber,
       title: this.value,
+      description: '',
       panel: this.panelName,
       position: 0,
       panelDateRegistry: [{

@@ -11,16 +11,20 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class WorkItemDialogComponent implements OnInit {
   form!: FormGroup;
+  idNumber: number = 0;
   title: string = '';
+  description: string = '';
 
   constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<WorkItemDialogComponent>, @Inject(MAT_DIALOG_DATA) data: any) {
+    this.idNumber = data.idNumber;
     this.title = data.title;
+    this.description = data.description;
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
       title: [this.title],
-      description: []
+      description: [this.description]
     })
   }
 

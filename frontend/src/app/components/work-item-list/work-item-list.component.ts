@@ -96,6 +96,8 @@ export class WorkItemListComponent implements OnInit {
       workItem.panel = newPanelName;
       workItem.position = newPosition;
 
+      console.log(workItem)
+
       // Actualizamos el workItem en la base de datos
       this.updateWorkItem(workItem);
     }
@@ -182,9 +184,6 @@ export class WorkItemListComponent implements OnInit {
     }
 
     else {
-      // Nombre del workItem que movemos
-      let movedWorkItemTitle = event.item.element.nativeElement.innerText;
-
       /* ESTADOS ANTERIORES de los Paneles */
 
       // Estado anterior (títulos de los workItems) de previousContainer (desde donde se mueve)
@@ -202,6 +201,9 @@ export class WorkItemListComponent implements OnInit {
 
       // Estado actual (títulos de los workItems) de container (al que se mueve)
       let current_containerTitles = event.container.data;
+
+      // Nombre del workItem que movemos
+      let movedWorkItemTitle = current_containerTitles[event.currentIndex];
       
 
       /* Actualizamos el panel del workItem que se ha movido */
