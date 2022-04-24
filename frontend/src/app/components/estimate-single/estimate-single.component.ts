@@ -412,6 +412,21 @@ export class EstimateSingleComponent implements OnInit {
 
         // Título del workItem
         let title = workItem.title;
+
+        // Descripción del workItem
+        // limitar a 50 caracteres
+        let description = workItem.description;
+        let descriptionArray = description!.split('');
+
+        if (description == '') description = '(sin descripción)';
+        
+        if (descriptionArray.length > 50) {
+          descriptionArray.splice(49, descriptionArray.length - 50);
+          description = `${this.arrayToString(descriptionArray)}...`;
+        }
+
+        // IdNumber del workItem
+        let idNumber = workItem.idNumber;
   
         // Fechas de start y end
         let dateStart!: Date;
@@ -437,7 +452,7 @@ export class EstimateSingleComponent implements OnInit {
           let cycleTime = this.getDaysBetween(dateEnd, dateStart);
   
           // añadir a data la dateEnd (x) y el cicleTime (y)
-          data.push([dateEnd, cycleTime, title]);
+          data.push([dateEnd, cycleTime, title, description, idNumber]);
         }
 
       }
@@ -475,6 +490,21 @@ export class EstimateSingleComponent implements OnInit {
       // Título del pbi
       let title = wI.title;
 
+      // Descripción del workItem
+      // limitar a 50 caracteres
+      let description = wI.description;
+      let descriptionArray = description!.split('');
+
+      if (description == '') description = '(sin descripción)';
+      
+      if (descriptionArray.length > 50) {
+        descriptionArray.splice(49, descriptionArray.length - 50);
+        description = `${this.arrayToString(descriptionArray)}...`;
+      }
+
+      // IdNumber del workItem
+      let idNumber = wI.idNumber;
+
       if (currentPanel == panelDoing) {
         /* Si el panel actual es el panel Doing, buscar la fecha en la que entró */
         // Recorrer el panelDateRegistry del WorkItem
@@ -492,13 +522,23 @@ export class EstimateSingleComponent implements OnInit {
         let itemAge = this.getDaysBetween(todayDate, dateDoing);
 
         // Añadir los datos
-        data.push([todayDate, itemAge, title]);
+        data.push([todayDate, itemAge, title, description, idNumber]);
       }
     }
 
     // Establecemos los datos obtenidos
     this.dataDoing = data;
     this.initChart();
+  }
+
+  arrayToString(array: string[]) {
+    let s = '';
+    
+    for (let a of array) {
+      s += a;
+    }
+
+    return s;
   }
 
   async getPanelNames() {
@@ -547,6 +587,9 @@ export class EstimateSingleComponent implements OnInit {
     if (percentile == 0) {
       return 0;
     }
+
+    // No calcular el percentile si no hay datos en dataDone
+    if (this.dataDone.length == 0) return 0;
 
     /* ordenar los datos por fecha y cycleTime */
     // se ordena this.dataDone
@@ -665,9 +708,11 @@ export class EstimateSingleComponent implements OnInit {
           let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
 
           return '<div style="padding: 10px 10px;">' +
+            '<div><b>ID:</b> #' + data[4] + '</div>' +
             '<div><b>Fecha de Fin:</b> ' + data[0].toDateString() + '</div>' +
             '<div><b>Tiempo de Ciclo:</b> ' + data[1] + '</div>' +
-            '<div><b>Descripción:</b> ' + data[2] + '</div>' +
+            '<div><b>Título:</b> ' + data[2] + '</div>' +
+            '<div><b>Descripción:</b> ' + data[3] + '</div>' +
             '</div>';
         }
       }

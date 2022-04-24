@@ -88,6 +88,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         new WorkItem({
             idNumber: 2,
             title: 'Pick up groceries',
+            description: '',
             panel: 'ToDO',
             position: 1,
             panelDateRegistry: panelDateRegistry
@@ -95,6 +96,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         new WorkItem({
             idNumber: 3,
             title: 'Go home',
+            description: '',
             panel: 'ToDO',
             position: 2,
             panelDateRegistry: panelDateRegistry
@@ -102,6 +104,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         new WorkItem({
             idNumber: 4,
             title: 'Fall asleep',
+            description: '',
             panel: 'ToDO',
             position: 3,
             panelDateRegistry: panelDateRegistry
@@ -109,6 +112,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         new WorkItem({
             idNumber: 5,
             title: 'Brush teeth',
+            description: '',
             panel: 'ToDO',
             position: 4,
             panelDateRegistry: panelDateRegistry
@@ -116,6 +120,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         new WorkItem({
             idNumber: 6,
             title: 'Get up',
+            description: '',
             panel: 'ToDO',
             position: 5,
             panelDateRegistry: panelDateRegistry
@@ -123,6 +128,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         new WorkItem({
             idNumber: 7,
             title: 'Take a shower',
+            description: '',
             panel: 'ToDO',
             position: 6,
             panelDateRegistry: panelDateRegistry
@@ -130,6 +136,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         new WorkItem({
             idNumber: 8,
             title: 'Check e-mail',
+            description: '',
             panel: 'ToDO',
             position: 7,
             panelDateRegistry: panelDateRegistry
