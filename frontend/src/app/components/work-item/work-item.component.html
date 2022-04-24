@@ -1,9 +1,9 @@
-<div (click)="openDialog()" id="{{workItemName}}" class="container">
-    <p *ngIf="!editing" class="description" title="{{workItemName}}">
-        {{workItemName}}
+<div (click)="openDialog()" id="{{workItemTitle}}" class="container">
+    <p *ngIf="!editing" class="description" title="Título: {{workItemTitle}}">
+        <span class="idNumber" title="ID #{{workItemIdNumber}}">#{{workItemIdNumber}} </span>{{workItemTitle}}
     </p>
     
-    <input *ngIf="editing" id="{{workItem._id}}" (blur)="updateWorkItemName(input)" type="text" value="{{workItemName}}" #input>
+    <input *ngIf="editing" id="{{workItem._id}}" (blur)="updateWorkItemTitle(input)" type="text" value="{{workItemTitle}}" #input>
 
     <div>
         <!-- Botón para editar la descripción -->

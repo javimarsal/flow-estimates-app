@@ -23,9 +23,10 @@ import { WorkItemDialogComponent } from '../work-item-dialog/work-item-dialog.co
 export class WorkItemComponent implements OnInit {
   editing: boolean = false;
 
-  @Input() workItemName: string = '';
+  @Input() workItemTitle: string = '';
   @Input() panelName: string = '';
   @Input() workItemListComponent!: WorkItemListComponent;
+  workItemIdNumber: number = 0;
 
   projectId: any = '';
 
@@ -40,7 +41,8 @@ export class WorkItemComponent implements OnInit {
 
     try {
       let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
-      this.workItem = this.getWorkItemByName(workItems, this.workItemName);
+      this.workItem = this.getWorkItemByTitle(workItems, this.workItemTitle);
+      this.workItemIdNumber = this.workItem.idNumber;
       this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
     }
     catch (error) {
@@ -57,8 +59,8 @@ export class WorkItemComponent implements OnInit {
     return this.projectService.getWorkItems(this.projectId);
   }
 
-  getWorkItemByName(workItemList: WorkItem[], name: string): WorkItem {
-    return this.workItemService.getWorkItemByName(workItemList, name);
+  getWorkItemByTitle(workItemList: WorkItem[], title: string): WorkItem {
+    return this.workItemService.getWorkItemByTitle(workItemList, title);
   }
 
   // Diálogo que se abre al pinchar en el workItem
@@ -71,8 +73,8 @@ export class WorkItemComponent implements OnInit {
     dialogConfig.width = '800px';
 
     dialogConfig.data = {
-      id: 1,
-      title: this.workItemName
+      idNumber: 1,
+      title: this.workItemTitle
     }
 
     const dialogRef = this.dialog.open(WorkItemDialogComponent, dialogConfig);
@@ -98,7 +100,7 @@ export class WorkItemComponent implements OnInit {
   async deleteWorkItem() {
     try {
       let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
-      this.workItem = this.getWorkItemByName(workItems, this.workItemName);
+      this.workItem = this.getWorkItemByTitle(workItems, this.workItemTitle);
       this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
     }
     catch (error) {
@@ -145,14 +147,14 @@ export class WorkItemComponent implements OnInit {
     }
 
     // Asegurarnos de que la interfaz se comporta bien
-    document.getElementById(this.workItemName)!.parentElement!.parentElement!.style.display = "none";
+    document.getElementById(this.workItemTitle)!.parentElement!.parentElement!.style.display = "none";
   }
 
-  async updateWorkItemName(input: HTMLInputElement) {
+  async updateWorkItemTitle(input: HTMLInputElement) {
     // Obtenemos el workItem que se va a actualizar (por si ha sufrido alguna modificación antes)
     try {
       let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
-      this.workItem = this.getWorkItemByName(workItems, this.workItemName);
+      this.workItem = this.getWorkItemByTitle(workItems, this.workItemTitle);
     }
     catch (error) {
       console.log(error)
@@ -161,7 +163,7 @@ export class WorkItemComponent implements OnInit {
     this.editing = false;
 
     let value = input.value;
-    // Creamos un nuevo WorkItem si value no está vacío
+    // Comprobar que value no está vacío
     if (value == '') {
       alert('El nombre de la tarea no puede estar vacío!');
       return;
@@ -170,16 +172,19 @@ export class WorkItemComponent implements OnInit {
     // Eliminar espacios no deseados en el valor del input
     value = value.replace(/\s+/g,' ').trim();
 
-    // Comprobamos que el nuevo nombre no es el mismo que el actual (no actualizamos)
-    if (value == this.workItem.name) {
+    // Comprobamos que el nuevo título no es el mismo que el actual (no actualizamos)
+    if (value == this.workItem.title) {
       return;
     }
 
+    // TODO: Comprobar que el nuevo título, no coincide con otro ya existente
+    // esto también comprueba que el nuevo no es el mismo que el actual
+
     // Actualizar el nombre del workItem en la interfaz
-    this.workItemName = value;
+    this.workItemTitle = value;
 
     // Actualizar el workItem en la bdd
-    this.workItem.name = value;
+    this.workItem.title = value;
     try {
       let res = await lastValueFrom(this.workItemService.updateWorkItem(this.workItem));
       console.log(res);

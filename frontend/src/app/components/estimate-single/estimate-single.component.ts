@@ -229,7 +229,7 @@ export class EstimateSingleComponent implements OnInit {
     document.getElementById('warningPanels')!.innerText = '';
 
     // Establecemos el panelStart
-    this.panelStart = this.panelStartSelectorValue
+    this.panelStart = this.panelStartSelectorValue;
 
     this.setDataForChart();
   }
@@ -410,8 +410,8 @@ export class EstimateSingleComponent implements OnInit {
       for (let workItem of this.workItemsOfProject) {
         let panelDateRegistry = workItem.panelDateRegistry;
 
-        // Descripción del pbi
-        let description = workItem.name;
+        // Título del workItem
+        let title = workItem.title;
   
         // Fechas de start y end
         let dateStart!: Date;
@@ -437,7 +437,7 @@ export class EstimateSingleComponent implements OnInit {
           let cycleTime = this.getDaysBetween(dateEnd, dateStart);
   
           // añadir a data la dateEnd (x) y el cicleTime (y)
-          data.push([dateEnd, cycleTime, description]);
+          data.push([dateEnd, cycleTime, title]);
         }
 
       }
@@ -472,8 +472,8 @@ export class EstimateSingleComponent implements OnInit {
       // Fecha en la que entró en el panel Doing
       let dateDoing!: Date;
 
-      // Descripción del pbi
-      let description = wI.name;
+      // Título del pbi
+      let title = wI.title;
 
       if (currentPanel == panelDoing) {
         /* Si el panel actual es el panel Doing, buscar la fecha en la que entró */
@@ -492,7 +492,7 @@ export class EstimateSingleComponent implements OnInit {
         let itemAge = this.getDaysBetween(todayDate, dateDoing);
 
         // Añadir los datos
-        data.push([todayDate, itemAge, description]);
+        data.push([todayDate, itemAge, title]);
       }
     }
 

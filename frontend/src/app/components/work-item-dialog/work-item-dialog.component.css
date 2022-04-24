@@ -14,6 +14,11 @@
     color: #f85454;
 }
 
+.idNumber {
+    color: darkgray;
+    font-family: 'Courier New', Courier, monospace;
+}
+
 .title {
     height: 20px;
     /* width: 100%;

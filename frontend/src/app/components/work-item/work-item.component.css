@@ -4,8 +4,14 @@
     padding: 20px 10px;
 }
 
+.idNumber {
+    color: darkgray;
+    font-family: 'Courier New', Courier, monospace;
+}
+
 .description {
     cursor: default;
+    font-size: 16px;
     /* overflow: hidden; */
     /* text-overflow: ellipsis; */
     /* overflow-wrap: break-word; */

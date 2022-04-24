@@ -46,16 +46,17 @@ export class WorkItemService {
     return workItemsOfPanel;
   }
 
-  getWorkItemByName(workItemList: WorkItem[], name: string): WorkItem {
+  getWorkItemByTitle(workItemList: WorkItem[], title: string): WorkItem {
     // Buscamos el workItem en la lista dada
-    let workItem = workItemList.find(wI => wI.name == name)
+    let workItem = workItemList.find(wI => wI.title == title)
 
     if (workItem) {
       return workItem;
     }
     else {
       let emptyWorkItem: WorkItem = {
-        name: '',
+        idNumber: 0,
+        title: '',
         panel: '',
         position: 0,
         panelDateRegistry: [{

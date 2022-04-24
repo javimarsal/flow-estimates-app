@@ -8,7 +8,7 @@
         <!-- Input to create new work-item -->
         <form class="create-work-item">
             <mat-form-field class="full-width" appearance="fill">
-                <mat-label>Nombre de la tarea</mat-label>
+                <mat-label>Título de la tarea</mat-label>
                 <input type="text" matInput autocomplete="off" [(ngModel)]="value" [ngModelOptions]="{standalone: true}">
                 <span>
                     <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">

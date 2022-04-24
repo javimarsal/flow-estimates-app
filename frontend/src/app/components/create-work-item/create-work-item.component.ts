@@ -47,17 +47,24 @@ export class CreateWorkItemComponent implements OnInit {
     // Eliminar espacios no deseados en el valor del input
     this.value = this.value.replace(/\s+/g,' ').trim();
 
+    // idNumber del nuevo workItem
+    let idNumber = 0;
+
     /* Actualizamos la posición del resto de workItems del panel. Lo hacemos antes para que no afecte al nuevo workItem */
     // Obtenemos todos los workItems
     try {
       let workItems = await lastValueFrom(this.getWorkItems());
       this.allWorkItems = workItems;
+      // también obtenemos el número del workItem para establecer su idNumber
+      // este debe ser el mayor idNumber + 1
+      idNumber = this.getMaxIdNumber(workItems) + 1;
+
     }
     catch (error) {
       console.log(error)
     }
 
-    // Comprobar que el nombre del nuevo workItem no coincide con ninguno de los existentes
+    // Comprobar que el título del nuevo workItem no coincide con ninguno de los existentes
     if (this.checkWorkItemNameExist(this.allWorkItems, this.value)) {
       alert("El nombre de la tarea no debe coincidir con una ya existente.");
       return;
@@ -71,7 +78,8 @@ export class CreateWorkItemComponent implements OnInit {
 
     // Nuevo objeto WorkItem
     let newWorkItem: WorkItem = {
-      name: this.value,
+      idNumber: idNumber,
+      title: this.value,
       panel: this.panelName,
       position: 0,
       panelDateRegistry: [{
@@ -104,9 +112,20 @@ export class CreateWorkItemComponent implements OnInit {
     }
 
     // Llamamos al método getWorkItems() del componente workItem para que actualice su lista
-    this.workItemListComponent.getWorkItemsOfProject();
+    await this.workItemListComponent.getWorkItemsOfProject();
     // puede que no tenga tiempo suficiente
     // hacer debug console.log
+  }
+
+  getMaxIdNumber(workItems: WorkItem[]) {
+    let maxNumber = workItems[0].idNumber;
+    let lengthWorkItems = workItems.length;
+
+    for (let i = 1; i < lengthWorkItems; i++) {
+      if (workItems[i].idNumber > maxNumber) maxNumber =  workItems[i].idNumber;
+    }
+
+    return maxNumber;
   }
 
   getWorkItems(): Observable<WorkItem[]> {
@@ -137,18 +156,18 @@ export class CreateWorkItemComponent implements OnInit {
     }
   }
 
-  checkWorkItemNameExist(workItems: WorkItem[], workItemName: string) {
+  checkWorkItemNameExist(workItems: WorkItem[], workItemTitle: string) {
     for (let wI of workItems) {
       // Convertir los string a lowercase para también cubrir esa posibilidad
-      let wINamelw = wI.name.toLowerCase();
-      let workItemNamelw = workItemName.toLowerCase();
+      let wITitlelw = wI.title.toLowerCase();
+      let workItemTitlelw = workItemTitle.toLowerCase();
 
-      if (wINamelw == workItemNamelw) {
-        // Si encuentra el nombre
+      if (wITitlelw == workItemTitlelw) {
+        // Si encuentra el título
         return true
       }
     }
-    // Si no encuentra el nombre, devolvemos false
+    // Si no encuentra el título, devolvemos false
     return false
   }
 
