@@ -1,8 +1,7 @@
-/* .mat-form-field {
+.headerDialog {
     display: flex;
-    flex-direction: column;
-    word-wrap: break-word;
-} */
+    justify-content: space-between;
+}
 
 .container {
     display: flex;
@@ -20,15 +19,22 @@
 }
 
 .title {
-    height: 20px;
+    height: 30px;
+    font-size: 22px;
     /* width: 100%;
     min-width: 100px;
     max-width: 1000px; */
     /* width: 1000px; */
-    resize: none;
 }
 
 .description {
     height: 100px;
+    font-size: 18px;
     resize: vertical;
+}
+
+.btn {
+    margin-left: 11px;
+    margin-top: 20px;
+    margin-bottom: 5px;
 }
