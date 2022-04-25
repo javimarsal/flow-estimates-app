@@ -29,9 +29,10 @@ export class WorkItemDialogComponent implements OnInit {
   }
 
   save() {
-    // Forma de acceder a un campo
-    // console.log(this.form.value.description)
-    // console.log(this.form.get('description')!.value)
+    // Title y Description del formulario
+    let formTitle = this.form.value.title;
+    let formDescription = this.form.value.description;
+    console.log(formTitle, formDescription)
 
     // Si el título está vacío, no hacer nada y warning
     if (this.form.get('title')!.value == "") {
@@ -41,7 +42,16 @@ export class WorkItemDialogComponent implements OnInit {
 
     // El título no está vacío
     document.getElementById('warning')!.innerText = "";
+
+    // Si no cambia nada, no enviamos nada para actualizar
+    if (this.title == formTitle  &&  this.description == formDescription) return this.dialogRef.close();
+
+    // Ha cambiado el title o el description, enviamos los datos para actualizar
     this.dialogRef.close(this.form.value);
+  }
+
+  delete() {
+    this.dialogRef.close('delete');
   }
 
   close() {

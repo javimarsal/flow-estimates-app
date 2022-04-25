@@ -21,8 +21,6 @@ import { WorkItemDialogComponent } from '../work-item-dialog/work-item-dialog.co
   styleUrls: ['./work-item.component.css']
 })
 export class WorkItemComponent implements OnInit {
-  editing: boolean = false;
-
   @Input() workItemTitle: string = '';
   @Input() panelName: string = '';
   @Input() workItemListComponent!: WorkItemListComponent;
@@ -81,23 +79,24 @@ export class WorkItemComponent implements OnInit {
     const dialogRef = this.dialog.open(WorkItemDialogComponent, dialogConfig);
 
     dialogRef.afterClosed().subscribe(
-      data => console.log('Dialog output', data)
+      data => {
+        // Si no le llegan datos no se hace nada
+        if (!data) return;
+
+        // Si data es 'delete' eliminamos el workItem
+        if (data == 'delete') {
+          this.deleteWorkItem();
+          return;
+        }
+
+        // Si llegan datos y no es 'delete' actualizamos el title y description del componente
+        this.updateWorkItemTitleDescription(data.title, data.description);
+      }
       // acceder a una propiedad de data --> data.title
     );
   }
 
   // EDITAR Y ELIMINAR WorkItem
-  edit() {
-    this.editing = true;
-    
-    // Necesitamos esperar unos instantes hasta que se crea el input en el DOM
-    document.getElementById(this.workItem._id!)?.focus();
-    setTimeout(() => {
-      
-    }, 1000);
-    
-  }
-
   async deleteWorkItem() {
     try {
       let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
@@ -151,7 +150,7 @@ export class WorkItemComponent implements OnInit {
     document.getElementById(this.workItemTitle)!.parentElement!.parentElement!.style.display = "none";
   }
 
-  async updateWorkItemTitle(input: HTMLInputElement) {
+  async updateWorkItemTitleDescription(t: string, description: string) {
     // Obtenemos el workItem que se va a actualizar (por si ha sufrido alguna modificación antes)
     try {
       let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
@@ -161,31 +160,15 @@ export class WorkItemComponent implements OnInit {
       console.log(error)
     }
 
-    this.editing = false;
-
-    let value = input.value;
-    // Comprobar que value no está vacío
-    if (value == '') {
-      alert('El nombre de la tarea no puede estar vacío!');
-      return;
-    }
-
-    // Eliminar espacios no deseados en el valor del input
-    value = value.replace(/\s+/g,' ').trim();
-
-    // Comprobamos que el nuevo título no es el mismo que el actual (no actualizamos)
-    if (value == this.workItem.title) {
-      return;
-    }
-
-    // TODO: Comprobar que el nuevo título, no coincide con otro ya existente
-    // esto también comprueba que el nuevo no es el mismo que el actual
+    // Eliminar espacios no deseados en el title
+    let title = t.replace(/\s+/g,' ').trim();
 
     // Actualizar el nombre del workItem en la interfaz
-    this.workItemTitle = value;
+    this.workItemTitle = title;
 
     // Actualizar el workItem en la bdd
-    this.workItem.title = value;
+    this.workItem.title = title;
+    this.workItem.description = description;
     try {
       let res = await lastValueFrom(this.workItemService.updateWorkItem(this.workItem));
       console.log(res);
@@ -193,6 +176,10 @@ export class WorkItemComponent implements OnInit {
     catch (error) {
       console.log(error)
     }
+
+    console.log(this.workItemsOfPanel);
+
+    // Actualizar la lista de WorkItemListComponent
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
