@@ -262,7 +262,10 @@ export class EstimateSingleComponent implements OnInit {
     document.getElementById('warningPanels')!.innerText = '';
 
     // Establecemos el panelEnd
-    this.panelEnd = this.panelEndSelectorValue
+    this.panelEnd = this.panelEndSelectorValue;
+
+    // establecer el rango de fechas según las fechas de los workItems
+    this.setMinMaxDates();
 
     this.setDataForChart();
   }
