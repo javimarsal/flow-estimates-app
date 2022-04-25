@@ -290,7 +290,7 @@ export class EstimateSingleComponent implements OnInit {
 
     // Recorremos el array de dataDone y seleccionamos las que estén entre StartDate y EndDate
     for (let data of this.allDataDone) {
-      if ((data[0] >= this.startDate) && (data[0] <= this.endDate)) {
+      if ((data.x >= this.startDate) && (data.x <= this.endDate)) {
         dataInRange.push(data);
       }
     }
@@ -456,7 +456,7 @@ export class EstimateSingleComponent implements OnInit {
           let cycleTime = this.getDaysBetween(dateEnd, dateStart);
   
           // añadir a data la dateEnd (x) y el cicleTime (y)
-          data.push([dateEnd, cycleTime, title, description, idNumber]);
+          data.push({x: dateEnd, y: cycleTime, title: title, description: description, id: idNumber});
         }
 
       }
@@ -526,7 +526,7 @@ export class EstimateSingleComponent implements OnInit {
         let itemAge = this.getDaysBetween(todayDate, dateDoing);
 
         // Añadir los datos
-        data.push([todayDate, itemAge, title, description, idNumber]);
+        data.push({x: todayDate, y: itemAge, title: title, description: description, id: idNumber});
       }
     }
 
@@ -607,12 +607,12 @@ export class EstimateSingleComponent implements OnInit {
     let indexOfData = Number((numberOfPoints * percentile).toFixed()) - 1;
 
     // Devolver el tiempo de ciclo (cycleTime) del dato (punto) en la posición indexOfData
-    return this.dataDone[indexOfData][1];
+    return this.dataDone[indexOfData].y;
   }
 
   sortData_ByCycleTime(data: any[]): any[] {
     return data.sort(function (a, b) {
-      return a[1] - b[1]
+      return a.y - b.y
     })
   }
 
@@ -712,11 +712,11 @@ export class EstimateSingleComponent implements OnInit {
           let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
 
           return '<div style="padding: 10px 10px;">' +
-            '<div><b>ID:</b> #' + data[4] + '</div>' +
-            '<div><b>Fecha de Fin:</b> ' + data[0].toDateString() + '</div>' +
-            '<div><b>Tiempo de Ciclo:</b> ' + data[1] + '</div>' +
-            '<div><b>Título:</b> ' + data[2] + '</div>' +
-            '<div><b>Descripción:</b> ' + data[3] + '</div>' +
+            '<div><b>ID:</b> #' + data.id + '</div>' +
+            '<div><b>Fecha de Fin:</b> ' + data.x.toDateString() + '</div>' +
+            '<div><b>Tiempo de Ciclo:</b> ' + data.y + '</div>' +
+            '<div><b>Título:</b> ' + data.title + '</div>' +
+            '<div><b>Descripción:</b> ' + data.description + '</div>' +
             '</div>';
         }
       }
