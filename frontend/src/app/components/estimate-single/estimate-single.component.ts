@@ -411,6 +411,7 @@ export class EstimateSingleComponent implements OnInit {
   
       // Recorremos los workItems del Project
       for (let workItem of this.workItemsOfProject) {
+        if (workItem.panel != panelEnd) continue;
         let panelDateRegistry = workItem.panelDateRegistry;
 
         // Título del workItem
