@@ -687,9 +687,10 @@ export class EstimateSingleComponent implements OnInit {
         labels: {
           formatter: function(value) {
             return new Date(value).toDateString();
+            // return opts.dateFormatter(new Date(value)).format("dd MMM")
           },
-          show: false
-        }
+          datetimeUTC: false,
+        },
       },
 
       yaxis: {
