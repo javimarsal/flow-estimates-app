@@ -460,6 +460,14 @@ export class EstimateSingleComponent implements OnInit {
         }
 
       }
+
+      if (data.length != 0) {
+        // ordenar los datos por tiempo de ciclo
+        this.sortData_ByCycleTimeAndDate(data);
+  
+        // concatenar la info de los puntos que coinciden en Tiempo de Ciclo y Fecha (y, x)
+        data = this.concatDataAtSamePosition(data);
+      }
       
       resolve(data);
     })
@@ -530,9 +538,52 @@ export class EstimateSingleComponent implements OnInit {
       }
     }
 
+    // ordenar los datos por tiempo de ciclo
+    this.sortData_ByCycleTimeAndDate(data);
+
+    // concatenar la info de los puntos que coinciden en Tiempo de Ciclo y Fecha (y, x)
+    data = this.concatDataAtSamePosition(data);
+
     // Establecemos los datos obtenidos
     this.dataDoing = data;
     this.initChart();
+  }
+
+  concatDataAtSamePosition(data: any[]): any[] {
+    // Cycle Time (o itemAge) y la fecha de fin (o todayDate) en cada iteración del contenido de data
+    // lo inicializamos con la primera posición de data
+    let cT = data[0].y;
+    let date = data[0].x;
+    let lengthData = data.length;
+
+    for (let i = 1; i < lengthData; i++) {
+      let cTOfIteration = data[i].y;
+      let dateOfIteration = data[i].x;
+
+      if (cTOfIteration != cT) {
+        cT = cTOfIteration;
+        date = dateOfIteration;
+        continue;
+      }
+
+      // Para actualizar la fecha si, por ejemplo, hay 3 puntos o más con el mismo cT y el primero de ellos no tiene la misma fecha
+      if (cTOfIteration == cT  &&  (dateOfIteration.getTime() != date.getTime())) {
+        date = dateOfIteration;
+        continue;
+      }
+
+      // si llega aquí es porque los cT y las fechas son iguales
+      // comprobamos que las fechas coinciden
+      if (dateOfIteration.getTime() == date.getTime()) {
+        console.log('true')
+        // concatenamos la información del punto
+        data[i].title = `${data[i-1].title}; ${data[i].title}`;
+        data[i].description = `${data[i-1].description}; ${data[i].description}`;
+        data[i].id = `${data[i-1].id}; #${data[i].id}`;
+      }
+    }
+
+    return data;
   }
 
   arrayToString(array: string[]) {
@@ -597,7 +648,8 @@ export class EstimateSingleComponent implements OnInit {
 
     /* ordenar los datos por fecha y cycleTime */
     // se ordena this.dataDone
-    this.sortData_ByCycleTime(this.dataDone);
+    // this.sortData_ByCycleTime(this.dataDone);
+    // ya se ordena cuando obtenemos los datos para this.dataDone
 
     // Número de puntos que hay en los datos
     let numberOfPoints = this.dataDone.length;
@@ -610,9 +662,27 @@ export class EstimateSingleComponent implements OnInit {
     return this.dataDone[indexOfData].y;
   }
 
-  sortData_ByCycleTime(data: any[]): any[] {
+  sortData_ByCycleTimeAndDate(data: any[]) {
+    //@ts-ignore
     return data.sort(function (a, b) {
-      return a.y - b.y
+      if (a.y < b.y) {
+        return -1;
+      }
+      if (a.y > b.y) {
+        return 1;
+      }
+    
+      if (a.y == b.y) {
+        if (a.x < b.x) {
+          return -1;
+        }
+        if (a.x > b.x) {
+          return 1;
+        }
+        return 0;
+      }
+  
+      return;
     })
   }
 
