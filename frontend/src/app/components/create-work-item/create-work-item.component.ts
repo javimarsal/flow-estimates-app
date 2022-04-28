@@ -32,6 +32,15 @@ export class CreateWorkItemComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProjectId();
+
+    // Evento para el botón Crear
+    var input = document.getElementById("title");
+    input!.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("create")!.click();
+      }
+    });
   }
 
   getProjectId() {
