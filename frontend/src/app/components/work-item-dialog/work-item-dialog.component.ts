@@ -32,7 +32,6 @@ export class WorkItemDialogComponent implements OnInit {
     // Title y Description del formulario
     let formTitle = this.form.value.title;
     let formDescription = this.form.value.description;
-    console.log(formTitle, formDescription)
 
     // Si el título está vacío, no hacer nada y warning
     if (this.form.get('title')!.value == "") {

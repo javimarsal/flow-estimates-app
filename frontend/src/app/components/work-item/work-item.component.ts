@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
 import { WorkItem } from 'src/app/models/work-item';
@@ -21,10 +21,10 @@ import { WorkItemDialogComponent } from '../work-item-dialog/work-item-dialog.co
   styleUrls: ['./work-item.component.css']
 })
 export class WorkItemComponent implements OnInit {
-  @Input() workItemTitle: string = '';
+  @Input() workItemIdNumber!: number;
   @Input() panelName: string = '';
   @Input() workItemListComponent!: WorkItemListComponent;
-  workItemIdNumber!: number;
+  // workItemIdNumber!: number;
 
   projectId: any = '';
 
@@ -38,9 +38,8 @@ export class WorkItemComponent implements OnInit {
     this.getProjectId();
 
     try {
-      let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
-      this.workItem = this.getWorkItemByTitle(workItems, this.workItemTitle);
-      this.workItemIdNumber = this.workItem.idNumber;
+      let workItems = await lastValueFrom(this.getWorkItemsOfProject());
+      this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
       this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
     }
     catch (error) {
@@ -53,12 +52,12 @@ export class WorkItemComponent implements OnInit {
     this.projectId = this.route.snapshot.paramMap.get('id');
   }
 
-  getWorkItemsOfPanel(): Observable<WorkItem[]> {
+  getWorkItemsOfProject(): Observable<WorkItem[]> {
     return this.projectService.getWorkItems(this.projectId);
   }
 
-  getWorkItemByTitle(workItemList: WorkItem[], title: string): WorkItem {
-    return this.workItemService.getWorkItemByTitle(workItemList, title);
+  getWorkItemByIdNumber(workItemList: WorkItem[], idNumber: number): WorkItem {
+    return this.workItemService.getWorkItemByIdNumber(workItemList, idNumber);
   }
 
   // Diálogo que se abre al pinchar en el workItem
@@ -72,7 +71,7 @@ export class WorkItemComponent implements OnInit {
 
     dialogConfig.data = {
       idNumber: this.workItemIdNumber,
-      title: this.workItemTitle,
+      title: this.workItem.title,
       description: this.workItem.description
     }
 
@@ -92,15 +91,16 @@ export class WorkItemComponent implements OnInit {
         // Si llegan datos y no es 'delete' actualizamos el title y description del componente
         this.updateWorkItemTitleDescription(data.title, data.description);
       }
-      // acceder a una propiedad de data --> data.title
     );
   }
 
-  // EDITAR Y ELIMINAR WorkItem
+  /* EDITAR Y ELIMINAR WorkItem */
+  // Eliminar WorkItem
   async deleteWorkItem() {
+    // Obtenemos los workItems que se van a actualizar (por si hah sufrido alguna modificación antes, como la posición)
     try {
-      let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
-      this.workItem = this.getWorkItemByTitle(workItems, this.workItemTitle);
+      let workItems = await lastValueFrom(this.getWorkItemsOfProject());
+      this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
       this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
     }
     catch (error) {
@@ -146,28 +146,32 @@ export class WorkItemComponent implements OnInit {
       console.log(error)
     }
 
-    // Asegurarnos de que la interfaz se comporta bien
-    document.getElementById(this.workItemTitle)!.parentElement!.parentElement!.style.display = "none";
+    // Actualizar la lista de WorkItemListComponent
+    let idNumbersOfList = this.workItemListComponent.workItemsOfPanel_IdNumbers;
+    let lengthIdNumbers = this.workItemListComponent.workItemsOfPanel_IdNumbers.length;
+
+    // buscamos el idNumber del workItem en la lista, y lo eliminamos
+    for (let i = 0; i < lengthIdNumbers; i++) {
+      if (parseInt(idNumbersOfList[i]) == this.workItem.idNumber) idNumbersOfList.splice(i, 1);
+    }
   }
 
-  async updateWorkItemTitleDescription(t: string, description: string) {
-    // Obtenemos el workItem que se va a actualizar (por si ha sufrido alguna modificación antes)
+  // Editar WorkItem
+  async updateWorkItemTitleDescription(title: string, description: string) {
+    // Obtenemos el workItem que se va a actualizar (por si ha sufrido alguna modificación antes, como la posición)
     try {
-      let workItems = await lastValueFrom(this.getWorkItemsOfPanel());
-      this.workItem = this.getWorkItemByTitle(workItems, this.workItemTitle);
+      let workItems = await lastValueFrom(this.getWorkItemsOfProject());
+      this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
     }
     catch (error) {
       console.log(error)
     }
 
     // Eliminar espacios no deseados en el title
-    let title = t.replace(/\s+/g,' ').trim();
+    let titleNoSpaces = title.replace(/\s+/g,' ').trim();
 
-    // Actualizar el nombre del workItem en la interfaz
-    this.workItemTitle = title;
-
-    // Actualizar el workItem en la bdd
-    this.workItem.title = title;
+    // Actualizar el workItem
+    this.workItem.title = titleNoSpaces;
     this.workItem.description = description;
     try {
       let res = await lastValueFrom(this.workItemService.updateWorkItem(this.workItem));
@@ -176,10 +180,6 @@ export class WorkItemComponent implements OnInit {
     catch (error) {
       console.log(error)
     }
-
-    console.log(this.workItemsOfPanel);
-
-    // Actualizar la lista de WorkItemListComponent
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {

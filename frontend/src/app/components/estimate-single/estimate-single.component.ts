@@ -575,7 +575,6 @@ export class EstimateSingleComponent implements OnInit {
       // si llega aquí es porque los cT y las fechas son iguales
       // comprobamos que las fechas coinciden
       if (dateOfIteration.getTime() == date.getTime()) {
-        console.log('true')
         // concatenamos la información del punto
         data[i].title = `${data[i-1].title}; ${data[i].title}`;
         data[i].description = `${data[i-1].description}; ${data[i].description}`;

@@ -46,9 +46,9 @@ export class WorkItemService {
     return workItemsOfPanel;
   }
 
-  getWorkItemByTitle(workItemList: WorkItem[], title: string): WorkItem {
+  getWorkItemByIdNumber(workItemList: WorkItem[], idNumber: number): WorkItem {
     // Buscamos el workItem en la lista dada
-    let workItem = workItemList.find(wI => wI.title == title)
+    let workItem = workItemList.find(wI => wI.idNumber == idNumber)
 
     if (workItem) {
       return workItem;

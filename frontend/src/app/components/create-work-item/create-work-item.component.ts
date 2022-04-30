@@ -73,12 +73,6 @@ export class CreateWorkItemComponent implements OnInit {
       console.log(error)
     }
 
-    // Comprobar que el título del nuevo workItem no coincide con ninguno de los existentes
-    if (this.checkWorkItemNameExist(this.allWorkItems, this.value)) {
-      alert("El nombre de la tarea no debe coincidir con una ya existente.");
-      return;
-    }
-
     // Obtenemos los workItems que pertenecen al panel actual
     let workItemsOfPanel = this.filterWorkItems_ByPanelName(this.allWorkItems, this.panelName);
 
@@ -98,7 +92,7 @@ export class CreateWorkItemComponent implements OnInit {
       }]
     };
 
-    // Creamos el objeto en la bdd, y borramos el contenido de value (en finally)
+    // Creamos el objeto en la bdd, y borramos el contenido de value
     let workItemOfDB!: WorkItem;
 
     try {
@@ -122,9 +116,7 @@ export class CreateWorkItemComponent implements OnInit {
     }
 
     // Llamamos al método getWorkItems() del componente workItem para que actualice su lista
-    await this.workItemListComponent.getWorkItemsOfProject();
-    // puede que no tenga tiempo suficiente
-    // hacer debug console.log
+    this.workItemListComponent.workItemsOfPanel_IdNumbers.unshift(idNumber.toString());
   }
 
   getMaxIdNumber(workItems: WorkItem[]) {
@@ -132,7 +124,7 @@ export class CreateWorkItemComponent implements OnInit {
     let lengthWorkItems = workItems.length;
 
     for (let i = 1; i < lengthWorkItems; i++) {
-      if (workItems[i].idNumber > maxNumber) maxNumber =  workItems[i].idNumber;
+      if (workItems[i].idNumber > maxNumber) maxNumber = workItems[i].idNumber;
     }
 
     return maxNumber;
@@ -164,21 +156,6 @@ export class CreateWorkItemComponent implements OnInit {
       // Actualizarlo en la bdd
       this.updateWorkItem(wI);
     }
-  }
-
-  checkWorkItemNameExist(workItems: WorkItem[], workItemTitle: string) {
-    for (let wI of workItems) {
-      // Convertir los string a lowercase para también cubrir esa posibilidad
-      let wITitlelw = wI.title.toLowerCase();
-      let workItemTitlelw = workItemTitle.toLowerCase();
-
-      if (wITitlelw == workItemTitlelw) {
-        // Si encuentra el título
-        return true
-      }
-    }
-    // Si no encuentra el título, devolvemos false
-    return false
   }
 
 }

@@ -1,5 +1,5 @@
-<div (click)="openDialog()" id="{{workItemTitle}}" class="container">
-    <p class="description" title="Título: {{workItemTitle}}">
-        <span class="idNumber" title="ID #{{workItemIdNumber}}">#{{workItemIdNumber}} </span>{{workItemTitle}}
+<div *ngIf="workItem" (click)="openDialog()" id="{{workItemIdNumber}}" class="container">
+    <p class="description" title="Título: {{workItem.title}}">
+        <span class="idNumber" title="ID #{{workItemIdNumber}}">#{{workItemIdNumber}} </span>{{workItem.title}}
     </p>
 </div>

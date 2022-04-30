@@ -20,17 +20,15 @@ import { WorkItem } from 'src/app/models/work-item';
 export class WorkItemListComponent implements OnInit {
   @Input() panelName!: string;
 
-  workItemsOfPanel: any = {};
+  workItemsOfPanel_IdNumbers: string[] = [];
 
   projectId: any = '';
-
-  editing: boolean = false;
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
   ngOnInit(): void {
     this.getProjectId();
-    this.getWorkItemsOfProject();
+    this.getWorkItemsOfPanel();
   }
 
   getProjectId() {
@@ -38,22 +36,23 @@ export class WorkItemListComponent implements OnInit {
   }
 
   // GET WorkItems
-  async getWorkItemsOfProject() {
+  async getWorkItemsOfPanel() {
     try {
       let workItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
 
       // Filtrar por el tablero que le corresponde y guardarlos
-      this.workItemsOfPanel.workItems = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+      let workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
         
-      // Obtener los títulos de los workItems del Panel, también se ordenan los objetos workItems en el método sortWorkItems
-      let workItemsOfPanel_Titles = this.getWorkItemsTitles(this.workItemsOfPanel.workItems);
-
-      // Asignamos los nombres al array de workItems del Panel
-      this.workItemsOfPanel.titles = workItemsOfPanel_Titles;
+      // Obtener los ID de los workItems del Panel, también se ordenan los objetos workItems en el método sortWorkItems
+      this.workItemsOfPanel_IdNumbers = this.getWorkItemsIdNumbers(workItemsOfPanel);
     }
     catch (error) {
       console.log(error)
     }
+  }
+
+  stringToNumber(s: string): number {
+    return parseInt(s);
   }
 
   // PUT WorkItem
@@ -68,11 +67,11 @@ export class WorkItemListComponent implements OnInit {
   }
 
   // Actualizar la posición del workItem cuyo nombre coincida
-  async updateWorkItem_Position(workItemTitle: string, newPosition: number) {
+  async updateWorkItem_Position(workItemIdNumber: number, newPosition: number) {
     try {
       let workItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
 
-      let workItem = this.getWorkItemByTitle(workItems, workItemTitle);
+      let workItem = this.getWorkItemByIdNumber(workItems, workItemIdNumber);
       workItem.position = newPosition;
       this.updateWorkItem(workItem);
     }
@@ -82,12 +81,12 @@ export class WorkItemListComponent implements OnInit {
   }
 
   // Actualizar la posición y el nombre de Panel del workItem cuyo nombre coincida
-  async updateWorkItem_PanelName_Position(workItemTitle: string, newPanelName: string, newPosition: number) {
+  async updateWorkItem_PanelName_Position(workItemNumber: number, newPanelName: string, newPosition: number) {
     try {
       let workItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
 
       // Obtenemos el workItem
-      let workItem = this.getWorkItemByTitle(workItems, workItemTitle);
+      let workItem = this.getWorkItemByIdNumber(workItems, workItemNumber);
 
       // Registrar fecha de entrada del workItem en el nuevo panel (si no existe para ese panel)
       workItem = this.registerEntryDate(workItem, newPanelName)
@@ -120,6 +119,7 @@ export class WorkItemListComponent implements OnInit {
     return workItem;
   }
 
+  // Para añadir o no el panel al registro del workItem (cuando se mueve)
   checkPanelEntryExist(workItem: WorkItem, newPanelName: string) {
     let panelDateRegistry = workItem.panelDateRegistry;
 
@@ -137,47 +137,48 @@ export class WorkItemListComponent implements OnInit {
     return this.workItemService.filterWorkItems_ByPanelName(workItems, panelName)
   }
 
-  getWorkItemsTitles(workItems: WorkItem[]): string[] {
-    let workItemsTitles: string[] = [];
+  getWorkItemsIdNumbers(workItems: WorkItem[]): string[] {
+    let workItemsIdNumbers: string[] = [];
 
     // Ordenar los workItems por el número de posición
     let sortedWorkItems_ByPosition = this.sortWorkItems(workItems);
 
-    // Obtiene el nombre de cada workItem
+    // Obtiene el idNumber de cada workItem
     for (let workItem of sortedWorkItems_ByPosition) {
-      workItemsTitles.push(workItem.title);
+      workItemsIdNumbers.push(workItem.idNumber.toString());
     }
 
-    return workItemsTitles;
+    return workItemsIdNumbers;
   }
 
   // Ordena los workItems según el número de posición
   sortWorkItems(workItems: WorkItem[]): WorkItem[] {
-    return workItems.sort(function(a, b) {
+    return workItems.sort(function (a, b) {
       return a.position - b.position;
     });
   }
 
   drop(event: CdkDragDrop<string[]>) {
+    console.log(event.item.element.nativeElement.innerText)
     if (event.previousContainer === event.container) {
-      // Hacemos una copia de this.workItemsOfPanel_Names (sin referencia) porque al realizarse "moveItemInArray" también cambia this.workItemsOfPanel_Names y queremos obtener el estado antes de realizar ningún movimiento
-      let previousPanelNames = JSON.parse(JSON.stringify(event.container.data));
-
+      // Hacemos una copia de event.container.data (sin referencia) porque al realizarse "moveItemInArray" también cambia event.container.data y queremos obtener el estado antes de realizar ningún movimiento
+      let previousPanelIdNumbers = JSON.parse(JSON.stringify(event.container.data));
+      
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
       // Debemos comprobar que el índice del workItem cambia para ejecutar la acción
       if (event.previousIndex != event.currentIndex) {
-        // Estado actual del panel (nombres)
-        let currentPanelNames = event.container.data;
+        // Estado actual del panel (idNumbers)
+        let currentPanelIdNumbers = event.container.data;
   
-        // Longitud del array de nombres
-        let panelNamesLength = currentPanelNames.length;
+        // Longitud del array de idNumbers
+        let panelIdNumbersLength = currentPanelIdNumbers.length;
   
         // Vamos actualizando la posición de los workItems, si ésta ha cambiado
-        // es decir, en la posición que corresponda cambian los nombres
-        for (let i = 0; i < panelNamesLength; i++) {
-          if (currentPanelNames[i] != previousPanelNames[i]) {
-            this.updateWorkItem_Position(currentPanelNames[i], i);
+        // es decir, en la posición que corresponda cambian los idNumbers
+        for (let i = 0; i < panelIdNumbersLength; i++) {
+          if (currentPanelIdNumbers[i] != previousPanelIdNumbers[i]) {
+            this.updateWorkItem_Position(parseInt(currentPanelIdNumbers[i]), i);
           }
         }
       }
@@ -185,85 +186,86 @@ export class WorkItemListComponent implements OnInit {
 
     else {
       /* ESTADOS ANTERIORES de los Paneles */
+      //* los datos del event son strings
 
-      // Estado anterior (títulos de los workItems) de previousContainer (desde donde se mueve)
-      let previous_previousContainerTitles = JSON.parse(JSON.stringify(event.previousContainer.data));
+      // Estado anterior (idNumbers de los workItems) de previousContainer (desde donde se mueve)
+      let previous_previousContainerIdNumbers = JSON.parse(JSON.stringify(event.previousContainer.data));
 
-      // Estado anterior (títulos de los workItems) de container (al que se mueve)
-      let previous_containerTitles = JSON.parse(JSON.stringify(event.container.data));
+      // Estado anterior (idNumbers de los workItems) de container (al que se mueve)
+      let previous_containerIdNumbers = JSON.parse(JSON.stringify(event.container.data));
 
       transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
 
       /* ESTADOS ACTUALES de los Paneles */
 
-      // Estado actual (títulos de los workItems) de previousContainer (desde donde se mueve)
-      let current_previousContainerTitles = event.previousContainer.data;
+      // Estado actual (idNumbers de los workItems) de previousContainer (desde donde se mueve)
+      let current_previousContainerIdNumbers = event.previousContainer.data;
 
-      // Estado actual (títulos de los workItems) de container (al que se mueve)
-      let current_containerTitles = event.container.data;
+      // Estado actual (idNumbers de los workItems) de container (al que se mueve)
+      let current_containerIdNumbers = event.container.data;
 
-      // Nombre del workItem que movemos
-      let movedWorkItemTitle = current_containerTitles[event.currentIndex];
+      // idNumber del workItem que movemos
+      let movedWorkItemIdNumber = current_containerIdNumbers[event.currentIndex];
       
 
       /* Actualizamos el panel del workItem que se ha movido */
       // Primero obtenemos el nombre del panel
       let containerPanelName = event.container.id;
 
-      /* Actualizamos la posición de los workItems de los dos paneles */
+      /* Actualizamos los workItems de los dos paneles */
       // Primer panel: previousContainer
-      this.updateWorkItems_betweenPanels(current_previousContainerTitles, previous_previousContainerTitles, movedWorkItemTitle, containerPanelName);
+      this.updateWorkItems_betweenPanels(current_previousContainerIdNumbers, previous_previousContainerIdNumbers, movedWorkItemIdNumber, containerPanelName);
       
       // Segundo panel: container
-      this.updateWorkItems_betweenPanels(current_containerTitles, previous_containerTitles, movedWorkItemTitle, containerPanelName);
+      this.updateWorkItems_betweenPanels(current_containerIdNumbers, previous_containerIdNumbers, movedWorkItemIdNumber, containerPanelName);
     }
   }
 
   /**
    * 
-   * @param currentTitles títulos de workItems que contiene el panel en el estado actual
-   * @param previousTitles títulos de workItems que contiene el panel en el estado anterior
-   * @param movedWorkItemTitle título del workItem que se ha movido
+   * @param currentIdNumbers idNumbers de workItems que contiene el panel en el estado actual
+   * @param previousIdNumbers idNumbers de workItems que contiene el panel en el estado anterior
+   * @param movedWorkItemIdNumber idNumber del workItem que se ha movido
    * @param movedPanelName nombre del panel hacia el que se ha movido el workItem
    */
-  updateWorkItems_betweenPanels(currentTitles: string[], previousTitles: string[], movedWorkItemTitle: string, movedPanelName: string) {
+  updateWorkItems_betweenPanels(currentIdNumbers: string[], previousIdNumbers: string[], movedWorkItemIdNumber: string, movedPanelName: string) {
     // Longitudes de los arrays
-    let currentTitles_length = currentTitles.length;
-    let previousTitles_length = previousTitles.length;
+    let currentIdNumbers_length = currentIdNumbers.length;
+    let previousIdNumbers_length = previousIdNumbers.length;
 
     // Al recorrer los arrays, podemos encontrarnos que el current tenga más workItems que el previous
     // Hay que controlarlo para que no haya desbordamiento
-    let hayDesbordamiento = currentTitles_length > previousTitles_length;
+    let hayDesbordamiento = currentIdNumbers_length > previousIdNumbers_length;
 
     // Vamos actualizando la posición de los workItems, si ésta ha cambiado
-    // es decir, en la posición que corresponda cambian los títulos
-    for (let i = 0; i < currentTitles_length; i++) {
-      if (i == (currentTitles_length - 1)  &&  hayDesbordamiento) {
-        // Si hay desbordamiento y se ha alcanzado la última posición de currentTitles
-        // comprobamos si el currentTitle en la posición i es el que hemos movido
-        if (currentTitles[i] == movedWorkItemTitle) {
+    // es decir, en la posición que corresponda cambian los idNumbers
+    for (let i = 0; i < currentIdNumbers_length; i++) {
+      // Si hay desbordamiento y se ha alcanzado la última posición de currentIdNumbers
+      if (i == (currentIdNumbers_length - 1)  &&  hayDesbordamiento) {
+        // comprobamos si el currentIdNumber en la posición i es el que hemos movido
+        if (currentIdNumbers[i] == movedWorkItemIdNumber) {
           // le cambiamos el nombre del panel y la posición
-          this.updateWorkItem_PanelName_Position(currentTitles[i], movedPanelName, i);
+          this.updateWorkItem_PanelName_Position(parseInt(currentIdNumbers[i]), movedPanelName, i);
         } else {
-          this.updateWorkItem_Position(currentTitles[i], i);
+          this.updateWorkItem_Position(parseInt(currentIdNumbers[i]), i);
         }
       } else {
-        // comprobamos que el currentTitle en la posición i ha cambiado de posición con respecto a su estado anterior (previous)
-        if (currentTitles[i] != previousTitles[i]) {
-          // comprobamos si el currentTitle en la posición i es el que hemos movido
-          if (currentTitles[i] == movedWorkItemTitle) {
+        // comprobamos que el currentIdNumber en la posición i ha cambiado de posición con respecto a su estado anterior (previous)
+        if (currentIdNumbers[i] != previousIdNumbers[i]) {
+          // comprobamos si el currentIdNumber en la posición i es el que hemos movido
+          if (currentIdNumbers[i] == movedWorkItemIdNumber) {
             // le cambiamos el nombre del panel y la posición
-            this.updateWorkItem_PanelName_Position(currentTitles[i], movedPanelName, i);
+            this.updateWorkItem_PanelName_Position(parseInt(currentIdNumbers[i]), movedPanelName, i);
           } else {
-            this.updateWorkItem_Position(currentTitles[i], i);
+            this.updateWorkItem_Position(parseInt(currentIdNumbers[i]), i);
           }
         }
       }
     }
   }
 
-  getWorkItemByTitle(workItemList: WorkItem[], title: string): WorkItem {
-    return this.workItemService.getWorkItemByTitle(workItemList, title);
+  getWorkItemByIdNumber(workItemList: WorkItem[], idNumber: number): WorkItem {
+    return this.workItemService.getWorkItemByIdNumber(workItemList, idNumber);
   }
 
 }
