@@ -2,7 +2,10 @@
 
 <div class="container">
     <h1 class="projectName">{{projectName}}</h1>
-    <button class="botonEstimar btn" routerLink="/project/{{projectId}}/estimate-single">Estimar 1 elemento</button>
+    <div>
+        <button class="botonEstimar btn" routerLink="/project/{{projectId}}/estimate-single">Estimar 1 elemento</button>
+        <button class="botonEstimar btn" routerLink="/project/{{projectId}}/estimate-multiple">Estimar varios elementos</button>
+    </div>
 </div>
 
 <div cdkDropList cdkDropListOrientation="horizontal" class="panelList" (cdkDropListDropped)="drop($event)">

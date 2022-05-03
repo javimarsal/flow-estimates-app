@@ -38,6 +38,7 @@ import { SignupComponent } from './components/signup/signup.component';
 import { WorkItemComponent } from './components/work-item/work-item.component';
 import { EstimateSingleComponent } from './components/estimate-single/estimate-single.component';
 import { WorkItemDialogComponent } from './components/work-item-dialog/work-item-dialog.component';
+import { EstimateMultipleComponent } from './components/estimate-multiple/estimate-multiple.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { WorkItemDialogComponent } from './components/work-item-dialog/work-item
     SignupComponent,
     WorkItemComponent,
     WorkItemDialogComponent,
-    EstimateSingleComponent
+    EstimateSingleComponent,
+    EstimateMultipleComponent
   ],
   imports: [
     BrowserModule,
