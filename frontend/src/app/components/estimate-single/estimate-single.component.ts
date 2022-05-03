@@ -134,6 +134,9 @@ export class EstimateSingleComponent implements OnInit {
       console.log(error);
     }
 
+    // Inicializar los PBI que están en Doing
+    this.getWorkItemsDoing(true);
+
     await this.getPanelNames();
 
     // establecer el rango de fechas según las fechas de los workItems

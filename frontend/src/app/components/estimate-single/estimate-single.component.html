@@ -32,7 +32,7 @@
         <!-- Mostrar PBI Doing -->
         <div class="optionGroupDoing">
             <h4 class="optionTitle">Mostrar</h4>
-            <mat-checkbox class="doingCheck" (change)="getWorkItemsDoing($event.checked)">PBI Doing</mat-checkbox>
+            <mat-checkbox class="doingCheck" [checked]="true" (change)="getWorkItemsDoing($event.checked)">PBI Doing</mat-checkbox>
             <h5 class="optionSubtitle">Elegir panel Doing</h5>
             <mat-form-field appearance="fill">
                 <mat-label>Panel Doing</mat-label>
