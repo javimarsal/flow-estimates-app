@@ -1,0 +1,67 @@
+.title {
+    padding-top: 5em;
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 1em;
+    color: #307df8;
+}
+
+.chart-card {
+    display: flex;
+    flex-direction: row;
+    max-width: 1300px;
+    margin: auto;
+}
+
+.chart {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 20px;
+    color: rgba(0, 0, 0, 0.87);
+    max-width: min-content;
+    box-sizing: border-box;
+    margin: 10px;
+    border: solid 1px rgb(190, 190, 190);
+    border-radius: 4px;
+}
+
+.optionGroup {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.optionGroupFechas {
+    margin-bottom: 15px;
+}
+
+.optionTitle {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.optionSubtitle {
+    font-size: 15px;
+    font-weight: bold;
+    color: #5c6b87;
+    margin-top: 5px;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.radio-button {
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.warning {
+    color: #f85454;
+}

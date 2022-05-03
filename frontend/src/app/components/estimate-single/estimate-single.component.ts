@@ -9,7 +9,6 @@ import { ProjectService } from 'src/app/services/project.service';
 import { WorkItem } from 'src/app/models/work-item';
 
 // Material Events
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 import {
