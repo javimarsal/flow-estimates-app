@@ -49,20 +49,20 @@
         <h4 class="optionSubtitle">Elegir panel</h4>
         <mat-form-field appearance="fill">
             <mat-label>Panel tareas hechas</mat-label>
-            <mat-select (selectionChange)="setPanelDoneSelector($event)" [(value)]="panelDone">
+            <mat-select (selectionChange)="setPanelDoneSelector($event, startDate, endDate)" [(value)]="panelDone">
                 <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
             </mat-select>
         </mat-form-field>
-        <p class="warning" id="warningPanel"></p>
+        <p class="warning" id="warningPanelDone"></p>
 
         <!-- rango de fechas -->
-        <div *ngIf="panelDone" class="optionGroupFechas">
+        <div class="optionGroupFechas">
             <h4 class="optionSubtitle">Elegir rango de fechas</h4>
             <mat-form-field appearance="fill">
                 <mat-label>Rango de fechas</mat-label>
                 <mat-date-range-input [rangePicker]="picker" [min]="permitedMinDate" [max]="permitedMaxDate">
-                    <input matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)">
-                    <input matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)">
+                    <input id="startDate" matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)" #startDate>
+                    <input id="endDate" matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)" #endDate>
                 </mat-date-range-input>
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
@@ -78,5 +78,6 @@
                 <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
             </mat-select>
         </mat-form-field>
+        <p class="warning" id="warningPanelBacklog"></p>
     </div>
 </mat-card>

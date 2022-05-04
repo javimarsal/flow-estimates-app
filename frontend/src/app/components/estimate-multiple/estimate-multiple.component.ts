@@ -11,7 +11,7 @@ import { ProjectService } from 'src/app/services/project.service';
 import { WorkItemService } from 'src/app/services/work-item.service';
 
 // Material Events
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatDatepickerInputEvent, MatDateRangeInput } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-estimate-multiple',
@@ -104,14 +104,24 @@ export class EstimateMultipleComponent implements OnInit {
   }
 
   setStartDate(event: MatDatepickerInputEvent<Date>) {
-    console.log(event.value)
+    this.startDate = event.value!;
   }
 
   setEndDate(event: MatDatepickerInputEvent<Date>) {
-    console.log(event.value)
+    this.endDate = event.value!;
+    document.getElementById('warningDates')!.innerText = '';
+
+    // TODO: enseñar mensaje si entre las fechas no hay workItems
   }
 
-  async setPanelDoneSelector(event: any) {
+  async setPanelDoneSelector(event: any, startDate: HTMLInputElement, endDate: HTMLInputElement) {
+    // Controlar que no coincida con el panelBacklog
+    if (this.panelBacklog && this.panelDone == this.panelBacklog) {
+      document.getElementById('warningPanelDone')!.innerText = 'El panel no puede coincidir con el panel de Backlog';
+      return;
+    }
+    document.getElementById('warningPanelDone')!.innerText = '';
+
     // Establecer el panel considerado para el cálculo del Throughput
     this.panelDone = event.value;
 
@@ -123,10 +133,10 @@ export class EstimateMultipleComponent implements OnInit {
     let workItemsOfPanel = this.filterWorkItems_ByPanelName(allWorkItems, this.panelDone);
 
     if (workItemsOfPanel.length == 0) {
-      document.getElementById('warningPanel')!.innerText = `No hay ningún PBI en el panel "${this.panelDone}"`;
+      document.getElementById('warningPanelDone')!.innerText = `No hay ningún PBI en el panel "${this.panelDone}"`;
       return;
     }
-    document.getElementById('warningPanel')!.innerText = '';
+    document.getElementById('warningPanelDone')!.innerText = '';
 
     /* Establecer el rango de fechas permitido (para el usuario) */
     // obtener las fechas de los workItems
@@ -138,9 +148,31 @@ export class EstimateMultipleComponent implements OnInit {
     // obtener la fecha más antigua y la más actual de los workItems
     this.permitedMaxDate = datesOfPanel[0];
     this.permitedMinDate = datesOfPanel[datesOfPanel.length - 1];
+
+    /* Comprobar que el rango de fechas (seleccionado por el usuario) sigue estando bien */
+    if (this.startDate && this.endDate) {
+      if (!this.checkDateRangeIsRight(this.startDate, this.endDate, new Date(new Date(this.permitedMinDate).toDateString()), new Date(new Date(this.permitedMaxDate).toDateString()))) {
+        this.deleteDates(startDate, endDate);
+        
+        document.getElementById('warningDates')!.innerText = `Las fechas se han eliminado porque el rango que se había elegido ya no se corresponde que el rango permitido por el panel ${this.panelDone}`;
+
+        return;
+      }
+      document.getElementById('warningDates')!.innerText = '';
+    }
   }
 
-  setPanelBacklogSelector(event: any) {}
+  setPanelBacklogSelector(event: any) {
+    // Controlar que no coincida con el panelDone
+    if (this.panelBacklog && this.panelDone == this.panelBacklog) {
+      document.getElementById('warningPanelBacklog')!.innerText = 'El panel no puede coincidir con el panel de tareas hechas';
+      return;
+    }
+    document.getElementById('warningPanelBacklog')!.innerText = '';
+
+    // Establecer el panel considerado como Backlog para la Simulación Monte Carlo
+    this.panelBacklog = event.value;
+  }
 
   getDatesOfWorkItems(workItems: WorkItem[], panelName: string): Date[] {
     let dates: Date[] = []
@@ -161,6 +193,23 @@ export class EstimateMultipleComponent implements OnInit {
     return dates.sort(function (a, b) {
       return a - b;
     })
+  }
+
+  checkDateRangeIsRight(startDate: Date, endDate: Date, permitedMinDate: Date, permitedMaxDate: Date) {
+    // Comprobar que las fechas Start y End siguen estando entre el rango permitido
+    if (((startDate >= permitedMinDate) && (startDate <= permitedMaxDate))  &&  ((endDate >= permitedMinDate) && (endDate <= permitedMaxDate))) return true;
+
+    return false;
+  }
+
+  deleteDates(startDate: HTMLInputElement, endDate: HTMLInputElement) {
+    // Las fechas
+    this.startDate = null!;
+    this.endDate = null!;
+    
+    // Inputs en la interfaz
+    startDate.value = '';
+    endDate.value = '';
   }
 
   calculatePercentile(percentil: number) {}
