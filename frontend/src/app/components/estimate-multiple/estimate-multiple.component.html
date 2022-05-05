@@ -34,6 +34,7 @@
                 <input type="number" id="title" matInput autocomplete="off" [(ngModel)]="numberOfExecutions" [ngModelOptions]="{standalone: true}">
             </mat-form-field>
             <button *ngIf="numberOfExecutions" id="create" mat-flat-button color="primary" (click)="monteCarloSimulation()">Simular</button>
+            <p class="warning" id="warningSimular">Evitar hacer la simulación si no hay datos</p>
         </div>
 
         <!-- Opciones para el Throughput -->
@@ -61,8 +62,8 @@
             <mat-form-field appearance="fill">
                 <mat-label>Rango de fechas</mat-label>
                 <mat-date-range-input [rangePicker]="picker" [min]="permitedMinDate" [max]="permitedMaxDate">
-                    <input id="startDate" matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)" #startDate>
-                    <input id="endDate" matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)" #endDate>
+                    <input matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)" #startDate>
+                    <input matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)" #endDate>
                 </mat-date-range-input>
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>

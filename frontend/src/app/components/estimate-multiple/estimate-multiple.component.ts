@@ -105,38 +105,42 @@ export class EstimateMultipleComponent implements OnInit {
 
   setStartDate(event: MatDatepickerInputEvent<Date>) {
     this.startDate = event.value!;
+    console.log('startDate', event.value);
   }
 
   setEndDate(event: MatDatepickerInputEvent<Date>) {
+    if (!event.value) {
+      return;
+    }
     this.endDate = event.value!;
-    document.getElementById('warningDates')!.innerText = '';
+    console.log('endDate', event.value);
+
+    // Borramos un posible warning, ocasionado por que el rango anterior no está permitido
+    this.changeInnerText('warningDates', '');
 
     // TODO: enseñar mensaje si entre las fechas no hay workItems
   }
 
   async setPanelDoneSelector(event: any, startDate: HTMLInputElement, endDate: HTMLInputElement) {
     // Controlar que no coincida con el panelBacklog
-    if (this.panelBacklog && this.panelDone == this.panelBacklog) {
-      document.getElementById('warningPanelDone')!.innerText = 'El panel no puede coincidir con el panel de Backlog';
-      return;
-    }
-    document.getElementById('warningPanelDone')!.innerText = '';
+    if (this.checkPanelsAreEqual(this.panelDone, this.panelBacklog, 'warningPanelDone', 'El panel no puede coincidir con el panel Backlog')) return;
+
+    // Borrar cualquier mensaje de warning que puediera haber
+    this.changeInnerText('warningPanelDone', '');
+    // también borramos el warning del PanelBacklog, por si es ahí dónde apareció
+    this.changeInnerText('warningPanelBacklog', '');
+
+    // Si en el panel Backlog seleccionado no hay workItems, volvemos a poner el mensaje de Warning
+    await this.getPanelWorkItems(this.panelBacklog, 'warningPanelBacklog');
 
     // Establecer el panel considerado para el cálculo del Throughput
     this.panelDone = event.value;
 
-    /* Obtenemos los workItems de ese panel */
-    // obtenemos todos los workItems
-    let allWorkItems = await this.getWorkItems();
-    
-    // filtramos los workItems por el panel correspondiente
-    let workItemsOfPanel = this.filterWorkItems_ByPanelName(allWorkItems, this.panelDone);
+    // Obtenemos los workItems de ese panel
+    let workItemsOfPanel = await this.getPanelWorkItems(this.panelDone, 'warningPanelDone');
 
-    if (workItemsOfPanel.length == 0) {
-      document.getElementById('warningPanelDone')!.innerText = `No hay ningún PBI en el panel "${this.panelDone}"`;
-      return;
-    }
-    document.getElementById('warningPanelDone')!.innerText = '';
+    if (!workItemsOfPanel) return;
+    this.changeInnerText('warningPanelDone', '');
 
     /* Establecer el rango de fechas permitido (para el usuario) */
     // obtener las fechas de los workItems
@@ -149,29 +153,36 @@ export class EstimateMultipleComponent implements OnInit {
     this.permitedMaxDate = datesOfPanel[0];
     this.permitedMinDate = datesOfPanel[datesOfPanel.length - 1];
 
-    /* Comprobar que el rango de fechas (seleccionado por el usuario) sigue estando bien */
+    // Comprobar que el rango de fechas (seleccionado por el usuario) sigue estando bien
     if (this.startDate && this.endDate) {
       if (!this.checkDateRangeIsRight(this.startDate, this.endDate, new Date(new Date(this.permitedMinDate).toDateString()), new Date(new Date(this.permitedMaxDate).toDateString()))) {
         this.deleteDates(startDate, endDate);
         
-        document.getElementById('warningDates')!.innerText = `Las fechas se han eliminado porque el rango que se había elegido ya no se corresponde que el rango permitido por el panel ${this.panelDone}`;
+        this.changeInnerText('warningDates', `Las fechas se han eliminado porque el rango que se había elegido ya no se corresponde con el rango permitido por el panel ${this.panelDone}`);
 
         return;
       }
-      document.getElementById('warningDates')!.innerText = '';
+      this.changeInnerText('warningDates', '');
     }
   }
 
-  setPanelBacklogSelector(event: any) {
+  async setPanelBacklogSelector(event: any) {
     // Controlar que no coincida con el panelDone
-    if (this.panelBacklog && this.panelDone == this.panelBacklog) {
-      document.getElementById('warningPanelBacklog')!.innerText = 'El panel no puede coincidir con el panel de tareas hechas';
-      return;
-    }
-    document.getElementById('warningPanelBacklog')!.innerText = '';
+    if (this.checkPanelsAreEqual(this.panelDone, this.panelBacklog, 'warningPanelBacklog', 'El panel no puede coincidir con el panel de tareas hechas')) return;
+
+    // Borrar cualquier mensaje de warning que puediera haber
+    this.changeInnerText('warningPanelBacklog', '');
+    // también borramos el warning del PanelDone, por si es ahí dónde apareció
+    this.changeInnerText('warningPanelDone', '');
+
+    // Si en el panel Done seleccionado no hay workItems, volvemos a poner el mensaje de Warning
+    this.getPanelWorkItems(this.panelDone, 'warningPanelDone');
 
     // Establecer el panel considerado como Backlog para la Simulación Monte Carlo
     this.panelBacklog = event.value;
+
+    // Si el panel no tiene workItems, se enseña un warning
+    await this.getPanelWorkItems(this.panelBacklog, 'warningPanelBacklog');
   }
 
   getDatesOfWorkItems(workItems: WorkItem[], panelName: string): Date[] {
@@ -202,14 +213,61 @@ export class EstimateMultipleComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Comprueba si el nombre de los paneles Done y Backlog son iguales, si es el caso pone un mensaje en el elemento HTML indicado
+   * @param panelDone nombre del panel Done
+   * @param panelBacklog nombre del panel Backlog
+   * @param elementId elemento HTML donde poner el warning
+   * @param message mensaje del warning
+   * @returns true si coinciden, false si no coinciden
+   */
+  checkPanelsAreEqual(panelDone: string, panelBacklog: string, elementId: string, message: string) {
+    if (!panelDone && !panelBacklog) return false;
+
+    if (panelDone == panelBacklog) {
+      this.changeInnerText(elementId, message);
+      return true;
+    }
+
+    return false;
+  }
+
+  async getPanelWorkItems(panelName: string, elementId: string) {
+    // Comprobamos que el panel se ha seleccionado (no debe ser '')
+    if (!panelName) return false;
+
+    let allWorkItems = await this.getWorkItems();
+      
+    // filtramos los workItems por el panel correspondiente
+    let workItemsOfPanel = this.filterWorkItems_ByPanelName(allWorkItems, panelName);
+
+    if (workItemsOfPanel.length == 0) {
+      // Si el panel no tiene workItems, mostramos un warning
+      this.changeInnerText(elementId, `No hay ningún PBI en el panel "${panelName}"`);
+      return false;
+    }
+
+    // tiene workItems
+    return workItemsOfPanel;
+  }
+
   deleteDates(startDate: HTMLInputElement, endDate: HTMLInputElement) {
     // Las fechas
-    this.startDate = null!;
-    this.endDate = null!;
+    this.startDate = undefined!;
+    this.endDate = undefined!;
     
     // Inputs en la interfaz
     startDate.value = '';
     endDate.value = '';
+  }
+
+  /**
+   * 
+   * @param elementId id del elemento HTML
+   * @param message mensaje que queremos poner en el innerText
+   */
+  changeInnerText(elementId: string, message: string) {
+    document.getElementById(elementId)!.innerText = message;
   }
 
   calculatePercentile(percentil: number) {}
