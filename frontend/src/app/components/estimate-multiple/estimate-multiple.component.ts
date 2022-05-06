@@ -254,7 +254,7 @@ export class EstimateMultipleComponent implements OnInit {
 
     if (workItemsOfPanel.length == 0) {
       // Si el panel no tiene workItems, mostramos un warning
-      this.changeInnerText(elementId, `No hay ninguna tarea en el panel "${panelName}"`);
+      if (elementId) this.changeInnerText(elementId, `No hay ninguna tarea en el panel "${panelName}"`);
       return false;
     }
 
@@ -293,7 +293,7 @@ export class EstimateMultipleComponent implements OnInit {
     }
 
     if (workItemsOfPanelBetweenDates.length == 0) {
-      this.changeInnerText(elementId, 'No se ha encontrado ninguna tarea en este rango de fechas')
+      if (elementId) this.changeInnerText(elementId, 'No se ha encontrado ninguna tarea en este rango de fechas');
       return false;
     }
 
@@ -322,9 +322,83 @@ export class EstimateMultipleComponent implements OnInit {
 
   calculatePercentile(percentil: number) {}
 
+  /**
+   * Comprobamos si se han seleccionado los paneles, y si existen workItems en ambos paneles (comprobando si existe el rango de fechas en el caso del panel Done), también se comprueba que el número de ejecuciones sea correcto (un número sin puntos y sin comas)
+   */
+  async isSimulationReady(numberOfExecutions: string) {
+    // Si falta en panel Doing, noReady
+    if (!this.panelDone) {
+      this.changeInnerText('warningPanelDone', 'Se debe seleccionar el panel de tareas hechas');
+      return false;
+    }
+
+    // Si falta en panel Backlog, noReady
+    if (!this.panelBacklog) {
+      this.changeInnerText('warningPanelBacklog', 'Se debe seleccionar el panel Backlog');
+      return false;
+    }
+
+    // Si los paneles coinciden, noReady
+    if (this.panelDone == this.panelBacklog) return false;
+
+    // El panel Backlog se ha seleccionado, pero no tiene workItems, noReady
+    if (!await this.getPanelWorkItems(this.panelBacklog, '')) return false;
+
+
+    if (this.startDate && this.endDate) {
+      if (!await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate)) return false;
+    }
+
+    // No se ha seleccionado el rango de fechas y el panel Doing no tiene workItems, noReady
+    if (!await this.getPanelWorkItems(this.panelDone, '')) return false;
+
+    // TODO: comprobar que el número de ejecuciones es un número y que está escrito sin comas ni puntos
+    // Si el valor está vacío, es 0 o no es un número, o contiene una coma, noReady
+    if (!Number(numberOfExecutions)) {
+      this.changeInnerText('warningExecutions', 'Número incorrecto. Éste debe ser mayor que 0 y debe ser entero (evita los puntos y las comas). Ejemplo número correcto: 100 (cien), 1000 (mil), 10000 (diez mil)');
+      return false;
+    }
+
+    // Si el valor no es positivo, noReady
+    if (Number(numberOfExecutions) < 0) {
+      this.changeInnerText('warningExecutions', 'Número incorrecto. Éste debe ser mayor que 0 y debe ser entero (evita los puntos y las comas). Ejemplo número correcto: 100 (cien), 1000 (mil), 10000 (diez mil)');
+      return false;
+    }
+
+    // Sabemos que el valor es un número, pero si no es entero, noReady
+    if (!this.isInteger(numberOfExecutions)) {
+      this.changeInnerText('warningExecutions', 'Número incorrecto. Éste debe ser mayor que 0 y debe ser entero (evita los puntos y las comas). Ejemplo número correcto: 100 (cien), 1000 (mil), 10000 (diez mil)');
+      return false;
+    }
+
+    console.log('Ready')
+
+    this.changeInnerText('warningExecutions', '');
+    return true;
+  }
+
+  isInteger(number: string) {
+    let regExpression = /^-?[0-9]+$/;
+
+    // Si el número tiene comas, se reemplazan por puntos
+    number = number.replace(',', '.');
+
+    // Si el número (string) se corresponde con la expresión, es integer
+    let result = regExpression.test(number);
+    if (result) {
+      return true;
+    }
+    
+    return false;
+  }
+
   calculateThroughput() {
   }
 
-  monteCarloSimulation() {}
+  monteCarloSimulation(numberOfExecutions: string) {
+    this.isSimulationReady(numberOfExecutions);
+
+    // convertir numberOfExecutions a número para poder utilizarlo como tal
+  }
 
 }

@@ -31,10 +31,10 @@
             </h3>
             <mat-form-field class="full-width" appearance="fill">
                 <mat-label>Número de ejecuciones</mat-label>
-                <input type="number" id="title" matInput autocomplete="off" [(ngModel)]="numberOfExecutions" [ngModelOptions]="{standalone: true}">
+                <input type="text" matInput autocomplete="off" value="10000" #executions>
             </mat-form-field>
-            <button *ngIf="numberOfExecutions" id="create" mat-flat-button color="primary" (click)="monteCarloSimulation()">Simular</button>
-            <p class="warning" id="warningSimular">Evitar hacer la simulación si no hay datos</p>
+            <p class="warning" id="warningExecutions"></p>
+            <button id="create" mat-flat-button color="primary" (click)="monteCarloSimulation(executions.value)">Simular</button>
         </div>
 
         <!-- Opciones para el Throughput -->
