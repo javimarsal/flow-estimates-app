@@ -105,20 +105,24 @@ export class EstimateMultipleComponent implements OnInit {
 
   setStartDate(event: MatDatepickerInputEvent<Date>) {
     this.startDate = event.value!;
-    console.log('startDate', event.value);
   }
 
-  setEndDate(event: MatDatepickerInputEvent<Date>) {
+  async setEndDate(event: MatDatepickerInputEvent<Date>) {
     if (!event.value) {
       return;
     }
     this.endDate = event.value!;
-    console.log('endDate', event.value);
+    
+    // TODO: /* Enseñar mensaje si entre las fechas no hay workItems */
+
+    // obtener workItems entre el rango de fechas, si no hay se muestra un warning
+    let workItemsOfPanelDoneBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, 'warningDates', this.startDate, this.endDate);
+
+    if (!workItemsOfPanelDoneBetweenDates) return;
 
     // Borramos un posible warning, ocasionado por que el rango anterior no está permitido
     this.changeInnerText('warningDates', '');
 
-    // TODO: enseñar mensaje si entre las fechas no hay workItems
   }
 
   async setPanelDoneSelector(event: any, startDate: HTMLInputElement, endDate: HTMLInputElement) {
@@ -146,22 +150,29 @@ export class EstimateMultipleComponent implements OnInit {
     // obtener las fechas de los workItems
     let datesOfPanel = this.getDatesOfWorkItems(workItemsOfPanel, this.panelDone);
 
-    // ordenamos las fechas quedando la más actual en la posición 0, y la más antigua en la n-1
+    // ordenamos las fechas quedando la más actual en la posición n-1, y la más antigua en la 0
     this.sortDates(datesOfPanel);
 
     // obtener la fecha más antigua y la más actual de los workItems
-    this.permitedMaxDate = datesOfPanel[0];
-    this.permitedMinDate = datesOfPanel[datesOfPanel.length - 1];
+    this.permitedMaxDate = datesOfPanel[datesOfPanel.length - 1];
+    this.permitedMinDate = datesOfPanel[0];
 
     // Comprobar que el rango de fechas (seleccionado por el usuario) sigue estando bien
     if (this.startDate && this.endDate) {
-      if (!this.checkDateRangeIsRight(this.startDate, this.endDate, new Date(new Date(this.permitedMinDate).toDateString()), new Date(new Date(this.permitedMaxDate).toDateString()))) {
+      if (!this.checkDateRangeIsRight(this.startDate, this.endDate, this.permitedMinDate, this.permitedMaxDate)) {
         this.deleteDates(startDate, endDate);
         
         this.changeInnerText('warningDates', `Las fechas se han eliminado porque el rango que se había elegido ya no se corresponde con el rango permitido por el panel ${this.panelDone}`);
 
         return;
       }
+
+      // el rango de fechas es correcto, comprobar si para el nuevo panel Done sigue habiendo workItems en el rango de fechas indicado
+      let workItemsOfPanelDoneBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, 'warningDates', this.startDate, this.endDate);
+      
+      if (!workItemsOfPanelDoneBetweenDates) return;
+
+      // El rango está bien, y hay workItems en ese rango (borramos cualquier warning que pueda haber)
       this.changeInnerText('warningDates', '');
     }
   }
@@ -194,7 +205,7 @@ export class EstimateMultipleComponent implements OnInit {
       let panelDateRegistry = wI.panelDateRegistry;
       for (let registry of panelDateRegistry) {
         // Si coincide con el panelName lo guardamos
-        if (registry.panel == panelName) dates.push(registry.date);
+        if (registry.panel == panelName) dates.push(new Date(new Date(registry.date).toDateString()));
       }
     }
     return dates;
@@ -243,7 +254,46 @@ export class EstimateMultipleComponent implements OnInit {
 
     if (workItemsOfPanel.length == 0) {
       // Si el panel no tiene workItems, mostramos un warning
-      this.changeInnerText(elementId, `No hay ningún PBI en el panel "${panelName}"`);
+      this.changeInnerText(elementId, `No hay ninguna tarea en el panel "${panelName}"`);
+      return false;
+    }
+
+    // tiene workItems
+    return workItemsOfPanel;
+  }
+
+  async getPanelWorkItemsBetweenDates(panelName: string, elementId: string, startDate: Date, endDate: Date) {
+    // Comprobamos que el panel se ha seleccionado (no debe ser '')
+    if (!panelName) return false;
+
+    let allWorkItems = await this.getWorkItems();
+      
+    // filtramos los workItems por el panel correspondiente
+    let workItemsOfPanel = this.filterWorkItems_ByPanelName(allWorkItems, panelName);
+
+    if (workItemsOfPanel.length == 0) return false;
+    
+    if (!startDate && !endDate) return false;
+
+    // Filtramos los workItems del panel entre el rango de fechas
+    let workItemsOfPanelBetweenDates = [];
+
+    for (let wI of workItemsOfPanel) {
+      let panelDateRegistry = wI.panelDateRegistry;
+      for (let registry of panelDateRegistry) {
+        // Buscamos el nombre del panel en el registro del workItem
+        if (registry.panel == panelName) {
+          let registryDate = new Date(new Date(registry.date).toDateString());
+          // si la fecha está entre el rango de fechas, guardamos el workItem
+          if ((registryDate >= startDate)  &&  (registryDate <= endDate)) {
+            workItemsOfPanelBetweenDates.push(wI);
+          }
+        }
+      }
+    }
+
+    if (workItemsOfPanelBetweenDates.length == 0) {
+      this.changeInnerText(elementId, 'No se ha encontrado ninguna tarea en este rango de fechas')
       return false;
     }
 
