@@ -212,9 +212,7 @@ export class EstimateMultipleComponent implements OnInit {
   }
 
   sortDates(dates: any[]) {
-    return dates.sort(function (a, b) {
-      return a - b;
-    })
+    return dates.sort((a, b) => a - b)
   }
 
   checkDateRangeIsRight(startDate: Date, endDate: Date, permitedMinDate: Date, permitedMaxDate: Date) {
@@ -298,7 +296,7 @@ export class EstimateMultipleComponent implements OnInit {
     }
 
     // tiene workItems
-    return workItemsOfPanel;
+    return workItemsOfPanelBetweenDates;
   }
 
   deleteDates(startDate: HTMLInputElement, endDate: HTMLInputElement) {
@@ -371,8 +369,6 @@ export class EstimateMultipleComponent implements OnInit {
       return false;
     }
 
-    console.log('Ready')
-
     this.changeInnerText('warningExecutions', '');
     return true;
   }
@@ -392,11 +388,70 @@ export class EstimateMultipleComponent implements OnInit {
     return false;
   }
 
-  calculateThroughput() {
+  async calculateDailyThroughput() {
+    let dailyThroughput: number[] = [];
+
+    /* Obtener los workItems */
+    let workItems: any = []
+
+    // considerar si se ha seleccionado un rango de fechas
+    if (this.startDate && this.endDate) {
+      workItems = await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate);
+    }
+    else {
+      workItems = await this.getPanelWorkItems(this.panelDone, '');
+    }
+
+    // Obtener las fechas de los workItems
+    let datesOfWorkItems = this.getDatesOfWorkItems(workItems, this.panelDone);
+
+    // Ordenamos las fechas quedando la más actual en la posición n-1, y la más antigua en la 0
+    this.sortDates(datesOfWorkItems);
+
+    // Fechas más antigua y actual
+    let earliestDate = new Date(datesOfWorkItems[0]);
+    let latestDate = new Date (datesOfWorkItems[datesOfWorkItems.length - 1]);
+
+    // Obtener todas las fechas entre la más antigua y la más actual, y guardarlas en un array de clave (fecha) y valor (throughput)
+    let allDatesBetweenEarliestAndLatest: any = [];
+    // inicializamos con la fecha más antigua
+    allDatesBetweenEarliestAndLatest[earliestDate.toString()] = 0;
+
+    while (earliestDate.toString() != latestDate.toString()) {
+      // incrementamos la fecha en un día
+      earliestDate.setDate(earliestDate.getDate() + 1);
+
+      // la incluimos en el array con throughput 0
+      allDatesBetweenEarliestAndLatest[earliestDate.toString()] = 0;
+    }
+
+    // Contar la ocurrencia de cada fecha
+    for (let date of datesOfWorkItems) {
+      allDatesBetweenEarliestAndLatest[date.toString()] += 1;
+    }
+
+    // Quedarnos solo con el Throughput
+    earliestDate = new Date(datesOfWorkItems[0]);
+    dailyThroughput.push(allDatesBetweenEarliestAndLatest[earliestDate.toString()]);
+
+    while (earliestDate.toString() != latestDate.toString()) {
+      // incrementamos la fecha en un día
+      earliestDate.setDate(earliestDate.getDate() + 1);
+
+      // incluimos el throughput según la clave (fecha) en el array de dailyThroughput
+      dailyThroughput.push(allDatesBetweenEarliestAndLatest[earliestDate.toString()]);
+    }
+    
+    // Devolvemos el Throughput calculado
+    return dailyThroughput;
   }
 
-  monteCarloSimulation(numberOfExecutions: string) {
-    this.isSimulationReady(numberOfExecutions);
+  async monteCarloSimulation(numberOfExecutions: string) {
+    if (!await this.isSimulationReady(numberOfExecutions)) {
+      return;
+    }
+
+    let dailyThroughput = await this.calculateDailyThroughput();
 
     // convertir numberOfExecutions a número para poder utilizarlo como tal
   }
