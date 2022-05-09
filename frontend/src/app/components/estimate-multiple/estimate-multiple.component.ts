@@ -151,7 +151,7 @@ export class EstimateMultipleComponent implements OnInit {
     let datesOfPanel = this.getDatesOfWorkItems(workItemsOfPanel, this.panelDone);
 
     // ordenamos las fechas quedando la más actual en la posición n-1, y la más antigua en la 0
-    this.sortDates(datesOfPanel);
+    this.sortList(datesOfPanel);
 
     // obtener la fecha más antigua y la más actual de los workItems
     this.permitedMaxDate = datesOfPanel[datesOfPanel.length - 1];
@@ -211,8 +211,8 @@ export class EstimateMultipleComponent implements OnInit {
     return dates;
   }
 
-  sortDates(dates: any[]) {
-    return dates.sort((a, b) => a - b)
+  sortList(list: any[]) {
+    return list.sort((a, b) => a - b)
   }
 
   checkDateRangeIsRight(startDate: Date, endDate: Date, permitedMinDate: Date, permitedMaxDate: Date) {
@@ -406,7 +406,7 @@ export class EstimateMultipleComponent implements OnInit {
     let datesOfWorkItems = this.getDatesOfWorkItems(workItems, this.panelDone);
 
     // Ordenamos las fechas quedando la más actual en la posición n-1, y la más antigua en la 0
-    this.sortDates(datesOfWorkItems);
+    this.sortList(datesOfWorkItems);
 
     // Fechas más antigua y actual
     let earliestDate = new Date(datesOfWorkItems[0]);
@@ -453,7 +453,115 @@ export class EstimateMultipleComponent implements OnInit {
 
     let dailyThroughput = await this.calculateDailyThroughput();
 
+    // para seleccionar un número aleatorio
+    let dTLength = dailyThroughput.length;
+
     // convertir numberOfExecutions a número para poder utilizarlo como tal
+    let nExucutions = Number(numberOfExecutions);
+
+    // Obtener el número de workItems en el backlog
+    let workItemsBacklog: any = await this.getPanelWorkItems(this.panelBacklog, '');
+
+    let nWorkItems = workItemsBacklog.length;
+    console.log(nWorkItems)
+
+    // Lista donde guardamos el número de días obtenido en cada ejecución
+    let dayList: number[] = [];
+
+    // Comenzamos con la Simulación, ejecutándole el número de veces que se ha especificado
+    for (let i = 0; i < nExucutions; i++) {
+      // número de workItems pendientes que iremos restando
+      let numberOfPendingWorkItems = nWorkItems;
+      // número de días transcurridos hasta que numberOfPendingWorkItems == 0
+      let days = 0
+
+      while (numberOfPendingWorkItems > 0) {
+        // Elegimos un número aleatorio de la lista de daily Throughput
+        let n = dailyThroughput[Math.floor(Math.random() * dTLength)];
+
+        // restamos ese número al número de workItems que hay "pendientes" por hacer
+        numberOfPendingWorkItems -= n;
+
+        days++;
+      }
+
+      // guardamos los días transcurridos en la lista de días
+      dayList.push(days);
+    }
+
+    // Transformamos los datos para el gráfico
+    this.setChartData(dayList);
+
+    
+    // TODO: calcular el percentil especificado por la variable this.percentile
+
+    // Inicializamos el gráfico
+
+  }
+
+  setChartData(dayList: number[]) {
+    // Datos para el gráfico
+    let data: any[] = [];
+
+    // Ordenar la lista del número de días
+    this.sortList(dayList);
+
+    // Recorremos la lista, contamos los números que se repiten y lo guardamos en el array data junto con la fecha
+    // primer número para comparar
+    let num = dayList[0];
+    let dayListLength = dayList.length;
+    // veces que se repite el número
+    let occurrences = 0;
+
+    for (let i = 0; i < dayListLength; i++) {
+      // guardar los datos de la última posición si num no ha cambiado
+      if (dayList[i] == num  &&  i == (dayListLength - 1)) {
+        
+        if (occurrences != 0) {
+          data.push(
+            {
+              x: num,
+              y: occurrences + 1
+            }
+          );
+        }
+        else {
+          data.push(
+            {
+              x: num,
+              y: 1
+            }
+          );
+        }
+      }
+
+      if (dayList[i] != num) {
+        data.push(
+          {
+            x: num,
+            y: occurrences
+          }
+        );
+
+        num = dayList[i];
+        occurrences = 0;
+
+        // caso (6, 6, 7), 7 está en la última posición, hay que guardarlo
+        if (i == (dayListLength - 1)) {
+          data.push(
+            {
+              x: num,
+              y: 1
+            }
+          )
+        }
+      }
+
+      // se incrementa al final para contar el num actual
+      occurrences++;
+    }
+
+    return data;
   }
 
 }
