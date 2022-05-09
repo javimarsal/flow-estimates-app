@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 
@@ -13,6 +13,25 @@ import { WorkItemService } from 'src/app/services/work-item.service';
 // Material Events
 import { MatDatepickerInputEvent, MatDateRangeInput } from '@angular/material/datepicker';
 
+import {
+  ChartComponent,
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexAnnotations,
+  ApexXAxis,
+  ApexTitleSubtitle,
+  ApexDataLabels
+} from 'ng-apexcharts';
+
+export type ChartOptions = {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  annotations: ApexAnnotations;
+  xaxis: ApexXAxis;
+  title: ApexTitleSubtitle;
+  dataLabels: ApexDataLabels;
+};
+
 @Component({
   selector: 'app-estimate-multiple',
   templateUrl: './estimate-multiple.component.html',
@@ -20,6 +39,9 @@ import { MatDatepickerInputEvent, MatDateRangeInput } from '@angular/material/da
 })
 
 export class EstimateMultipleComponent implements OnInit {
+  @ViewChild("chart") chart!: ChartComponent;
+  public chartOptions!: Partial<ChartOptions>;
+
   isReady = false;
 
   // Paneles considerados como done y backlog
@@ -490,13 +512,13 @@ export class EstimateMultipleComponent implements OnInit {
     }
 
     // Transformamos los datos para el gráfico
-    this.setChartData(dayList);
+    let data = this.setChartData(dayList);
 
     
     // TODO: calcular el percentil especificado por la variable this.percentile
 
     // Inicializamos el gráfico
-
+    this.initChart(data);
   }
 
   setChartData(dayList: number[]) {
@@ -520,7 +542,7 @@ export class EstimateMultipleComponent implements OnInit {
         if (occurrences != 0) {
           data.push(
             {
-              x: num,
+              x: `${num}`,
               y: occurrences + 1
             }
           );
@@ -528,7 +550,7 @@ export class EstimateMultipleComponent implements OnInit {
         else {
           data.push(
             {
-              x: num,
+              x: `${num}`,
               y: 1
             }
           );
@@ -538,7 +560,7 @@ export class EstimateMultipleComponent implements OnInit {
       if (dayList[i] != num) {
         data.push(
           {
-            x: num,
+            x: `${num}`,
             y: occurrences
           }
         );
@@ -550,7 +572,7 @@ export class EstimateMultipleComponent implements OnInit {
         if (i == (dayListLength - 1)) {
           data.push(
             {
-              x: num,
+              x: `${num}`,
               y: 1
             }
           )
@@ -562,6 +584,37 @@ export class EstimateMultipleComponent implements OnInit {
     }
 
     return data;
+  }
+
+  initChart(data: any[]) {
+    this.chartOptions = {
+      series: [
+        {
+          name: 'Días',
+          data: data
+        }
+      ],
+
+      title: {
+        text: 'Simulación Monte Carlo',
+        align: 'center',
+        style: {
+          fontSize: '18px'
+        }
+      },
+
+      chart: {
+        height: 650,
+        width: 800,
+        type: 'bar',
+      },
+
+      dataLabels: {
+        enabled: false
+      }
+    }
+
+    this.isReady = true;
   }
 
 }

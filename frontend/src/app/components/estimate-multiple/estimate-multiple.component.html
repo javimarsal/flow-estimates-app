@@ -6,6 +6,12 @@
     <div class="chart" *ngIf="isReady">
         <p class="forecast">Según tus datos, ...</p>
 
+        <apx-chart
+            [series]="chartOptions.series!"
+            [title]="chartOptions.title!"
+            [chart]="chartOptions.chart!"
+            [dataLabels]="chartOptions.dataLabels!"
+        ></apx-chart>
     </div>
 
     <div class="options">
