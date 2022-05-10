@@ -15,6 +15,7 @@
 
 .chart {
     max-width: 1100px;
+    min-width: 300px;
     margin: auto;
 }
 

@@ -19,8 +19,10 @@ import {
   ApexChart,
   ApexAnnotations,
   ApexXAxis,
+  ApexYAxis,
   ApexTitleSubtitle,
-  ApexDataLabels
+  ApexDataLabels,
+  ApexTooltip,
 } from 'ng-apexcharts';
 
 export type ChartOptions = {
@@ -28,8 +30,10 @@ export type ChartOptions = {
   chart: ApexChart;
   annotations: ApexAnnotations;
   xaxis: ApexXAxis;
+  yaxis: ApexYAxis;
   title: ApexTitleSubtitle;
   dataLabels: ApexDataLabels;
+  tooltip: ApexTooltip;
 };
 
 @Component({
@@ -74,6 +78,9 @@ export class EstimateMultipleComponent implements OnInit {
 
     // obtenemos el nombre de los paneles para poder hacer la selección
     await this.getPanelNames();
+
+    // inicializar el gráfico sin datos para que se muestre el hueco del gráfico
+    this.initChart([])
   }
 
   getProjectId() {
@@ -485,7 +492,6 @@ export class EstimateMultipleComponent implements OnInit {
     let workItemsBacklog: any = await this.getPanelWorkItems(this.panelBacklog, '');
 
     let nWorkItems = workItemsBacklog.length;
-    console.log(nWorkItems)
 
     // Lista donde guardamos el número de días obtenido en cada ejecución
     let dayList: number[] = [];
@@ -586,7 +592,7 @@ export class EstimateMultipleComponent implements OnInit {
     return data;
   }
 
-  initChart(data: any[]) {
+  initChart(data: any = undefined) {
     this.chartOptions = {
       series: [
         {
@@ -596,7 +602,7 @@ export class EstimateMultipleComponent implements OnInit {
       ],
 
       title: {
-        text: 'Simulación Monte Carlo',
+        text: `Posibles Duraciones del Panel ${this.panelBacklog}`,
         align: 'center',
         style: {
           fontSize: '18px'
@@ -609,8 +615,37 @@ export class EstimateMultipleComponent implements OnInit {
         type: 'bar',
       },
 
+      xaxis: {
+        title: {
+          text: `Posible nº de Días para completar las tareas del Panel ${this.panelBacklog}`,
+          style: {
+            fontSize: '15px'
+          }
+        }
+      },
+
+      yaxis: {
+        title: {
+          text: 'Nº de veces que puede ocurrir cada resultado',
+          style: {
+            fontSize: '15px'
+          }
+        }
+      },
+
       dataLabels: {
         enabled: false
+      },
+
+      tooltip: {
+        custom: function({ seriesIndex, dataPointIndex, w }) {
+          let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+          return '<div style="padding: 10px 10px;">' +
+            '<div><b>Nº de días:</b> ' + data.x + '</div>' +
+            '<div><b>Ocurrencias:</b> ' + data.y + '</div>' +
+            '</div>';
+        }
       }
     }
 
