@@ -6,6 +6,18 @@
     color: #307df8;
 }
 
+.forecast {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 3em;
+}
+
+.forecast-important {
+    font-weight: bold;
+    font-size: 25px;
+    color: #f85454;
+}
+
 .chart-card {
     display: flex;
     flex-direction: row;

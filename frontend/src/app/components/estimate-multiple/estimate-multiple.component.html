@@ -4,7 +4,7 @@
 
 <mat-card class="chart-card">
     <div class="chart" *ngIf="isReady">
-        <p class="forecast">Según tus datos, ...</p>
+        <p *ngIf="dataChart.length != 0" class="forecast">Según tus datos, las tareas del panel {{panelBacklog}} serían completadas en <span class="forecast-important">{{xValuePercentile}}</span> <span *ngIf="xValuePercentile != '1'"> días</span> <span *ngIf="xValuePercentile == '1'"> día</span> o menos, con una probabilidad del <span class="forecast-important">{{percentile * 100}}%</span></p>
 
         <apx-chart
             [series]="chartOptions.series!"
@@ -12,6 +12,7 @@
             [chart]="chartOptions.chart!"
             [xaxis]="chartOptions.xaxis!"
             [yaxis]="chartOptions.yaxis!"
+            [annotations]="chartOptions.annotations!"
             [dataLabels]="chartOptions.dataLabels!"
             [tooltip]="chartOptions.tooltip!"
         ></apx-chart>

@@ -52,10 +52,6 @@ export class EstimateMultipleComponent implements OnInit {
   panelDone: string = '';
   panelBacklog: string = '';
 
-  // El valor de sus selectores
-  panelDoneSelector: string = '';
-  panelBacklogSelector: string = '';
-
   // fechas por las que filtrar los workItems para el cálculo del Throughput
   startDate!: Date;
   endDate!: Date;
@@ -66,6 +62,14 @@ export class EstimateMultipleComponent implements OnInit {
 
   projectId: any = '';
   panelNames: string[] = [];
+
+  // Datos para el gráfico
+  dataChart: any[] = [];
+  allData: number[] = [];
+
+  // percentil
+  percentile: number = 0;
+  xValuePercentile: string = '';
 
   // Número de ejecuciones Simulación Monte Carlo
   numberOfExecutions: number = 10000;
@@ -78,6 +82,9 @@ export class EstimateMultipleComponent implements OnInit {
 
     // obtenemos el nombre de los paneles para poder hacer la selección
     await this.getPanelNames();
+
+    // el percentil por defecto es el 50
+    this.setPercentile(0.5);
 
     // inicializar el gráfico sin datos para que se muestre el hueco del gráfico
     this.initChart([])
@@ -130,6 +137,10 @@ export class EstimateMultipleComponent implements OnInit {
     }
 
     return workItems;
+  }
+
+  setPercentile(p: number) {
+    this.percentile = p;
   }
 
   setStartDate(event: MatDatepickerInputEvent<Date>) {
@@ -347,7 +358,30 @@ export class EstimateMultipleComponent implements OnInit {
     document.getElementById(elementId)!.innerText = message;
   }
 
-  calculatePercentile(percentil: number) {}
+  calculatePercentile(percentile: number) {
+    // Establecer el percentil
+    this.percentile = percentile;
+
+    // No calcular el percentil si este es 0
+    if (percentile == 0) return;
+
+    // No calcular el percentil si no se ha realizado la simulación, es decir, allData está vacío
+    if (this.allData.length == 0) return;
+    
+    // Número de puntos que hay en los datos
+    let numberOfPoints = this.allData.length;
+
+    /* Multiplicamos el percentil por el número de puntos */
+    // Redondeamos
+    let indexOfData = Number((numberOfPoints * percentile).toFixed()) - 1;
+
+    // this.allData ya está ordenado de menor a mayor número
+    // obtenemos el valor en el eje X, que es el valor de allData en la posición indexOfData
+    this.xValuePercentile = this.allData[indexOfData].toString();
+
+    // inicializamos el gráfico
+    this.initChart(this.dataChart);
+  }
 
   /**
    * Comprobamos si se han seleccionado los paneles, y si existen workItems en ambos paneles (comprobando si existe el rango de fechas en el caso del panel Done), también se comprueba que el número de ejecuciones sea correcto (un número sin puntos y sin comas)
@@ -518,13 +552,17 @@ export class EstimateMultipleComponent implements OnInit {
     }
 
     // Transformamos los datos para el gráfico
-    let data = this.setChartData(dayList);
+    this.dataChart = this.setChartData(dayList);
+
+    // Lista de días obtenidos en cada ejecución (para calcular el percentil)
+    this.allData = dayList;
 
     
-    // TODO: calcular el percentil especificado por la variable this.percentile
+    // Calcular el percentil especificado por la variable this.percentile. También se inicializa el gráfico
+    this.calculatePercentile(this.percentile);
 
     // Inicializamos el gráfico
-    this.initChart(data);
+    // this.initChart(this.dataChart);
   }
 
   setChartData(dayList: number[]) {
@@ -631,6 +669,26 @@ export class EstimateMultipleComponent implements OnInit {
             fontSize: '15px'
           }
         }
+      },
+
+      annotations: {
+        xaxis: [
+          {
+            id: 'percentile',
+            x: this.xValuePercentile,
+            borderColor: '#e84c4c',
+            strokeDashArray: 0,
+            label: {
+              borderColor: '#e84c4c',
+              style: {
+                color: '#fff',
+                background: '#e84c4c',
+                fontSize: '15',
+              },
+              text: `Percentil ${this.percentile * 100}`,
+            }
+          }
+        ]
       },
 
       dataLabels: {
