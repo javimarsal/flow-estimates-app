@@ -9,6 +9,9 @@ export interface WorkItem {
         panel: string,
         date: Date
     }]
+    tags?: [{
+        tag: object
+    }]
     createdAt?: string
     updatedAt?: string
 }

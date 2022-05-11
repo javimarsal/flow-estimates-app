@@ -7,6 +7,9 @@ export interface Project {
     workItems: [{
         workItem: object
     }]
+    tags?: [{
+        tag: object
+    }]
     createdAt?: string
     updatedAt?: string
 }
