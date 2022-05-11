@@ -9,6 +9,9 @@ const workItemSchema = new Schema({
     panelDateRegistry: [{
         panel: {type: String, required: true},
         date: {type: Date, required: true}
+    }],
+    tags: [{
+        tag: {type: Schema.Types.ObjectId, ref: 'tag'}
     }]
 },
 {

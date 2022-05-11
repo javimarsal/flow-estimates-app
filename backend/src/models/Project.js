@@ -7,6 +7,9 @@ const projectSchema = new Schema({
     }],
     workItems: [{
         workItem: {type: Schema.Types.ObjectId, ref: 'workitem'}
+    }],
+    tags: [{
+        tag: {type: Schema.Types.ObjectId, ref: 'tag'}
     }]
 },
 {

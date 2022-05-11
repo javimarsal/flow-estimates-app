@@ -16,4 +16,13 @@ workItemRouter.put('/:id', workItemController.editWorkItem);
 
 workItemRouter.delete('/:id', workItemController.deleteWorkItem);
 
+// get tags of workItem
+workItemRouter.get('/:id/tags', workItemController.getTags);
+
+// update list of tags of workItem
+workItemRouter.put('/:id/tags', workItemController.addTag);
+
+// delete a tag from the list of tags
+workItemRouter.delete('/:wid/tags/:tid', workItemController.deleteTag);
+
 module.exports = workItemRouter;

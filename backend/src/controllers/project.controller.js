@@ -100,4 +100,55 @@ projectController.deleteWorkItem = async (req, res) => {
     res.send({ message: `work-item with id="${workItemId}" has been removed from project with id="${project._id}"` });
 }
 
+projectController.getTags = async (req, res) => {
+    const project = await Project.findById(req.params.id).populate({
+        path: 'tags',
+        populate: {
+            path: 'tag'
+        }
+    });
+
+    // rellenamos el array tags para enviarlo como respuesta
+    let tags = [];
+    for (let t of project.tags) {
+        tags.push(t.tag);
+    }
+
+    return res.send(tags);
+}
+
+projectController.addTag = async (req, res) => {
+    const project = await Project.findById(req.params.id);
+    const tag = req.body;
+
+    // Añadimos el tag a la lista de Project
+    project.tags.push({
+        tag: tag._id
+    });
+
+    await project.save();
+
+    return res.send({ message: `tag with id="${tag._id}" has been added to project with id="${project._id}"` });
+}
+
+projectController.deleteTag = async (req, res) => {
+    const project = await Project.findById(req.params.pid);
+    const tagId = req.params.tid;
+
+    // Buscar el id del tag en la lista de Project y eliminarlo
+    let tagsOfProject = project.tags;
+    let tPLength = tagsOfProject.length;
+    for (let i = 0; i < tPLength; i++) {
+        if (tagsOfProject[i].tag.toString() == tagId) {
+            tagsOfProject.splice(i, 1);
+            break;
+        }
+    }
+
+    // Guardamos el Project con la lista actualizada
+    await project.save();
+
+    return res.send({ message: `tag with id="${tagId}" has been removed from project with id="${project._id}"` });
+}
+
 module.exports = projectController;

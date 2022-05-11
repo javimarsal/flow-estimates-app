@@ -67,5 +67,6 @@ app.use("/api/projects", require('./routes/projects.routes'))
 app.use("/api/users", require('./routes/users.routes'))
 app.use("/api/workitems", require('./routes/work-items.routes'))
 app.use("/api/panels", require('./routes/panels.routes'))
+app.use("/api/tags", require('./routes/tags.routes'))
 
 module.exports = app;

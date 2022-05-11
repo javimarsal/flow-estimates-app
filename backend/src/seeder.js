@@ -43,13 +43,15 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     var project1 = new Project({
         name: 'Proyecto Casa Blanca',
         panels: [],
-        workItems: []
+        workItems: [],
+        tags: []
     });
 
     var project2 = new Project({
         name: 'Proyecto Astro',
         panels: [],
-        workItems: []
+        workItems: [],
+        tags: []
     });
 
     var panels1 = [
@@ -83,7 +85,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: 'Yes, let\'s go!',
             panel: 'ToDO',
             position: 0,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
         new WorkItem({
             idNumber: 2,
@@ -91,7 +94,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: '',
             panel: 'ToDO',
             position: 1,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
         new WorkItem({
             idNumber: 3,
@@ -99,7 +103,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: '',
             panel: 'ToDO',
             position: 2,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
         new WorkItem({
             idNumber: 4,
@@ -107,7 +112,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: '',
             panel: 'ToDO',
             position: 3,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
         new WorkItem({
             idNumber: 5,
@@ -115,7 +121,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: '',
             panel: 'ToDO',
             position: 4,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
         new WorkItem({
             idNumber: 6,
@@ -123,7 +130,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: '',
             panel: 'ToDO',
             position: 5,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
         new WorkItem({
             idNumber: 7,
@@ -131,7 +139,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: '',
             panel: 'ToDO',
             position: 6,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
         new WorkItem({
             idNumber: 8,
@@ -139,7 +148,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: '',
             panel: 'ToDO',
             position: 7,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
         new WorkItem({
             idNumber: 9,
@@ -147,7 +157,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             description: 'Walk my dog Coffee',
             panel: 'ToDO',
             position: 8,
-            panelDateRegistry: panelDateRegistry
+            panelDateRegistry: panelDateRegistry,
+            tags: []
         }),
     ];
 

@@ -25,7 +25,16 @@ projectRouter.get('/:id/workitems', projectController.getWorkItems);
 // update list of workItems of project
 projectRouter.put('/:id/workitems', projectController.addWorkItem);
 
-// delete a workItem for the list of workItems
+// delete a workItem from the list of workItems
 projectRouter.delete('/:pid/workitems/:wid', projectController.deleteWorkItem)
+
+// get tags of project
+projectRouter.get('/:id/tags', projectController.getTags);
+
+// update list of tags of project
+projectRouter.put('/:id/tags', projectController.addTag);
+
+// delete a tag from the list of tags
+projectRouter.delete('/:pid/tags/:tid', projectController.deleteTag);
 
 module.exports = projectRouter;
