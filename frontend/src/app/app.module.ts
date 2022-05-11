@@ -39,6 +39,7 @@ import { WorkItemComponent } from './components/work-item/work-item.component';
 import { EstimateSingleComponent } from './components/estimate-single/estimate-single.component';
 import { WorkItemDialogComponent } from './components/work-item-dialog/work-item-dialog.component';
 import { EstimateMultipleComponent } from './components/estimate-multiple/estimate-multiple.component';
+import { TagListComponent } from './components/tag-list/tag-list.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { EstimateMultipleComponent } from './components/estimate-multiple/estima
     WorkItemComponent,
     WorkItemDialogComponent,
     EstimateSingleComponent,
-    EstimateMultipleComponent
+    EstimateMultipleComponent,
+    TagListComponent
   ],
   imports: [
     BrowserModule,

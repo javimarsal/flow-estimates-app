@@ -1,0 +1,13 @@
+.title {
+    padding-top: 5em;
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 1em;
+    color: #307df8
+}
+
+.tags {
+    margin: auto;
+    max-width: 900px;
+    padding: 30px 10px;
+}
