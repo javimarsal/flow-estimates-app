@@ -649,13 +649,13 @@ export class EstimateMultipleComponent implements OnInit {
 
       chart: {
         height: 650,
-        width: 800,
+        width: 900,
         type: 'bar',
       },
 
       xaxis: {
         title: {
-          text: `Posible nº de Días para completar las tareas del Panel ${this.panelBacklog}`,
+          text: `Nº de Días para completar las tareas del Panel ${this.panelBacklog}`,
           style: {
             fontSize: '15px'
           }
@@ -663,12 +663,7 @@ export class EstimateMultipleComponent implements OnInit {
       },
 
       yaxis: {
-        title: {
-          text: 'Nº de veces que puede ocurrir cada resultado',
-          style: {
-            fontSize: '15px'
-          }
-        }
+        show: false
       },
 
       annotations: {
