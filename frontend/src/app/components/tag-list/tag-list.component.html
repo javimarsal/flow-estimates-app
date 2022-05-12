@@ -13,10 +13,11 @@
                 </mat-expansion-panel-header>
                 <!-- Input to create new tag -->
                 <form class="create-work-item" [formGroup]="form">
-                    <mat-form-field class="tagInput" appearance="fill">
+                    <mat-form-field class="tagInput" appearance="fill" hintLabel="Máximo 10 caracteres">
                         <mat-label>Nombre</mat-label>
-                        <input type="text" matInput autocomplete="off" formControlName="name" required>
-                        <mat-error class="errorMessage" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
+                        <input type="text" matInput autocomplete="off" formControlName="name" maxlength="15" required #nameInput>
+                        <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/15</mat-hint>
+                        <mat-error class="inputFooter" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
                     </mat-form-field>
                     <mat-form-field class="tagInput" appearance="fill">
                         <mat-label>Color</mat-label>
