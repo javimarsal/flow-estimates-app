@@ -41,7 +41,6 @@ export class TagListComponent implements OnInit {
   initForm() {
     this.form = this.fb.group({
       name: [''],
-      description: [''],
       color: ['#ffffff'],
     });
   }
@@ -63,7 +62,6 @@ export class TagListComponent implements OnInit {
   async createTag() {
     // Eliminar espacios no deseados
     let name = this.form.value.name.replace(/\s+/g,' ').trim();
-    let description = this.form.value.description.replace(/\s+/g,' ').trim();
     let color = this.form.value.color.replace(/\s+/g,' ').trim();
 
     console.log(this.form.value)
@@ -71,7 +69,6 @@ export class TagListComponent implements OnInit {
     // Crear el Tag
     let newTag: Tag = {
       name: name,
-      description: description,
       color: color
     }
 
@@ -98,7 +95,6 @@ export class TagListComponent implements OnInit {
     // this.initForm();
     this.form.reset({
       name: [''],
-      description: [''],
       color: ['#ffffff'],
     })
 

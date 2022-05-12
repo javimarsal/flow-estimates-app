@@ -19,10 +19,6 @@
                         <mat-error class="errorMessage" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
                     </mat-form-field>
                     <mat-form-field class="tagInput" appearance="fill">
-                        <mat-label>Descripción</mat-label>
-                        <input type="text" matInput autocomplete="off" formControlName="description">
-                    </mat-form-field>
-                    <mat-form-field class="tagInput" appearance="fill">
                         <mat-label>Color</mat-label>
                         <input type="text" matInput autocomplete="off" formControlName="color" required>
                         <mat-error class="errorMessage" *ngIf="form.invalid">Debes elegir un color</mat-error>
