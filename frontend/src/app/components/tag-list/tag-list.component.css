@@ -12,8 +12,20 @@
     padding: 30px 10px;
 }
 
+.tagCreation {
+    margin-bottom: 30px;
+}
+
 .no-tags {
     font-size: 20px;
     color: grey;
     text-align: center;
+}
+
+.tagInput {
+    margin-right: 10px;
+}
+
+.errorMessage {
+    font-size: 12px;
 }

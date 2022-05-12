@@ -12,9 +12,9 @@ tagController.createTag = async (req, res) => {
     const newTag = new Tag(req.body);
 
     // Guardamos el nuevo objeto
-    await newTag.save();
+    const savedTag = await newTag.save();
 
-    return res.send({ message: 'Tag created' });
+    return res.send(savedTag);
 }
 
 tagController.getTag = async (req, res) => {

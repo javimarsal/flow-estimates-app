@@ -1,7 +1,6 @@
 const { Schema, model } = require('mongoose');
 
 const tagSchema = new Schema({
-    idNumber: {type: Number, required: true},
     name: {type: String, required: true},
     description: {type: String},
     color: {type: String}

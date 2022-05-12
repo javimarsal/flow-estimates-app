@@ -37,7 +37,15 @@ export class ProjectService {
     return this.http.put(`${this.URL_API}/${projectId}/workitems`, workItem);
   }
 
+  addTag(projectId: string, tag: Tag) {
+    return this.http.put(`${this.URL_API}/${projectId}/tags`, tag);
+  }
+
   removeWorkItem(projectId: string, workItemId?: string) {
     return this.http.delete(`${this.URL_API}/${projectId}/workitems/${workItemId}`);
+  }
+
+  removeTag(projectId: string, tagId?: string) {
+    return this.http.delete(`${this.URL_API}/${projectId}/tags/${tagId}`);
   }
 }

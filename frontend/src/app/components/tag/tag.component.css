@@ -1,0 +1,16 @@
+.tagItem {
+    padding: 20px 20px;
+    color: rgba(0, 0, 0, 0.87);
+    align-items: center;
+    display: flex;
+    box-sizing: border-box;
+    background: white;
+    font-size: 18px;
+    margin: 10px;
+    border: solid 1px rgb(190, 190, 190);
+    border-radius: 4px;
+}
+
+.tagProperty {
+    flex: 1;
+}

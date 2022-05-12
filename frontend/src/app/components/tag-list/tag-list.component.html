@@ -3,6 +3,37 @@
 <h2 class="title">Etiquetas del Proyecto</h2>
 
 <mat-card class="tags">
+    <div class="tagCreation">
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Crear nueva etiqueta
+                </mat-panel-title>
+                </mat-expansion-panel-header>
+                <!-- Input to create new tag -->
+                <form class="create-work-item" [formGroup]="form">
+                    <mat-form-field class="tagInput" appearance="fill">
+                        <mat-label>Nombre</mat-label>
+                        <input type="text" matInput autocomplete="off" formControlName="name" required>
+                        <mat-error class="errorMessage" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="tagInput" appearance="fill">
+                        <mat-label>Descripción</mat-label>
+                        <input type="text" matInput autocomplete="off" formControlName="description">
+                    </mat-form-field>
+                    <mat-form-field class="tagInput" appearance="fill">
+                        <mat-label>Color</mat-label>
+                        <input type="text" matInput autocomplete="off" formControlName="color" required>
+                        <mat-error class="errorMessage" *ngIf="form.invalid">Debes elegir un color</mat-error>
+                    </mat-form-field>
+                    
+                    <button id="create" mat-flat-button color="primary" (click)="createTag()">Crear</button>
+                </form>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+
     <div *ngFor="let tag of tagsOfProject">
         <app-tag [tag]="tag"></app-tag>
     </div>
