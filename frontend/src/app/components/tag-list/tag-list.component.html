@@ -3,18 +3,11 @@
 <h2 class="title">Etiquetas del Proyecto</h2>
 
 <mat-card class="tags">
-    <!-- <div class="item-proyect" *ngFor="let uP of userProjects">
-        <span class="nombre">
-            Nombre: 
-                <a class="link-nombre" routerLink="/project/{{uP.project._id}}">{{ uP.project.name }}</a>
-        </span>
+    <div *ngFor="let tag of tagsOfProject">
+        <app-tag [tag]="tag"></app-tag>
+    </div>
 
-        <span class="rol">
-            Rol: <span class="rol-name">{{ uP.role }}</span>
-        </span>
-    </div> -->
-
-    <!-- <div *ngIf="userProjects.length==0">
-        <p class="no-projects">Ningún proyecto que mostrar</p>
-    </div> -->
+    <div *ngIf="tagsOfProject.length==0">
+        <p class="no-tags">Todavía no existen etiquetas en tu proyecto</p>
+    </div>
 </mat-card>

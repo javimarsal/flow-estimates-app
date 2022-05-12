@@ -11,3 +11,9 @@
     max-width: 900px;
     padding: 30px 10px;
 }
+
+.no-tags {
+    font-size: 20px;
+    color: grey;
+    text-align: center;
+}

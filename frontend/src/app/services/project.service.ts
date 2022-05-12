@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 // Modelos
 import { Panel } from '../models/panel';
 import { WorkItem } from '../models/work-item';
-import { environment } from 'src/environments/environment';
+import { Tag } from '../models/tag';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,10 @@ export class ProjectService {
 
   getWorkItems(projectId: string): Observable<WorkItem[]> {
     return this.http.get<WorkItem[]>(`${this.URL_API}/${projectId}/workitems`);
+  }
+
+  getTags(projectId: string): Observable<Tag[]> {
+    return this.http.get<Tag[]>(`${this.URL_API}/${projectId}/tags`);
   }
 
   addWorkItem(projectId: string, workItem: WorkItem) {
