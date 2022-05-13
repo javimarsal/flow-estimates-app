@@ -58,7 +58,6 @@ export class TagListComponent implements OnInit {
     }
   }
 
-  // TODO
   async createTag() {
     // Eliminar espacios no deseados
     let name = this.form.value.name.replace(/\s+/g,' ').trim();
@@ -85,7 +84,7 @@ export class TagListComponent implements OnInit {
     // Añadir el Tag a la lista del proyecto
     // TODO: controlar que tagDB no sea undefine o similar
     try {
-      let res = await lastValueFrom(this.projectService.addTag(this.projectId, tagDB));
+      await lastValueFrom(this.projectService.addTag(this.projectId, tagDB));
     }
     catch (error) {
       console.log(error);
@@ -99,7 +98,7 @@ export class TagListComponent implements OnInit {
     })
 
     // y añadimos el nuevo Tag a la lista tagsOfProject
-    // TODO: puede que el orden no se corresponda al cargar la página
+    // puede que el orden no se corresponda al cargar la página
     this.tagsOfProject.unshift(tagDB);
   }
 

@@ -152,8 +152,6 @@ export class EstimateMultipleComponent implements OnInit {
       return;
     }
     this.endDate = event.value!;
-    
-    // TODO: /* Enseñar mensaje si entre las fechas no hay workItems */
 
     // obtener workItems entre el rango de fechas, si no hay se muestra un warning
     let workItemsOfPanelDoneBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, 'warningDates', this.startDate, this.endDate);
@@ -413,7 +411,7 @@ export class EstimateMultipleComponent implements OnInit {
     // No se ha seleccionado el rango de fechas y el panel Doing no tiene workItems, noReady
     if (!await this.getPanelWorkItems(this.panelDone, '')) return false;
 
-    // TODO: comprobar que el número de ejecuciones es un número y que está escrito sin comas ni puntos
+    // Comprobar que el número de ejecuciones es un número y que está escrito sin comas ni puntos
     // Si el valor está vacío, es 0 o no es un número, o contiene una coma, noReady
     if (!Number(numberOfExecutions)) {
       this.changeInnerText('warningExecutions', 'Número incorrecto. Éste debe ser mayor que 0 y debe ser entero (evita los puntos y las comas). Ejemplo número correcto: 100 (cien), 1000 (mil), 10000 (diez mil)');
