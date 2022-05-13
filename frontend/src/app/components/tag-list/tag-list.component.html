@@ -12,20 +12,20 @@
                 </mat-panel-title>
                 </mat-expansion-panel-header>
                 <!-- Input to create new tag -->
-                <form class="create-work-item" [formGroup]="form">
-                    <mat-form-field class="tagInput" appearance="fill" hintLabel="Máximo 10 caracteres">
+                <form class="create-work-item" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="createTag(formDirective)">
+                    <mat-form-field class="tagInput" appearance="fill" hintLabel="Máximo 10 caracteres" [hideRequiredMarker]="true">
                         <mat-label>Nombre</mat-label>
                         <input type="text" matInput autocomplete="off" formControlName="name" maxlength="15" required #nameInput>
                         <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/15</mat-hint>
                         <mat-error class="inputFooter" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
                     </mat-form-field>
-                    <mat-form-field class="tagInput" appearance="fill">
+                    <mat-form-field class="tagInput" appearance="fill" [hideRequiredMarker]="true">
                         <mat-label>Color</mat-label>
                         <input type="text" matInput autocomplete="off" formControlName="color" required>
-                        <mat-error class="errorMessage" *ngIf="form.invalid">Debes elegir un color</mat-error>
+                        <mat-error class="inputFooter" *ngIf="form.invalid">Debes elegir un color</mat-error>
                     </mat-form-field>
                     
-                    <button id="create" mat-flat-button color="primary" (click)="createTag()">Crear</button>
+                    <button type="submit" mat-flat-button color="primary">Crear</button>
                 </form>
             </mat-expansion-panel>
         </mat-accordion>

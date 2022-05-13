@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 
@@ -22,6 +22,8 @@ export class TagListComponent implements OnInit {
 
   // Formulario para crear una nueva Tag
   form!: FormGroup;
+  invalidName = false;
+  invalidColor = false;
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private projectService: ProjectService, private tagService: TagService) { }
 
@@ -41,7 +43,7 @@ export class TagListComponent implements OnInit {
   initForm() {
     this.form = this.fb.group({
       name: [''],
-      color: ['#ffffff'],
+      color: ['#FFFFFF'],
     });
   }
 
@@ -58,12 +60,19 @@ export class TagListComponent implements OnInit {
     }
   }
 
-  async createTag() {
+  async createTag(formDirective: FormGroupDirective) {
     // Eliminar espacios no deseados
     let name = this.form.value.name.replace(/\s+/g,' ').trim();
     let color = this.form.value.color.replace(/\s+/g,' ').trim();
 
-    console.log(this.form.value)
+    if (!name) {
+      return;
+    }
+
+    // TODO: comprobaciones de si es un color válido
+    if (!color) {
+      return;
+    }
     
     // Crear el Tag
     let newTag: Tag = {
@@ -82,7 +91,10 @@ export class TagListComponent implements OnInit {
     }
 
     // Añadir el Tag a la lista del proyecto
-    // TODO: controlar que tagDB no sea undefine o similar
+    // controlar que tagDB no sea undefine o similar
+    if (!tagDB) return;
+
+    // Si tagDB no es undefine, significa que se ha podido crear y lo podemos añadir a la lista del proyecto
     try {
       await lastValueFrom(this.projectService.addTag(this.projectId, tagDB));
     }
@@ -91,10 +103,10 @@ export class TagListComponent implements OnInit {
     }
 
     // Si todo ha ido bien, reseteamos el contenido del formulario
-    // this.initForm();
+    formDirective.resetForm();
     this.form.reset({
-      name: [''],
-      color: ['#ffffff'],
+      name: '',
+      color: '#FFFFFF',
     })
 
     // y añadimos el nuevo Tag a la lista tagsOfProject
