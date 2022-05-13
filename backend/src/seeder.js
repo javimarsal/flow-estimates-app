@@ -8,6 +8,7 @@ var User = require('./models/User');
 var Project = require('./models/Project');
 var Panel = require('./models/Panel');
 var WorkItem = require('./models/Work-item');
+var Tag = require('./models/Tag');
 
 // URI
 // const uri = process.env.DB_MONGO;
@@ -201,6 +202,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         return Project.deleteMany();
     }).then(function () {
         return User.deleteMany();
+    }).then(function () {
+        return Tag.deleteMany();
     }).then(function () {
         return Panel.insertMany(panels1);
     }).then(function () {
