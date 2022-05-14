@@ -6,11 +6,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-/* Para que aparezcan los botones de editar y eliminar los work-items cuando tenemos el ratón encima del div itemBox */
-.itemBox:hover .updateDelete {
-    display: inline-block;
-}
-
 .mat-tooltip {
     font-size: 18px;
 }

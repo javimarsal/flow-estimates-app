@@ -1,0 +1,25 @@
+.headerDialog {
+    display: flex;
+    justify-content: space-between;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+}
+
+.tagInput {
+    height: 30px;
+    font-size: 22px;
+}
+
+.warning {
+    color: #f85454;
+}
+
+.btn {
+    margin-left: 11px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}

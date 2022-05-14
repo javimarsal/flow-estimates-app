@@ -61,7 +61,7 @@ export class WorkItemComponent implements OnInit {
   }
 
   // Diálogo que se abre al pinchar en el workItem
-  openDialog() {
+  async openDialog() {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
@@ -78,7 +78,7 @@ export class WorkItemComponent implements OnInit {
     const dialogRef = this.dialog.open(WorkItemDialogComponent, dialogConfig);
 
     dialogRef.afterClosed().subscribe(
-      data => {
+      async data => {
         // Si no le llegan datos no se hace nada
         if (!data) return;
 
@@ -89,7 +89,7 @@ export class WorkItemComponent implements OnInit {
         }
 
         // Si llegan datos y no es 'delete' actualizamos el title y description del componente
-        this.updateWorkItemTitleDescription(data.title, data.description);
+        await this.updateWorkItemTitleDescription(data.title, data.description);
       }
     );
   }
@@ -97,7 +97,7 @@ export class WorkItemComponent implements OnInit {
   /* EDITAR Y ELIMINAR WorkItem */
   // Eliminar WorkItem
   async deleteWorkItem() {
-    // Obtenemos los workItems que se van a actualizar (por si hah sufrido alguna modificación antes, como la posición)
+    // Obtenemos los workItems que se van a actualizar (por si ha sufrido alguna modificación antes, como la posición)
     try {
       let workItems = await lastValueFrom(this.getWorkItemsOfProject());
       this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
@@ -152,7 +152,11 @@ export class WorkItemComponent implements OnInit {
 
     // buscamos el idNumber del workItem en la lista, y lo eliminamos
     for (let i = 0; i < lengthIdNumbers; i++) {
-      if (parseInt(idNumbersOfList[i]) == this.workItem.idNumber) idNumbersOfList.splice(i, 1);
+      if (parseInt(idNumbersOfList[i]) == this.workItem.idNumber) {
+        idNumbersOfList.splice(i, 1);
+        // break porque ahora idNumbersOfList.length es uno menos que lengthIdNumbers. En la última iteración, idNumbersOfList[i] sería undefined
+        break;
+      }
     }
   }
 

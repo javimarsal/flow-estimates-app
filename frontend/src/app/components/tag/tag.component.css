@@ -3,6 +3,7 @@
     color: rgba(0, 0, 0, 0.87);
     align-items: center;
     display: flex;
+    justify-content: space-between;
     box-sizing: border-box;
     background: white;
     font-size: 18px;
@@ -11,6 +12,10 @@
     border-radius: 4px;
 }
 
-.tagProperty {
-    flex: 1;
+.editButton {
+    display: none;
+}
+
+.tagItem:hover .editButton {
+    display: inline-block;
 }

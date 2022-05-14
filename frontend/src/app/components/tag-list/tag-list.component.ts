@@ -47,6 +47,10 @@ export class TagListComponent implements OnInit {
     });
   }
 
+  changeInnerText(elementId: string, message: string) {
+    document.getElementById(elementId)!.innerText = message;
+  }
+
   async getProjectTags() {
     if (!this.projectId) {
       return;
@@ -92,7 +96,12 @@ export class TagListComponent implements OnInit {
 
     // Añadir el Tag a la lista del proyecto
     // controlar que tagDB no sea undefine o similar
-    if (!tagDB) return;
+    if (!tagDB) {
+      // si es undefine es porque no se ha podido crear debido a que existe otra etiqueta con el mismo nombre
+      this.changeInnerText('warning', 'No se puede crear la etiqueta porque el nombre elegido ya está en uso.');
+      return;
+    };
+    this.changeInnerText('warning', '');
 
     // Si tagDB no es undefine, significa que se ha podido crear y lo podemos añadir a la lista del proyecto
     try {

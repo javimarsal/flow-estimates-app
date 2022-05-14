@@ -3,36 +3,39 @@
 <h2 class="title">Etiquetas del Proyecto</h2>
 
 <mat-card class="tags">
-    <div class="tagCreation">
+    <div>
         <mat-accordion>
-            <mat-expansion-panel>
+            <mat-expansion-panel class="tagCreation">
                 <mat-expansion-panel-header>
                 <mat-panel-title>
                     Crear nueva etiqueta
                 </mat-panel-title>
                 </mat-expansion-panel-header>
                 <!-- Input to create new tag -->
-                <form class="create-work-item" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="createTag(formDirective)">
-                    <mat-form-field class="tagInput" appearance="fill" hintLabel="Máximo 10 caracteres" [hideRequiredMarker]="true">
-                        <mat-label>Nombre</mat-label>
-                        <input type="text" matInput autocomplete="off" formControlName="name" maxlength="15" required #nameInput>
-                        <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/15</mat-hint>
-                        <mat-error class="inputFooter" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
-                    </mat-form-field>
-                    <mat-form-field class="tagInput" appearance="fill" [hideRequiredMarker]="true">
-                        <mat-label>Color</mat-label>
-                        <input type="text" matInput autocomplete="off" formControlName="color" required>
-                        <mat-error class="inputFooter" *ngIf="form.invalid">Debes elegir un color</mat-error>
-                    </mat-form-field>
-                    
-                    <button type="submit" mat-flat-button color="primary">Crear</button>
-                </form>
+                <div>
+                    <form class="create-work-item" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="createTag(formDirective)">
+                        <mat-form-field class="tagInput" appearance="fill" hintLabel="Máximo 10 caracteres" [hideRequiredMarker]="true">
+                            <mat-label>Nombre</mat-label>
+                            <input type="text" matInput autocomplete="off" formControlName="name" maxlength="15" required #nameInput>
+                            <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/15</mat-hint>
+                            <mat-error class="inputFooter" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
+                        </mat-form-field>
+                        <mat-form-field class="tagInput" appearance="fill" [hideRequiredMarker]="true">
+                            <mat-label>Color</mat-label>
+                            <input type="text" matInput autocomplete="off" formControlName="color" required>
+                            <mat-error class="inputFooter" *ngIf="form.invalid">Debes elegir un color</mat-error>
+                        </mat-form-field>
+                        
+                        <button type="submit" mat-flat-button color="primary">Crear</button>
+                    </form>
+                </div>
+                <p class="tagCreation-warning" id="warning"></p>
             </mat-expansion-panel>
         </mat-accordion>
     </div>
 
     <div *ngFor="let tag of tagsOfProject">
-        <app-tag [tag]="tag"></app-tag>
+        <app-tag [tag]="tag" [tagListComponent]="this"></app-tag>
     </div>
 
     <div *ngIf="tagsOfProject.length==0">
