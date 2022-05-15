@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 
@@ -16,6 +16,9 @@ import { TagListComponent } from '../tag-list/tag-list.component';
 // Material
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
+// A Color Picker
+import * as AColorPicker from 'a-color-picker';
+
 @Component({
   selector: 'app-tag',
   templateUrl: './tag.component.html',
@@ -27,10 +30,39 @@ export class TagComponent implements OnInit {
   @Input() tagListComponent!: TagListComponent;
   projectId: any = '';
 
+  @ViewChild('tagName') pElement!: ElementRef;
+
   constructor(private dialog: MatDialog, private tagService: TagService, private projectService: ProjectService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.getProjectId();
+  }
+
+  ngAfterViewInit() {
+    let tagColor = this.tag.color;
+
+    // Cambiar el background-color del elemento HTML
+    this.setBackgroundColor(tagColor)
+
+    this.setFontColor(tagColor);
+  }
+
+  setBackgroundColor(color: string) {
+    this.pElement.nativeElement.style.backgroundColor = color;
+  }
+
+  setFontColor(color: string) {
+    let darkness = 0;
+
+    let colorRGB: any = AColorPicker.parseColor(color, 'rgb');
+
+    // Contar la percepción de luminosidad - human eye favors
+    let luminance = (0.299 * colorRGB[0] + 0.587 * colorRGB[1] + 0.114 * colorRGB[2]) / 255;
+
+    if (luminance > 0.5) darkness = 0; // bright colors - black font
+    else darkness = 255; // dark colors - white font
+                
+    this.pElement.nativeElement.style.color = `rgb(${darkness}, ${darkness}, ${darkness})`
   }
 
   getProjectId() {
@@ -111,6 +143,8 @@ export class TagComponent implements OnInit {
         // Si llegan datos y no es 'delete' actualizamos el name y color del Tag
         this.tag.name = data.name;
         this.tag.color = data.color;
+        this.setBackgroundColor(this.tag.color);
+        this.setFontColor(this.tag.color);
         await this.updateTag(this.tag);
       }
     );

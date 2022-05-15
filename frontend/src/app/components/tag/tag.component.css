@@ -12,6 +12,12 @@
     border-radius: 4px;
 }
 
+.tag {
+    border-radius: 20px;
+    padding: 2px 8px;
+    border: 2px solid rgb(225, 225, 225);
+}
+
 .editButton {
     display: none;
 }
