@@ -8,6 +8,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 // Services
 import { ProjectService } from 'src/app/services/project.service';
 
+// A Color Picker
+import * as AColorPicker from 'a-color-picker';
+
 
 @Component({
   selector: 'app-tag-dialog',
@@ -21,6 +24,8 @@ export class TagDialogComponent implements OnInit {
 
   projectId: any = '';
 
+  colorPicker: any;
+
   constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<TagDialogComponent>, @Inject(MAT_DIALOG_DATA) data: any, private projectService: ProjectService) {
     this.name = data.name;
     this.color = data.color;
@@ -31,10 +36,41 @@ export class TagDialogComponent implements OnInit {
     this.form = this.fb.group({
       name: [this.name],
       color: [this.color]
-    })
+    });
+
+    this.setButtonColor(this.color);
+
+    this.createColorPicker();
   }
 
-  
+  setButtonColor(color: string) {
+    document.getElementById('btnColor')!.style.background = color;
+  }
+
+  createColorPicker() {
+    let cPElement = document.getElementById('colorPicker');
+
+    this.colorPicker = AColorPicker.createPicker(cPElement, {
+      color: this.color,
+      showRGB: false,
+      showHSL: false,
+      palette: ['#5c0ed1']
+    });
+
+    this.colorPicker.on('change', (picker: any, color: string) => {
+      // Cambiamos el color del botón
+      this.setButtonColor(color);
+
+      // Cambiamos el valor del input del color
+      let colorInput = document.getElementById('colorInput') as HTMLInputElement;
+      colorInput.value = AColorPicker.parseColor(color, 'hex');
+
+      // Cambiar el valor del color del formulario
+      this.form.value.color = colorInput.value;
+    });
+
+    this.toggleColorPicker();
+  }
 
   async save() {
     // Nombre y Color del formulario
@@ -112,10 +148,12 @@ export class TagDialogComponent implements OnInit {
       return false;
     }
 
-    // TODO: Si cambia el nombre, comprobar que es un color válido
-
     this.changeInnerText('warningColor', '');
     return true;
+  }
+
+  toggleColorPicker() {
+    this.colorPicker.toggle();
   }
 
 }

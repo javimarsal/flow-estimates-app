@@ -21,9 +21,13 @@
             <input class="tagInput" matInput placeholder="Nombre" formControlName="name">
         </mat-form-field>
         <p class="warning" id="warningName"></p>
-        <mat-form-field>
-            <input class="tagInput" matInput placeholder="Color" formControlName="color">
-        </mat-form-field>
+        <div class="subContainer">
+            <mat-form-field>
+                <input id="colorInput" class="tagInput readonly" matInput placeholder="Color" formControlName="color" [readonly]="true">
+            </mat-form-field>
+            <button id="btnColor" class="btn colorButton" (click)="toggleColorPicker()"></button>
+            <div id="colorPicker"></div>
+        </div>
         <p class="warning" id="warningColor"></p>
     </div>
     <button class="btn btn-outline-danger" type="button" (click)="delete()">

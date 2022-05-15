@@ -9,9 +9,17 @@
     word-wrap: break-word;
 }
 
+.subContainer {
+    display: flex;
+}
+
 .tagInput {
     height: 30px;
     font-size: 22px;
+}
+
+.readonly {
+    color: darkgrey;
 }
 
 .warning {
@@ -22,4 +30,10 @@
     margin-left: 11px;
     margin-top: 20px;
     margin-bottom: 5px;
+}
+
+.colorButton {
+    border: 2px solid darkgray;
+    height: 28px;
+    margin-right: 20px;
 }
