@@ -15,7 +15,7 @@
 .tag {
     border-radius: 20px;
     padding: 2px 8px;
-    border: 2px solid rgb(225, 225, 225);
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
 .editButton {
