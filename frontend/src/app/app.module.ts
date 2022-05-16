@@ -24,6 +24,7 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 // Components
 import { AppComponent } from './app.component';
@@ -80,6 +81,7 @@ import { TagDialogComponent } from './components/tag-dialog/tag-dialog.component
     MatSelectModule,
     MatTooltipModule,
     MatDialogModule,
+    ScrollingModule,
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,

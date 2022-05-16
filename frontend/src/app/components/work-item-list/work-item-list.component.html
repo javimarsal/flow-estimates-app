@@ -1,6 +1,8 @@
-<div id="{{panelName}}" cdkDropList [cdkDropListData]="workItemsOfPanel_IdNumbers" class="itemList" (cdkDropListDropped)="drop($event)">
-    <div class="itemBox" *ngFor="let workItemId of workItemsOfPanel_IdNumbers" cdkDrag #workItemBox>
-        <!-- Las listas de los divs deben ser la misma para que funcione -->
-        <app-work-item [workItemIdNumber]="stringToNumber(workItemId)" [panelName]="panelName" [workItemListComponent]="this"></app-work-item>
+<div class="scrollable-area" cdkScrollable>
+    <div id="{{panelName}}" cdkDropList [cdkDropListData]="workItemsOfPanel_IdNumbers" class="itemList" (cdkDropListDropped)="drop($event)">
+        <div class="itemBox" *ngFor="let workItemId of workItemsOfPanel_IdNumbers" cdkDrag #workItemBox>
+            <!-- Las listas de los divs deben ser la misma para que funcione -->
+            <app-work-item [workItemIdNumber]="stringToNumber(workItemId)" [panelName]="panelName" [workItemListComponent]="this"></app-work-item>
+        </div>
     </div>
 </div>

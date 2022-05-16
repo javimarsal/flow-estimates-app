@@ -1,10 +1,17 @@
 .itemList {
     border: solid 1px #ccc;
-    min-height: 60px;
     background: white;
     border-radius: 4px;
     overflow: hidden;
     display: block;
+    height: auto;
+    min-height: 105px;
+}
+
+.scrollable-area {
+    max-height: 650px;
+    min-height: 105px;
+    overflow-y: auto;
 }
 
 .itemBox {
