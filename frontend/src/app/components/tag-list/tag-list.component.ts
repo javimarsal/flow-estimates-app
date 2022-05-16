@@ -10,6 +10,9 @@ import { Tag } from 'src/app/models/tag';
 import { ProjectService } from 'src/app/services/project.service';
 import { TagService } from 'src/app/services/tag.service';
 
+// A Color Picker
+import * as AColorPicker from 'a-color-picker';
+
 @Component({
   selector: 'app-tag-list',
   templateUrl: './tag-list.component.html',
@@ -25,12 +28,17 @@ export class TagListComponent implements OnInit {
   invalidName = false;
   invalidColor = false;
 
+  colorPicker: any;
+
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private projectService: ProjectService, private tagService: TagService) { }
 
   async ngOnInit() {
     this.getProjectId();
 
     this.initForm();
+
+    this.setButtonColor('#f5a475')
+    this.createColorPicker();
 
     // Obtenemos las etiquetas (tags) del proyecto
     await this.getProjectTags();
@@ -43,8 +51,37 @@ export class TagListComponent implements OnInit {
   initForm() {
     this.form = this.fb.group({
       name: [''],
-      color: ['#FFFFFF'],
+      color: ['#f5a475'],
     });
+  }
+
+  setButtonColor(color: string) {
+    document.getElementById('colorButton')!.style.background = color;
+  }
+
+  createColorPicker() {
+    let cPElement = document.getElementById('pickerColor');
+
+    this.colorPicker = AColorPicker.createPicker(cPElement, {
+      color: '#f5a475',
+      showRGB: false,
+      showHSL: false,
+      palette: ['#5c0ed1']
+    });
+
+    this.colorPicker.on('change', (picker: any, color: string) => {
+      // Cambiamos el color del botón
+      this.setButtonColor(color);
+
+      // Cambiamos el valor del input del color
+      let colorInput = document.getElementById('color') as HTMLInputElement;
+      colorInput.value = AColorPicker.parseColor(color, 'hex');
+
+      // Cambiar el valor del color del formulario
+      this.form.value.color = colorInput.value;
+    });
+
+    this.toggleColorPicker();
   }
 
   changeInnerText(elementId: string, message: string) {
@@ -64,6 +101,10 @@ export class TagListComponent implements OnInit {
     }
   }
 
+  toggleColorPicker() {
+    this.colorPicker.toggle();
+  }
+
   async createTag(formDirective: FormGroupDirective) {
     // Eliminar espacios no deseados
     let name = this.form.value.name.replace(/\s+/g,' ').trim();
@@ -73,7 +114,6 @@ export class TagListComponent implements OnInit {
       return;
     }
 
-    // TODO: comprobaciones de si es un color válido
     if (!color) {
       return;
     }
@@ -115,8 +155,9 @@ export class TagListComponent implements OnInit {
     formDirective.resetForm();
     this.form.reset({
       name: '',
-      color: '#FFFFFF',
-    })
+      color: '#f5a475',
+    });
+    this.setButtonColor('#f5a475');
 
     // y añadimos el nuevo Tag a la lista tagsOfProject
     // puede que el orden no se corresponda al cargar la página

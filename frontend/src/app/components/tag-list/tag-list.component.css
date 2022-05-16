@@ -18,6 +18,26 @@
     flex-direction: column;
 }
 
+.creationTitle {
+    font-size: 20px;
+    color: #307df8;
+}
+
+.formContainer {
+    display: flex;
+    align-items: center;
+}
+
+.colorButton {
+    border: 2px solid darkgray;
+    height: 28px;
+    margin-right: 20px;
+}
+
+.crearButton {
+    margin-left: 20px;
+}
+
 .tagCreation-warning {
     margin-top: 20px;
     color: #f85454;
@@ -31,6 +51,10 @@
 
 .tagInput {
     margin-right: 10px;
+}
+
+.readonly {
+    color: darkgrey;
 }
 
 .inputFooter {
