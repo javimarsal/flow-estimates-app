@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
+import { FormBuilder, FormGroup, FormGroupDirective } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
 
 // Model
@@ -30,7 +31,7 @@ export class TagListComponent implements OnInit {
 
   colorPicker: any;
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private projectService: ProjectService, private tagService: TagService) { }
+  constructor(private route: ActivatedRoute, private location: Location, private fb: FormBuilder, private projectService: ProjectService, private tagService: TagService) { }
 
   async ngOnInit() {
     this.getProjectId();
@@ -42,6 +43,10 @@ export class TagListComponent implements OnInit {
 
     // Obtenemos las etiquetas (tags) del proyecto
     await this.getProjectTags();
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   getProjectId() {

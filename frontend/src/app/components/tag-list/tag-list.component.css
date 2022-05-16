@@ -1,7 +1,21 @@
-.title {
+.header {
+    display: flex;
     padding-top: 5em;
+    margin: auto;
+    max-width: 900px;
+}
+
+.headerButton {
+    height: 45px;
+    margin-right: 20px;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.title {
     font-size: 30px;
     text-align: center;
+    padding-top: 5px;
     margin-bottom: 1em;
     color: #307df8
 }

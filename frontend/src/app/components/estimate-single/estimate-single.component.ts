@@ -1,6 +1,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
+import { Location } from '@angular/common';
 
 // Services
 import { ProjectService } from 'src/app/services/project.service';
@@ -87,7 +88,7 @@ export class EstimateSingleComponent implements OnInit {
   startDate!: Date;
   endDate!: Date;
 
-  constructor(private route: ActivatedRoute, private projectService: ProjectService) { }
+  constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService) { }
 
   recalculate(newPercentile: number) {
     // Establecer el nuevo percentil
@@ -143,6 +144,10 @@ export class EstimateSingleComponent implements OnInit {
 
 
     // TODO: si dataDone está vacío mostrar un mensaje (o reemplazar el mensaje de la estimación por ese mensaje)
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   async setDataForChart() {

@@ -1,6 +1,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 
 // Models
 import { Panel } from 'src/app/models/panel';
@@ -74,7 +75,7 @@ export class EstimateMultipleComponent implements OnInit {
   // Número de ejecuciones Simulación Monte Carlo
   numberOfExecutions: number = 10000;
 
-  constructor(private route: ActivatedRoute, private projectService: ProjectService, private workItemService: WorkItemService) { }
+  constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService, private workItemService: WorkItemService) { }
 
   async ngOnInit() {
     // obtenemos el id del proyecto para poder obtener sus datos
@@ -92,6 +93,10 @@ export class EstimateMultipleComponent implements OnInit {
 
   getProjectId() {
     this.projectId = this.route.snapshot.paramMap.get('id');
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {

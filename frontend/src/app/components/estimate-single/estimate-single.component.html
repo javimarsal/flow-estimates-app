@@ -1,6 +1,13 @@
 <app-navbar></app-navbar>
 
-<h2 class="title">Predicción para 1 Elemento, basada en el Tiempo de Ciclo de tus PBI</h2>
+<div class="header">
+    <button class="headerButton btn" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+            <path fill="#4b4c4c" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+          </svg>
+    </button>
+    <h2 class="title">Predicción para 1 Elemento, basada en el Tiempo de Ciclo de tus PBI</h2>
+</div>
 
 <mat-card class="chart-card">
     <div class="chart" *ngIf="isReady">
