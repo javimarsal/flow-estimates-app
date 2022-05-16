@@ -66,7 +66,7 @@ export class TagListComponent implements OnInit {
       color: '#f5a475',
       showRGB: false,
       showHSL: false,
-      palette: ['#5c0ed1']
+      palette: ['#fc3628', '#fc9a11', '#fcec11', '#b2fc14', '#2af913', '#13dff9', '#134cf7', '#6e13f7', '#e413f7', '#000000', '#fca1a1', '#fcd6a1', '#f9f395', '#ddfc99', '#9ff995', '#99f0fc', '#99b2fc', '#b78cf7', '#ee8cf7', '#ffffff']
     });
 
     this.colorPicker.on('change', (picker: any, color: string) => {
