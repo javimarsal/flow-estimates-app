@@ -38,13 +38,17 @@ export class TagDialogComponent implements OnInit {
       color: [this.color]
     });
 
-    this.setButtonColor(this.color);
+    // Poner el color del Tag en el botón y en el título
+    this.setButtonColor('btnColor', this.color);
+    this.setButtonColor('title', this.color);
+    // Poner color de la letra del título según el color
+    this.setFontColor(this.color);
 
     this.createColorPicker();
   }
 
-  setButtonColor(color: string) {
-    document.getElementById('btnColor')!.style.background = color;
+  setButtonColor(elementId: string, color: string) {
+    document.getElementById(elementId)!.style.background = color;
   }
 
   createColorPicker() {
@@ -59,7 +63,10 @@ export class TagDialogComponent implements OnInit {
 
     this.colorPicker.on('change', (picker: any, color: string) => {
       // Cambiamos el color del botón
-      this.setButtonColor(color);
+      this.setButtonColor('btnColor', color);
+      this.setButtonColor('title', color);
+      // y el de la letra del título
+      this.setFontColor(color);
 
       // Cambiamos el valor del input del color
       let colorInput = document.getElementById('colorInput') as HTMLInputElement;
@@ -70,6 +77,20 @@ export class TagDialogComponent implements OnInit {
     });
 
     this.toggleColorPicker();
+  }
+
+  setFontColor(color: string) {
+    let darkness = 0;
+
+    let colorRGB: any = AColorPicker.parseColor(color, 'rgb');
+
+    // Contar la percepción de luminosidad - human eye favors
+    let luminance = (0.299 * colorRGB[0] + 0.587 * colorRGB[1] + 0.114 * colorRGB[2]) / 255;
+
+    if (luminance > 0.5) darkness = 0; // bright colors - black font
+    else darkness = 255; // dark colors - white font
+                
+    document.getElementById('title')!.style.color = `rgb(${darkness}, ${darkness}, ${darkness})`;
   }
 
   async save() {
