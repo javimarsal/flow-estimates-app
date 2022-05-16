@@ -20,6 +20,7 @@ import * as AColorPicker from 'a-color-picker';
 export class TagDialogComponent implements OnInit {
   form!: FormGroup;
   name: string = '';
+  nameTitleHTML: string = '';
   color: string = '';
 
   projectId: any = '';
@@ -28,6 +29,7 @@ export class TagDialogComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<TagDialogComponent>, @Inject(MAT_DIALOG_DATA) data: any, private projectService: ProjectService) {
     this.name = data.name;
+    this.nameTitleHTML = data.name;
     this.color = data.color;
     this.projectId = data.projectId;
   }
