@@ -30,6 +30,7 @@ export class TagListComponent implements OnInit {
   invalidColor = false;
 
   colorPicker: any;
+  characterLimitName = 15;
 
   constructor(private route: ActivatedRoute, private location: Location, private fb: FormBuilder, private projectService: ProjectService, private tagService: TagService) { }
 

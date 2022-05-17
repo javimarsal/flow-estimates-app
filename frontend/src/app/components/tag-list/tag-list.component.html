@@ -21,10 +21,10 @@
                 <!-- Input to create new tag -->
                 <div>
                     <form class="formContainer" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="createTag(formDirective)">
-                        <mat-form-field class="tagInput" appearance="fill" hintLabel="Máximo 10 caracteres" [hideRequiredMarker]="true">
+                        <mat-form-field class="tagInput" appearance="fill" hintLabel="Máximo {{characterLimitName}} caracteres" [hideRequiredMarker]="true">
                             <mat-label>Nombre</mat-label>
-                            <input type="text" matInput autocomplete="off" formControlName="name" maxlength="15" required #nameInput>
-                            <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/15</mat-hint>
+                            <input type="text" matInput autocomplete="off" formControlName="name" maxlength="{{characterLimitName}}" required #nameInput>
+                            <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/{{characterLimitName}}</mat-hint>
                             <mat-error class="inputFooter" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
                         </mat-form-field>
                         <mat-form-field class="tagInput readonly" appearance="fill" [hideRequiredMarker]="true">

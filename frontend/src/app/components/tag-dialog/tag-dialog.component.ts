@@ -74,8 +74,11 @@ export class TagDialogComponent implements OnInit {
       let colorInput = document.getElementById('colorInput') as HTMLInputElement;
       colorInput.value = AColorPicker.parseColor(color, 'hex');
 
-      // Cambiar el valor del color del formulario
-      this.form.value.color = colorInput.value;
+      // Cambiar el valor del color del formulario (name se mantiene igual)
+      this.form.setValue({
+        ['name']: this.form.value.name,
+        ['color']: AColorPicker.parseColor(color, 'hex')
+      });
     });
 
     this.toggleColorPicker();
