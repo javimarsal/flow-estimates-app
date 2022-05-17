@@ -32,7 +32,7 @@ db.on('error', function (err) {
     console.error('Error:', err.message);
 });
 
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(function () {
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(async function () {
     var user1 = new User({
         name: 'Javier',
         surname: 'Martínez',
@@ -74,91 +74,808 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         })
     ];
 
-    var panelDateRegistry = [{
-        panel: 'ToDO',
-        date: new Date()
-    }];
+    var tags1 = [
+        new Tag({
+            name: 'PG1',
+            color: '#4da6ff'
+        }),
+        new Tag({
+            name: 'PG2',
+            color: '#4de1ff'
+        }),
+        new Tag({
+            name: 'PG3',
+            color: '#9933ff'
+        }),
+        new Tag({
+            name: 'PG4',
+            color: '#4019ff'
+        }),
+        new Tag({
+            name: 'bug',
+            color: '#d73a4a'
+        }),
+        new Tag({
+            name: 'enhancement',
+            color: '#a2eeef'
+        }),
+        new Tag({
+            name: 'documentation',
+            color: '#0075ca'
+        }),
+        new Tag({
+            name: 'duplicate',
+            color: '#cfd3d7'
+        })
+    ];
 
     var workItems1 = [
-        new WorkItem({
-            idNumber: 1,
-            title: 'Get to work',
-            description: 'Yes, let\'s go!',
-            panel: 'ToDO',
-            position: 0,
-            panelDateRegistry: panelDateRegistry,
-            tags: []
-        }),
-        new WorkItem({
-            idNumber: 2,
-            title: 'Pick up groceries',
-            description: '',
-            panel: 'ToDO',
-            position: 1,
-            panelDateRegistry: panelDateRegistry,
-            tags: []
-        }),
         new WorkItem({
             idNumber: 3,
             title: 'Go home',
             description: '',
-            panel: 'ToDO',
-            position: 2,
-            panelDateRegistry: panelDateRegistry,
+            panel: 'Done',
+            position: 15,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-24')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-25')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-25')
+                },
+            ],
             tags: []
         }),
         new WorkItem({
             idNumber: 4,
             title: 'Fall asleep',
             description: '',
-            panel: 'ToDO',
-            position: 3,
-            panelDateRegistry: panelDateRegistry,
+            panel: 'Done',
+            position: 16,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-24')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-25')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-28')
+                },
+            ],
             tags: []
         }),
         new WorkItem({
             idNumber: 5,
             title: 'Brush teeth',
-            description: '',
-            panel: 'ToDO',
-            position: 4,
-            panelDateRegistry: panelDateRegistry,
+            description: 'Brush your teeth to be clean',
+            panel: 'Done',
+            position: 14,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-24')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-25')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-26')
+                },
+            ],
             tags: []
         }),
         new WorkItem({
             idNumber: 6,
             title: 'Get up',
             description: '',
-            panel: 'ToDO',
-            position: 5,
-            panelDateRegistry: panelDateRegistry,
-            tags: []
-        }),
-        new WorkItem({
-            idNumber: 7,
-            title: 'Take a shower',
-            description: '',
-            panel: 'ToDO',
-            position: 6,
-            panelDateRegistry: panelDateRegistry,
+            panel: 'Done',
+            position: 13,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-24')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-27')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-27')
+                },
+            ],
             tags: []
         }),
         new WorkItem({
             idNumber: 8,
             title: 'Check e-mail',
             description: '',
-            panel: 'ToDO',
-            position: 7,
-            panelDateRegistry: panelDateRegistry,
+            panel: 'Done',
+            position: 12,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-22')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-27')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-27')
+                },
+            ],
             tags: []
         }),
         new WorkItem({
             idNumber: 9,
             title: 'Walk dog',
-            description: 'Walk my dog Coffee',
+            description: '',
+            panel: 'Done',
+            position: 11,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-24')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-27')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-30')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 10,
+            title: 'It\'s raining',
+            description: '',
+            panel: 'Done',
+            position: 10,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-20')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-24')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-27')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 11,
+            title: 'Please, stop raining',
+            description: 'Just a joke!',
+            panel: 'Done',
+            position: 9,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-18')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-19')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-22')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 12,
+            title: 'Say hello',
+            description: 'Or whatever you want to say',
+            panel: 'ToDO',
+            position: 15,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-27')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-27')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 13,
+            title: 'Have a break',
+            description: 'You always need a break',
+            panel: 'Done',
+            position: 8,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-20')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-24')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-26')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 14,
+            title: 'Tarea 1',
+            description: 'Descripción de la Tarea 1',
+            panel: 'Done',
+            position: 7,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-27')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-27')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-27')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 15,
+            title: 'Tarea 2',
+            description: 'Descripción de la Tarea 2',
+            panel: 'Done',
+            position: 6,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-27')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-27')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-27')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 16,
+            title: 'Tarea 3',
+            description: '',
+            panel: 'Done',
+            position: 4,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-28')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-28')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-28')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 18,
+            title: 'Tarea 5',
+            description: '',
+            panel: 'Done',
+            position: 5,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-28')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-28')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-28')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 19,
+            title: 'Tarea 6',
+            description: '',
+            panel: 'Done',
+            position: 3,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-28')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-28')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-28')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 20,
+            title: 'Tarea 7',
+            description: '',
+            panel: 'Done',
+            position: 2,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-28')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-29')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-04-29')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 22,
+            title: 'Tarea 9',
+            description: 'Otra descripción',
+            panel: 'Doing',
+            position: 2,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-28')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-05-06')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 23,
+            title: 'Tarea nueva',
+            description: '',
+            panel: 'Doing',
+            position: 1,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-30')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-30')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 25,
+            title: 'tarea',
+            description: '',
+            panel: 'Doing',
+            position: 0,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-30')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-30')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 26,
+            title: 'don\'t say hello',
+            description: 'Just don\'t say hello to strangers',
+            panel: 'Done',
+            position: 1,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-04-30')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-04-30')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-05-07')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 27,
+            title: 'Tarea 1',
+            description: '',
+            panel: 'ToDO',
+            position: 22,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-03')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 28,
+            title: 'Tarea 1',
+            description: '',
+            panel: 'ToDO',
+            position: 21,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-03')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 29,
+            title: 'Tarea 0',
+            description: '',
+            panel: 'Done',
+            position: 0,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-03')
+                },
+                {
+                    panel: 'Doing',
+                    date: new Date('2022-05-05')
+                },
+                {
+                    panel: 'Done',
+                    date: new Date('2022-05-05')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 30,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 20,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 31,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 19,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 32,
+            title: 'tarea nueva',
+            description: '',
+            panel: 'ToDO',
+            position: 18,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 33,
+            title: 'tarea 1',
+            description: '',
+            panel: 'ToDO',
+            position: 17,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 34,
+            title: 'tarea muy nueva',
+            description: '',
+            panel: 'ToDO',
+            position: 16,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 35,
+            title: 'tarea guay',
+            description: '',
+            panel: 'ToDO',
+            position: 14,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 36,
+            title: 'tareaaa',
+            description: '',
+            panel: 'ToDO',
+            position: 13,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 37,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 12,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 38,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 11,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 39,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 10,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 40,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 9,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 41,
+            title: 'tarea',
+            description: '',
             panel: 'ToDO',
             position: 8,
-            panelDateRegistry: panelDateRegistry,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 42,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 7,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 43,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 6,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 44,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 5,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 45,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 4,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 46,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 3,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 46,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 3,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 47,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 2,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 48,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 1,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
+            tags: []
+        }),
+        new WorkItem({
+            idNumber: 49,
+            title: 'tarea',
+            description: '',
+            panel: 'ToDO',
+            position: 0,
+            panelDateRegistry: [
+                {
+                    panel: 'ToDO',
+                    date: new Date('2022-05-09')
+                },
+            ],
             tags: []
         }),
     ];
@@ -196,61 +913,59 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     //     }),
     // ];
 
-    return WorkItem.deleteMany().then(function () {
-        return Panel.deleteMany();
-    }).then(function () {
-        return Project.deleteMany();
-    }).then(function () {
-        return User.deleteMany();
-    }).then(function () {
-        return Tag.deleteMany();
-    }).then(function () {
-        return Panel.insertMany(panels1);
-    }).then(function () {
-        return WorkItem.insertMany(workItems1);
-    }).then(async function () {
-        let panels = await Panel.find();
-        for (let p of panels) {
-            project1.panels.push({
-                panel: p._id
-            });
-        }
+    await WorkItem.deleteMany();
+    await Panel.deleteMany();
+    await Project.deleteMany();
+    await User.deleteMany();
+    await Tag.deleteMany();
 
-        let workItems = await WorkItem.find();
-        for (let wI of workItems) {
-            project1.workItems.push({
-                workItem: wI._id
-            });
-        }
+    await Panel.insertMany(panels1);
+    await WorkItem.insertMany(workItems1);
+    await Tag.insertMany(tags1);
 
-        return project1.save();
-    }).then(async function () {
-        let panels = await Panel.find();
-        for (let p of panels) {
-            project2.panels.push({
-                panel: p._id
-            });
-        }
+    let panels = await Panel.find();
+    for (let p of panels) {
+        project1.panels.push({
+            panel: p._id
+        });
+    }
+    let workItems = await WorkItem.find();
+    for (let wI of workItems) {
+        project1.workItems.push({
+            workItem: wI._id
+        });
+    }
+    let tags = await Tag.find();
+    for (let t of tags) {
+        project1.tags.push({
+            tag: t._id
+        });
+    }
+    // Poner etiquetas a los workItems
+    for (let wI of workItems) {
+        // elegir entre PG1-PG4 (uno)
+        // elegir entre bug, enhancement, ... (uno)
+    }
+    await project1.save();
 
-        return project2.save();
-    }).then(async function () {
-        let projects = await Project.find();
-        user1.projects.push({
-            role: 'Project Manager',
-            project: projects[0]._id
-        })
-
-        user1.projects.push({
-            role: 'Desarrollador',
-            project: projects[1]._id
-        })
-        
-        //user1.openedProject = projects[0]._id;
-
-        return user1.save();
-    }).then(function () {
-        return mongoose.disconnect();
+    let panels_1 = await Panel.find();
+    for (let p_1 of panels_1) {
+        project2.panels.push({
+            panel: p_1._id
+        });
+    }
+    await project2.save();
+    let projects = await Project.find();
+    user1.projects.push({
+        role: 'Project Manager',
+        project: projects[0]._id
     });
+    user1.projects.push({
+        role: 'Desarrollador',
+        project: projects[1]._id
+    });
+    await user1.save();
+    return await mongoose.disconnect();
 
 }).catch(function (err) {
     console.log('Error:', err.message);
