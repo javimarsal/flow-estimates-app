@@ -106,6 +106,10 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         new Tag({
             name: 'duplicate',
             color: '#cfd3d7'
+        }),
+        new Tag({
+            name: 'weird problem',
+            color: '#282828'
         })
     ];
 
@@ -941,13 +945,31 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             tag: t._id
         });
     }
+    await project1.save();
+
     // Poner etiquetas a los workItems
     for (let wI of workItems) {
         // elegir entre PG1-PG4 (uno)
-        // elegir entre bug, enhancement, ... (uno)
-    }
-    await project1.save();
+        // Retorna un entero aleatorio entre min (incluido) y max (excluido)
+        let index = Math.floor(Math.random() * (4 - 0)) + 0;
+        wI.tags.push({
+            tag: tags[index]._id
+        });
 
+        // elegir entre bug, enhancement, ... (dos)
+        // Retorna un entero aleatorio entre min (incluido) y max (excluido)
+        index = Math.floor(Math.random() * (7 - 4)) + 4;
+        wI.tags.push({
+            tag: tags[index]._id
+        });
+        index = Math.floor(Math.random() * (9 - 7)) + 7;
+        wI.tags.push({
+            tag: tags[index]._id
+        });
+
+        await wI.save();
+    }
+    
     let panels_1 = await Panel.find();
     for (let p_1 of panels_1) {
         project2.panels.push({
@@ -955,6 +977,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         });
     }
     await project2.save();
+
     let projects = await Project.find();
     user1.projects.push({
         role: 'Project Manager',
