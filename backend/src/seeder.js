@@ -827,20 +827,6 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
             tags: []
         }),
         new WorkItem({
-            idNumber: 46,
-            title: 'tarea',
-            description: '',
-            panel: 'ToDO',
-            position: 3,
-            panelDateRegistry: [
-                {
-                    panel: 'ToDO',
-                    date: new Date('2022-05-09')
-                },
-            ],
-            tags: []
-        }),
-        new WorkItem({
             idNumber: 47,
             title: 'tarea',
             description: '',
