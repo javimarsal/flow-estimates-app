@@ -38,20 +38,28 @@
 
         <!-- panel de tareas pendientes (Backlog) -->
         <h3 class="optionTitle">Qué panel estimar
-            <span matTooltip="Panel donde están las tareas por hacer y de las que queremos saber su estimación">
+            <span matTooltip="Panel o paneles donde están las tareas por hacer y de las que queremos saber su estimación">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
                     <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                     <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                 </svg>
             </span>
         </h3>
-        <mat-form-field appearance="fill">
+
+        <section class="estimatePanels">
+            <p *ngFor="let pN of panelNames">
+                <mat-checkbox (change)="changeCheckedValue($event.checked, pN)" [disabled]="disabledPanels[pN]">{{pN}} ({{numberOfWorkItems_PerPanel[pN]}} tareas)</mat-checkbox>
+            </p>
+            <p class="warning" id="warningPanelBacklog"></p>
+        </section>
+
+        <!-- <mat-form-field >
             <mat-label>Panel Backlog</mat-label>
             <mat-select (selectionChange)="setPanelBacklogSelector($event)" [(value)]="panelBacklog">
                 <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
             </mat-select>
-        </mat-form-field>
-        <p class="warning" id="warningPanelBacklog"></p>
+        </mat-form-field> -->
+        
 
         <!-- Elegir número de ejecuciones -->
         <div class="optionGroup">
@@ -84,8 +92,8 @@
         <h4 class="optionSubtitle">Elegir panel</h4>
         <mat-form-field appearance="fill">
             <mat-label>Panel tareas hechas</mat-label>
-            <mat-select (selectionChange)="setPanelDoneSelector($event, startDate, endDate)" [(value)]="panelDone">
-                <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
+            <mat-select (selectionChange)="setPanelDoneSelector($event, startDate, endDate)">
+                <mat-option *ngFor="let pN of panelList_ForSelectingPanelDone" [value]="pN">{{pN}}</mat-option>
             </mat-select>
         </mat-form-field>
         <p class="warning" id="warningPanelDone"></p>

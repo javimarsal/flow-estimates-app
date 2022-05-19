@@ -53,6 +53,19 @@ export class EstimateMultipleComponent implements OnInit {
   panelDone: string = '';
   panelBacklog: string = '';
 
+  // Array de paneles para el panelThroughput
+  panelList_ForSelectingPanelDone: string[] = [];
+
+  // Condición para poder inicar la simulación, o no
+  arePanelsRight: boolean = true;
+
+  // Condiciones para deshabilitar o no los paneles backlog
+  disabledPanels: any = [];
+  // true / false si el panel está checked o no
+  checkedPanels: any = [];
+  // array donde se guarda el número de workItems de cada panel
+  numberOfWorkItems_PerPanel: any = [];
+
   // fechas por las que filtrar los workItems para el cálculo del Throughput
   startDate!: Date;
   endDate!: Date;
@@ -84,11 +97,25 @@ export class EstimateMultipleComponent implements OnInit {
     // obtenemos el nombre de los paneles para poder hacer la selección
     await this.getPanelNames();
 
+    // Obtener el número de workItems que hay en cada panel y guardarlo en el array numberOfWorkItems_PerPanel
+    await this.getNumberOfWorkItems_PerPanel(this.numberOfWorkItems_PerPanel);
+
+    // inicializar array con las condiciones para deshabilitar o no los paneles backlog
+    // numberOfWorkItems_PerPanel se utiliza para dsehabilitar (true) el panel si numberOfWorkItems_PerPanel[pN] no tiene workItems
+    this.initDisableArray(this.disabledPanels, this.numberOfWorkItems_PerPanel);
+
+    // inicializar array con las checked de los paneles backlog
+    // solo tenemos en cuenta los paneles que estén a disable en false
+    this.initCheckedArray(this.checkedPanels, this.disabledPanels);
+
+    // formar la lista de panel Throughput
+    this.setPanelThroughputList(this.checkedPanels);
+
     // el percentil por defecto es el 50
     this.setPercentile(0.5);
 
     // inicializar el gráfico sin datos para que se muestre el hueco del gráfico
-    this.initChart([])
+    this.initChart([]);
   }
 
   getProjectId() {
@@ -97,6 +124,73 @@ export class EstimateMultipleComponent implements OnInit {
 
   goBack() {
     this.location.back();
+  }
+
+  async getNumberOfWorkItems_PerPanel(listOfNumberOfWorkItems_PerPanel: any) {
+    let panelNames = this.panelNames;
+
+    if (panelNames.length == 0) return;
+
+    for (let pN of panelNames) {
+      let workItemsOfPanel = await this.getWorkItemsOfPanel(pN, '');
+
+      if (workItemsOfPanel) {
+        listOfNumberOfWorkItems_PerPanel[pN] = workItemsOfPanel.length;
+      }
+      // Si pasa por aquí es porque workItemsOfPanel es false (no tiene workItems)
+      else listOfNumberOfWorkItems_PerPanel[pN] = 0;
+    }
+  }
+
+  initDisableArray(disableArray: any, listOfWorkItemsPerPanel: any) {
+    let panelNames = this.panelNames;
+
+    if (panelNames.length == 0) return;
+
+    for (let pN of panelNames) {
+      if (listOfWorkItemsPerPanel[pN] > 0) {
+        disableArray[pN] = false;
+      }
+      else disableArray[pN] = true;
+    }
+  }
+
+  initCheckedArray(checkedArray: any, disableArray: any) {
+    let panelNames = this.panelNames;
+
+    if (panelNames.length == 0) return;
+
+    for (let pN of panelNames) {
+      if (!disableArray[pN]) checkedArray[pN] = false;
+    }
+  }
+
+  changeCheckedValue(checked: boolean, panelName: string) {
+    this.checkedPanels[panelName] = checked;
+
+    // Actualizar la lista de paneles disponibles para el Throughput
+    this.setPanelThroughputList(this.checkedPanels);
+  }
+
+  setPanelThroughputList(checkedPanels: any) {
+    // Borrar el contenido de la lista
+    this.panelList_ForSelectingPanelDone = [];
+
+    // Establecer la lista
+    for (let key in checkedPanels) {
+      if (!checkedPanels[key]) this.panelList_ForSelectingPanelDone.push(key);
+    }
+
+    // Si la lista no tiene elementos, marcar que los paneles no están bien y warning
+    if (this.panelList_ForSelectingPanelDone.length == 0) {
+      this.arePanelsRight = false;
+      this.changeInnerText('warningPanelBacklog', 'No pueden estar seleccionados todos los paneles, ya que uno de ellos debe ser el panel para calcular el Throughput');
+      
+      return;
+    }
+    // si todo está correcto
+    this.arePanelsRight = true;
+    this.changeInnerText('warningPanelBacklog', '');
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
@@ -169,22 +263,18 @@ export class EstimateMultipleComponent implements OnInit {
   }
 
   async setPanelDoneSelector(event: any, startDate: HTMLInputElement, endDate: HTMLInputElement) {
-    // Controlar que no coincida con el panelBacklog
-    if (this.checkPanelsAreEqual(this.panelDone, this.panelBacklog, 'warningPanelDone', 'El panel no puede coincidir con el panel Backlog')) return;
-
-    // Borrar cualquier mensaje de warning que puediera haber
-    this.changeInnerText('warningPanelDone', '');
-    // también borramos el warning del PanelBacklog, por si es ahí dónde apareció
-    this.changeInnerText('warningPanelBacklog', '');
-
-    // Si en el panel Backlog seleccionado no hay workItems, volvemos a poner el mensaje de Warning
-    await this.getPanelWorkItems(this.panelBacklog, 'warningPanelBacklog');
+    // panelDone seleccionado anteriormente, para poner su disabled a false
+    let previousPanelDone = this.panelDone;
 
     // Establecer el panel considerado para el cálculo del Throughput
     this.panelDone = event.value;
 
-    // Obtenemos los workItems de ese panel
-    let workItemsOfPanel = await this.getPanelWorkItems(this.panelDone, 'warningPanelDone');
+    // Actualizar array disabledPanels
+    this.disabledPanels[previousPanelDone] = false;
+    this.disabledPanels[this.panelDone] = true;
+    
+    // Obtenemos los workItems de ese panel (aunque está asegurado que tiene workItems)
+    let workItemsOfPanel = await this.getWorkItemsOfPanel(this.panelDone, 'warningPanelDone');
 
     if (!workItemsOfPanel) return;
     this.changeInnerText('warningPanelDone', '');
@@ -220,6 +310,7 @@ export class EstimateMultipleComponent implements OnInit {
     }
   }
 
+  //! Deprecated
   async setPanelBacklogSelector(event: any) {
     // Controlar que no coincida con el panelDone
     if (this.checkPanelsAreEqual(this.panelDone, this.panelBacklog, 'warningPanelBacklog', 'El panel no puede coincidir con el panel de tareas hechas')) return;
@@ -230,13 +321,13 @@ export class EstimateMultipleComponent implements OnInit {
     this.changeInnerText('warningPanelDone', '');
 
     // Si en el panel Done seleccionado no hay workItems, volvemos a poner el mensaje de Warning
-    this.getPanelWorkItems(this.panelDone, 'warningPanelDone');
+    this.getWorkItemsOfPanel(this.panelDone, 'warningPanelDone');
 
     // Establecer el panel considerado como Backlog para la Simulación Monte Carlo
     this.panelBacklog = event.value;
 
     // Si el panel no tiene workItems, se enseña un warning
-    await this.getPanelWorkItems(this.panelBacklog, 'warningPanelBacklog');
+    await this.getWorkItemsOfPanel(this.panelBacklog, 'warningPanelBacklog');
   }
 
   getDatesOfWorkItems(workItems: WorkItem[], panelName: string): Date[] {
@@ -265,6 +356,17 @@ export class EstimateMultipleComponent implements OnInit {
     return false;
   }
 
+  checkSomePanelIsChecked() {
+    let checkedPanels = this.checkedPanels;
+    for (let key in checkedPanels) {
+      if (checkedPanels[key] == true) return true;
+    }
+
+    // Si no hay paneles checked
+    return false;
+  }
+
+  //! DEPRECATED
   /**
    * Comprueba si el nombre de los paneles Done y Backlog son iguales, si es el caso pone un mensaje en el elemento HTML indicado
    * @param panelDone nombre del panel Done
@@ -284,7 +386,7 @@ export class EstimateMultipleComponent implements OnInit {
     return false;
   }
 
-  async getPanelWorkItems(panelName: string, elementId: string) {
+  async getWorkItemsOfPanel(panelName: string, elementId: string) {
     // Comprobamos que el panel se ha seleccionado (no debe ser '')
     if (!panelName) return false;
 
@@ -390,31 +492,24 @@ export class EstimateMultipleComponent implements OnInit {
    * Comprobamos si se han seleccionado los paneles, y si existen workItems en ambos paneles (comprobando si existe el rango de fechas en el caso del panel Done), también se comprueba que el número de ejecuciones sea correcto (un número sin puntos y sin comas)
    */
   async isSimulationReady(numberOfExecutions: string) {
-    // Si falta en panel Doing, noReady
+    // Si falta el panel Done, noReady
     if (!this.panelDone) {
       this.changeInnerText('warningPanelDone', 'Se debe seleccionar el panel de tareas hechas');
       return false;
     }
 
-    // Si falta en panel Backlog, noReady
-    if (!this.panelBacklog) {
-      this.changeInnerText('warningPanelBacklog', 'Se debe seleccionar el panel Backlog');
+    // Si no se ha seleccionado ningún panel Backlog, noReady
+    if (!this.checkSomePanelIsChecked()) {
+      this.changeInnerText('warningPanelBacklog', 'Se debe seleccionar al menos un panel');
       return false;
     }
-
-    // Si los paneles coinciden, noReady
-    if (this.panelDone == this.panelBacklog) return false;
-
-    // El panel Backlog se ha seleccionado, pero no tiene workItems, noReady
-    if (!await this.getPanelWorkItems(this.panelBacklog, '')) return false;
-
 
     if (this.startDate && this.endDate) {
       if (!await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate)) return false;
     }
 
-    // No se ha seleccionado el rango de fechas y el panel Doing no tiene workItems, noReady
-    if (!await this.getPanelWorkItems(this.panelDone, '')) return false;
+    // No se ha seleccionado el rango de fechas y el panel Done no tiene workItems, noReady
+    if (!await this.getWorkItemsOfPanel(this.panelDone, '')) return false;
 
     // Comprobar que el número de ejecuciones es un número y que está escrito sin comas ni puntos
     // Si el valor está vacío, es 0 o no es un número, o contiene una coma, noReady
@@ -465,7 +560,7 @@ export class EstimateMultipleComponent implements OnInit {
       workItems = await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate);
     }
     else {
-      workItems = await this.getPanelWorkItems(this.panelDone, '');
+      workItems = await this.getWorkItemsOfPanel(this.panelDone, '');
     }
 
     // Obtener las fechas de los workItems
@@ -526,7 +621,7 @@ export class EstimateMultipleComponent implements OnInit {
     let nExucutions = Number(numberOfExecutions);
 
     // Obtener el número de workItems en el backlog
-    let workItemsBacklog: any = await this.getPanelWorkItems(this.panelBacklog, '');
+    let workItemsBacklog: any = await this.getWorkItemsOfPanel(this.panelBacklog, '');
 
     let nWorkItems = workItemsBacklog.length;
 
