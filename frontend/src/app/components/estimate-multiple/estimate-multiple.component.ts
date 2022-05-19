@@ -549,6 +549,19 @@ export class EstimateMultipleComponent implements OnInit {
     return false;
   }
 
+  getNumberOfWorkItems_OfCheckedPanels(listOfCheckedPanels: any, listOfNumberOfWorkItems_PerPanel: any): number {
+    let numberOfWorkItems = 0;
+
+    for (let key in listOfCheckedPanels) {
+      if (listOfCheckedPanels[key] == true) {
+        // tenemos la seguridad de que el panel tiene workItems
+        numberOfWorkItems += listOfNumberOfWorkItems_PerPanel[key];
+      }
+    }
+
+    return numberOfWorkItems;
+  }
+
   async calculateDailyThroughput() {
     let dailyThroughput: number[] = [];
 
@@ -618,18 +631,17 @@ export class EstimateMultipleComponent implements OnInit {
     let dTLength = dailyThroughput.length;
 
     // convertir numberOfExecutions a número para poder utilizarlo como tal
-    let nExucutions = Number(numberOfExecutions);
+    let nExecutions = Number(numberOfExecutions);
 
     // Obtener el número de workItems en el backlog
-    let workItemsBacklog: any = await this.getWorkItemsOfPanel(this.panelBacklog, '');
-
-    let nWorkItems = workItemsBacklog.length;
+    let nWorkItems = this.getNumberOfWorkItems_OfCheckedPanels(this.checkedPanels, this.numberOfWorkItems_PerPanel);
+    console.log(nWorkItems);
 
     // Lista donde guardamos el número de días obtenido en cada ejecución
     let dayList: number[] = [];
 
     // Comenzamos con la Simulación, ejecutándole el número de veces que se ha especificado
-    for (let i = 0; i < nExucutions; i++) {
+    for (let i = 0; i < nExecutions; i++) {
       // número de workItems pendientes que iremos restando
       let numberOfPendingWorkItems = nWorkItems;
       // número de días transcurridos hasta que numberOfPendingWorkItems == 0
@@ -654,13 +666,9 @@ export class EstimateMultipleComponent implements OnInit {
 
     // Lista de días obtenidos en cada ejecución (para calcular el percentil)
     this.allData = dayList;
-
     
     // Calcular el percentil especificado por la variable this.percentile. También se inicializa el gráfico
     this.calculatePercentile(this.percentile);
-
-    // Inicializamos el gráfico
-    // this.initChart(this.dataChart);
   }
 
   setChartData(dayList: number[]) {
