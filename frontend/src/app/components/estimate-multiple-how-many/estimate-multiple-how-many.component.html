@@ -1,0 +1,116 @@
+<app-navbar></app-navbar>
+
+<div class="header">
+    <button class="headerButton btn" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+            <path fill="#4b4c4c" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+          </svg>
+    </button>
+    <h2 class="title">Predicción para varios Elementos, basada en el Throughput de tus PBI</h2>
+</div>
+
+<mat-card class="chart-card">
+    <div class="chart" *ngIf="isReady">
+        <p *ngIf="dataChart.length != 0" class="forecast">Según tus datos, las tareas del panel {{panelBacklog}} serían completadas en <span class="forecast-important">{{xValuePercentile}}</span> <span *ngIf="xValuePercentile != '1'"> días</span> <span *ngIf="xValuePercentile == '1'"> día</span> o menos, con una probabilidad del <span class="forecast-important">{{percentile * 100}}%</span></p>
+
+        <apx-chart
+            [series]="chartOptions.series!"
+            [title]="chartOptions.title!"
+            [chart]="chartOptions.chart!"
+            [xaxis]="chartOptions.xaxis!"
+            [yaxis]="chartOptions.yaxis!"
+            [annotations]="chartOptions.annotations!"
+            [dataLabels]="chartOptions.dataLabels!"
+            [tooltip]="chartOptions.tooltip!"
+        ></apx-chart>
+    </div>
+
+    <div class="options">
+        <!-- Elegir percentil -->
+        <div class="optionGroup">
+            <label class="optionTitle" id="radio-group">Percentiles estándar</label>
+            <mat-radio-group aria-labelledby="radio-group" class="radio-group">
+                <mat-radio-button class="radio-button" [value]="0.5" [checked]="true" (click)="calculatePercentile(0.5)">50%</mat-radio-button>
+                <mat-radio-button class="radio-button" [value]="0.85" (click)="calculatePercentile(0.85)">85%</mat-radio-button>
+                <mat-radio-button class="radio-button" [value]="0.95" (click)="calculatePercentile(0.95)">95%</mat-radio-button>
+            </mat-radio-group>
+        </div>
+
+        <!-- panel de tareas pendientes (Backlog) -->
+        <h3 class="optionTitle">Qué panel estimar
+            <span matTooltip="Panel o paneles donde están las tareas por hacer y de las que queremos saber su estimación">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+            </span>
+        </h3>
+
+        <section class="estimatePanels">
+            <p *ngFor="let pN of panelNames">
+                <mat-checkbox (change)="changeCheckedValue($event.checked, pN)" [disabled]="disabledPanels[pN]">{{pN}} ({{numberOfWorkItems_PerPanel[pN]}} tareas)</mat-checkbox>
+            </p>
+            <p class="warning" id="warningPanelBacklog"></p>
+        </section>
+
+        <!-- <mat-form-field >
+            <mat-label>Panel Backlog</mat-label>
+            <mat-select (selectionChange)="setPanelBacklogSelector($event)" [(value)]="panelBacklog">
+                <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
+            </mat-select>
+        </mat-form-field> -->
+        
+
+        <!-- Elegir número de ejecuciones -->
+        <div class="optionGroup">
+            <h3 class="optionTitle">Ejecuciones Simulación Monte Carlo
+                <span matTooltip="Cuanto mayor sea el número de ejecuciones, mejor se ajustará el resultado de la Simulación. (Según Daniel Vacanti, el resultado se estabiliza en las 10.000 ejecuciones)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                </span>
+            </h3>
+            <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Número de ejecuciones</mat-label>
+                <input type="text" matInput autocomplete="off" value="10000" #executions>
+            </mat-form-field>
+            <p class="warning" id="warningExecutions"></p>
+            <button id="create" mat-flat-button color="primary" (click)="monteCarloSimulation(executions.value)">Simular</button>
+        </div>
+
+        <!-- Opciones para el Throughput -->
+        <h3 class="optionTitle">Opciones para calcular el Throughput
+            <span matTooltip="Panel y rango de fechas (opcional) para elegir los datos de entrada para el cálculo del Throughput">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+            </span>
+        </h3>
+        <!-- panel de entradas -->
+        <h4 class="optionSubtitle">Elegir panel</h4>
+        <mat-form-field appearance="fill">
+            <mat-label>Panel tareas hechas</mat-label>
+            <mat-select (selectionChange)="setPanelDoneSelector($event, startDate, endDate)">
+                <mat-option *ngFor="let pN of panelList_ForSelectingPanelDone" [value]="pN">{{pN}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <p class="warning" id="warningPanelDone"></p>
+
+        <!-- rango de fechas -->
+        <div class="optionGroupFechas">
+            <h4 class="optionSubtitle">Elegir rango de fechas</h4>
+            <mat-form-field appearance="fill">
+                <mat-label>Rango de fechas</mat-label>
+                <mat-date-range-input [rangePicker]="picker" [min]="permitedMinDate" [max]="permitedMaxDate">
+                    <input matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)" #startDate>
+                    <input matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)" #endDate>
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
+                <p class="warning" id="warningDates"></p>
+            </mat-form-field>
+        </div>
+    </div>
+</mat-card>

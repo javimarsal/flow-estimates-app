@@ -38,12 +38,12 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-estimate-multiple',
-  templateUrl: './estimate-multiple.component.html',
-  styleUrls: ['./estimate-multiple.component.css']
+  selector: 'app-estimate-multiple-how-many',
+  templateUrl: './estimate-multiple-how-many.component.html',
+  styleUrls: ['./estimate-multiple-how-many.component.css']
 })
 
-export class EstimateMultipleComponent implements OnInit {
+export class EstimateMultipleHowManyComponent implements OnInit {
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: Partial<ChartOptions>;
 

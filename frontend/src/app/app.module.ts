@@ -43,6 +43,7 @@ import { EstimateMultipleComponent } from './components/estimate-multiple/estima
 import { TagListComponent } from './components/tag-list/tag-list.component';
 import { TagComponent } from './components/tag/tag.component';
 import { TagDialogComponent } from './components/tag-dialog/tag-dialog.component';
+import { EstimateMultipleHowManyComponent } from './components/estimate-multiple-how-many/estimate-multiple-how-many.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { TagDialogComponent } from './components/tag-dialog/tag-dialog.component
     EstimateMultipleComponent,
     TagListComponent,
     TagComponent,
-    TagDialogComponent
+    TagDialogComponent,
+    EstimateMultipleHowManyComponent
   ],
   imports: [
     BrowserModule,
