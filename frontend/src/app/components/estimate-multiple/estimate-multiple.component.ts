@@ -310,26 +310,6 @@ export class EstimateMultipleComponent implements OnInit {
     }
   }
 
-  //! Deprecated
-  async setPanelBacklogSelector(event: any) {
-    // Controlar que no coincida con el panelDone
-    if (this.checkPanelsAreEqual(this.panelDone, this.panelBacklog, 'warningPanelBacklog', 'El panel no puede coincidir con el panel de tareas hechas')) return;
-
-    // Borrar cualquier mensaje de warning que puediera haber
-    this.changeInnerText('warningPanelBacklog', '');
-    // también borramos el warning del PanelDone, por si es ahí dónde apareció
-    this.changeInnerText('warningPanelDone', '');
-
-    // Si en el panel Done seleccionado no hay workItems, volvemos a poner el mensaje de Warning
-    this.getWorkItemsOfPanel(this.panelDone, 'warningPanelDone');
-
-    // Establecer el panel considerado como Backlog para la Simulación Monte Carlo
-    this.panelBacklog = event.value;
-
-    // Si el panel no tiene workItems, se enseña un warning
-    await this.getWorkItemsOfPanel(this.panelBacklog, 'warningPanelBacklog');
-  }
-
   getDatesOfWorkItems(workItems: WorkItem[], panelName: string): Date[] {
     let dates: Date[] = []
 
@@ -363,26 +343,6 @@ export class EstimateMultipleComponent implements OnInit {
     }
 
     // Si no hay paneles checked
-    return false;
-  }
-
-  //! DEPRECATED
-  /**
-   * Comprueba si el nombre de los paneles Done y Backlog son iguales, si es el caso pone un mensaje en el elemento HTML indicado
-   * @param panelDone nombre del panel Done
-   * @param panelBacklog nombre del panel Backlog
-   * @param elementId elemento HTML donde poner el warning
-   * @param message mensaje del warning
-   * @returns true si coinciden, false si no coinciden
-   */
-  checkPanelsAreEqual(panelDone: string, panelBacklog: string, elementId: string, message: string) {
-    if (!panelDone && !panelBacklog) return false;
-
-    if (panelDone == panelBacklog) {
-      this.changeInnerText(elementId, message);
-      return true;
-    }
-
     return false;
   }
 
@@ -635,7 +595,6 @@ export class EstimateMultipleComponent implements OnInit {
 
     // Obtener el número de workItems en el backlog
     let nWorkItems = this.getNumberOfWorkItems_OfCheckedPanels(this.checkedPanels, this.numberOfWorkItems_PerPanel);
-    console.log(nWorkItems);
 
     // Lista donde guardamos el número de días obtenido en cada ejecución
     let dayList: number[] = [];
