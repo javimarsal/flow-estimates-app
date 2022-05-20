@@ -49,9 +49,8 @@ export class EstimateMultipleHowManyComponent implements OnInit {
 
   isReady = false;
 
-  // Paneles considerados como done y backlog
+  // Panel considerado como done
   panelDone: string = '';
-  panelBacklog: string = '';
 
   // Array de paneles para el panelThroughput
   panelList_ForSelectingPanelDone: string[] = [];
@@ -705,7 +704,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
       ],
 
       title: {
-        text: `Posibles Duraciones del Panel ${this.panelBacklog}`,
+        text: 'Posibles Duraciones de los Paneles seleccionados',
         align: 'center',
         style: {
           fontSize: '18px'
@@ -720,7 +719,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
 
       xaxis: {
         title: {
-          text: `Nº de Días para completar las tareas del Panel ${this.panelBacklog}`,
+          text: 'Nº de Días para completar las tareas de los Paneles seleccionados',
           style: {
             fontSize: '15px'
           }

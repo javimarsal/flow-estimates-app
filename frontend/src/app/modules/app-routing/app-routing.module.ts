@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'my-projects', component: MyProjectsComponent },
   { path: 'project/:id', component: PanelComponent },
   { path: 'project/:id/estimate-single', component: EstimateSingleComponent },
-  { path: 'project/:id/estimate-multiple-when', component: EstimateMultipleComponent },
+  { path: 'project/:id/estimate-multiple', component: EstimateMultipleComponent },
   { path: 'project/:id/estimate-multiple-howMany', component: EstimateMultipleHowManyComponent },
   { path: 'project/:id/tags', component: TagListComponent }
 ]

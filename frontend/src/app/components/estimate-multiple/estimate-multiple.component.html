@@ -11,7 +11,7 @@
 
 <mat-card class="chart-card">
     <div class="chart" *ngIf="isReady">
-        <p *ngIf="dataChart.length != 0" class="forecast">Según tus datos, las tareas del panel {{panelBacklog}} serían completadas en <span class="forecast-important">{{xValuePercentile}}</span> <span *ngIf="xValuePercentile != '1'"> días</span> <span *ngIf="xValuePercentile == '1'"> día</span> o menos, con una probabilidad del <span class="forecast-important">{{percentile * 100}}%</span></p>
+        <p *ngIf="dataChart.length != 0" class="forecast">Según tus datos, las tareas de los paneles seleccionados serían completadas en <span class="forecast-important">{{xValuePercentile}}</span> <span *ngIf="xValuePercentile != '1'"> días</span> <span *ngIf="xValuePercentile == '1'"> día</span> o menos, con una probabilidad del <span class="forecast-important">{{percentile * 100}}%</span></p>
 
         <apx-chart
             [series]="chartOptions.series!"
@@ -36,8 +36,8 @@
             </mat-radio-group>
         </div>
 
-        <!-- panel de tareas pendientes (Backlog) -->
-        <h3 class="optionTitle">Qué panel estimar
+        <!-- paneles de tareas pendientes (Backlog) -->
+        <h3 class="optionTitle">Qué paneles estimar
             <span matTooltip="Panel o paneles donde están las tareas por hacer y de las que queremos saber su estimación">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
                     <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -52,32 +52,6 @@
             </p>
             <p class="warning" id="warningPanelBacklog"></p>
         </section>
-
-        <!-- <mat-form-field >
-            <mat-label>Panel Backlog</mat-label>
-            <mat-select (selectionChange)="setPanelBacklogSelector($event)" [(value)]="panelBacklog">
-                <mat-option *ngFor="let pN of panelNames" [value]="pN">{{pN}}</mat-option>
-            </mat-select>
-        </mat-form-field> -->
-        
-
-        <!-- Elegir número de ejecuciones -->
-        <div class="optionGroup">
-            <h3 class="optionTitle">Ejecuciones Simulación Monte Carlo
-                <span matTooltip="Cuanto mayor sea el número de ejecuciones, mejor se ajustará el resultado de la Simulación. (Según Daniel Vacanti, el resultado se estabiliza en las 10.000 ejecuciones)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
-                        <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                    </svg>
-                </span>
-            </h3>
-            <mat-form-field class="full-width" appearance="fill">
-                <mat-label>Número de ejecuciones</mat-label>
-                <input type="text" matInput autocomplete="off" value="10000" #executions>
-            </mat-form-field>
-            <p class="warning" id="warningExecutions"></p>
-            <button id="create" mat-flat-button color="primary" (click)="monteCarloSimulation(executions.value)">Simular</button>
-        </div>
 
         <!-- Opciones para el Throughput -->
         <h3 class="optionTitle">Opciones para calcular el Throughput
@@ -111,6 +85,24 @@
                 <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
                 <p class="warning" id="warningDates"></p>
             </mat-form-field>
+        </div>
+        
+        <!-- Elegir número de ejecuciones -->
+        <div class="optionGroup">
+            <h3 class="optionTitle">Ejecuciones Simulación Monte Carlo
+                <span matTooltip="Cuanto mayor sea el número de ejecuciones, mejor se ajustará el resultado de la Simulación. (Según Daniel Vacanti, el resultado se estabiliza en las 10.000 ejecuciones)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                </span>
+            </h3>
+            <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Número de ejecuciones</mat-label>
+                <input type="text" matInput autocomplete="off" value="10000" #executions>
+            </mat-form-field>
+            <p class="warning" id="warningExecutions"></p>
+            <button id="create" mat-flat-button color="primary" (click)="monteCarloSimulation(executions.value)">Simular</button>
         </div>
     </div>
 </mat-card>
