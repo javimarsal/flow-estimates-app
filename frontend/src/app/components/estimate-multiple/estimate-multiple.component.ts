@@ -100,7 +100,7 @@ export class EstimateMultipleComponent implements OnInit {
     await this.getNumberOfWorkItems_PerPanel(this.numberOfWorkItems_PerPanel);
 
     // inicializar array con las condiciones para deshabilitar o no los paneles backlog
-    // numberOfWorkItems_PerPanel se utiliza para dsehabilitar (true) el panel si numberOfWorkItems_PerPanel[pN] no tiene workItems
+    // numberOfWorkItems_PerPanel se utiliza para deshabilitar (true) el panel si numberOfWorkItems_PerPanel[pN] no tiene workItems
     this.initDisableArray(this.disabledPanels, this.numberOfWorkItems_PerPanel);
 
     // inicializar array con las checked de los paneles backlog

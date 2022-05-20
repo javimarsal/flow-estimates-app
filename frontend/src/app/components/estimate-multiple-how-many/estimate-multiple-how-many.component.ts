@@ -60,14 +60,14 @@ export class EstimateMultipleHowManyComponent implements OnInit {
 
   // Condiciones para deshabilitar o no los paneles backlog
   disabledPanels: any = [];
-  // true / false si el panel está checked o no
-  checkedPanels: any = [];
   // array donde se guarda el número de workItems de cada panel
   numberOfWorkItems_PerPanel: any = [];
 
   // fechas por las que filtrar los workItems para el cálculo del Throughput
   startDate!: Date;
   endDate!: Date;
+
+  todayDate!: Date;
 
   // fechas permitidas para el usuario
   permitedMinDate!: Date;
@@ -93,6 +93,8 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     // obtenemos el id del proyecto para poder obtener sus datos
     this.getProjectId();
 
+    this.todayDate = new Date();
+
     // obtenemos el nombre de los paneles para poder hacer la selección
     await this.getPanelNames();
 
@@ -100,15 +102,11 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     await this.getNumberOfWorkItems_PerPanel(this.numberOfWorkItems_PerPanel);
 
     // inicializar array con las condiciones para deshabilitar o no los paneles backlog
-    // numberOfWorkItems_PerPanel se utiliza para dsehabilitar (true) el panel si numberOfWorkItems_PerPanel[pN] no tiene workItems
+    // numberOfWorkItems_PerPanel se utiliza para deshabilitar (true) el panel si numberOfWorkItems_PerPanel[pN] no tiene workItems
     this.initDisableArray(this.disabledPanels, this.numberOfWorkItems_PerPanel);
 
-    // inicializar array con las checked de los paneles backlog
-    // solo tenemos en cuenta los paneles que estén a disable en false
-    this.initCheckedArray(this.checkedPanels, this.disabledPanels);
-
     // formar la lista de panel Throughput
-    this.setPanelThroughputList(this.checkedPanels);
+    this.setPanelThroughputList(this.disabledPanels);
 
     // el percentil por defecto es el 50
     this.setPercentile(0.5);
@@ -154,42 +152,14 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     }
   }
 
-  initCheckedArray(checkedArray: any, disableArray: any) {
-    let panelNames = this.panelNames;
-
-    if (panelNames.length == 0) return;
-
-    for (let pN of panelNames) {
-      if (!disableArray[pN]) checkedArray[pN] = false;
-    }
-  }
-
-  changeCheckedValue(checked: boolean, panelName: string) {
-    this.checkedPanels[panelName] = checked;
-
-    // Actualizar la lista de paneles disponibles para el Throughput
-    this.setPanelThroughputList(this.checkedPanels);
-  }
-
-  setPanelThroughputList(checkedPanels: any) {
+  setPanelThroughputList(disabledPanels: any) {
     // Borrar el contenido de la lista
     this.panelList_ForSelectingPanelDone = [];
 
     // Establecer la lista
-    for (let key in checkedPanels) {
-      if (!checkedPanels[key]) this.panelList_ForSelectingPanelDone.push(key);
+    for (let key in disabledPanels) {
+      if (!disabledPanels[key]) this.panelList_ForSelectingPanelDone.push(key);
     }
-
-    // Si la lista no tiene elementos, marcar que los paneles no están bien y warning
-    if (this.panelList_ForSelectingPanelDone.length == 0) {
-      this.arePanelsRight = false;
-      this.changeInnerText('warningPanelBacklog', 'No pueden estar seleccionados todos los paneles, ya que uno de ellos debe ser el panel para calcular el Throughput');
-      
-      return;
-    }
-    // si todo está correcto
-    this.arePanelsRight = true;
-    this.changeInnerText('warningPanelBacklog', '');
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {
@@ -335,16 +305,6 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     return false;
   }
 
-  checkSomePanelIsChecked() {
-    let checkedPanels = this.checkedPanels;
-    for (let key in checkedPanels) {
-      if (checkedPanels[key] == true) return true;
-    }
-
-    // Si no hay paneles checked
-    return false;
-  }
-
   async getWorkItemsOfPanel(panelName: string, elementId: string) {
     // Comprobamos que el panel se ha seleccionado (no debe ser '')
     if (!panelName) return false;
@@ -457,11 +417,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
       return false;
     }
 
-    // Si no se ha seleccionado ningún panel Backlog, noReady
-    if (!this.checkSomePanelIsChecked()) {
-      this.changeInnerText('warningPanelBacklog', 'Se debe seleccionar al menos un panel');
-      return false;
-    }
+    // TODO: la fecha objetivo debe estar seleccionada
 
     if (this.startDate && this.endDate) {
       if (!await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate)) return false;
@@ -579,7 +535,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     return dailyThroughput;
   }
 
-  async monteCarloSimulation(numberOfExecutions: string) {
+  async monteCarloSimulation(numberOfExecutions: string, objectiveDate: HTMLInputElement) {
     if (!await this.isSimulationReady(numberOfExecutions)) {
       return;
     }
@@ -593,7 +549,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     let nExecutions = Number(numberOfExecutions);
 
     // Obtener el número de workItems en el backlog
-    let nWorkItems = this.getNumberOfWorkItems_OfCheckedPanels(this.checkedPanels, this.numberOfWorkItems_PerPanel);
+    // let nWorkItems = this.getNumberOfWorkItems_OfCheckedPanels(this.checkedPanels, this.numberOfWorkItems_PerPanel);
 
     // Lista donde guardamos el número de días obtenido en cada ejecución
     let dayList: number[] = [];
@@ -601,19 +557,19 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     // Comenzamos con la Simulación, ejecutándole el número de veces que se ha especificado
     for (let i = 0; i < nExecutions; i++) {
       // número de workItems pendientes que iremos restando
-      let numberOfPendingWorkItems = nWorkItems;
+      // let numberOfPendingWorkItems = nWorkItems;
       // número de días transcurridos hasta que numberOfPendingWorkItems == 0
       let days = 0
 
-      while (numberOfPendingWorkItems > 0) {
+      // while (numberOfPendingWorkItems > 0) {
         // Elegimos un número aleatorio de la lista de daily Throughput
         let n = dailyThroughput[Math.floor(Math.random() * dTLength)];
 
         // restamos ese número al número de workItems que hay "pendientes" por hacer
-        numberOfPendingWorkItems -= n;
+        // numberOfPendingWorkItems -= n;
 
         days++;
-      }
+      // }
 
       // guardamos los días transcurridos en la lista de días
       dayList.push(days);

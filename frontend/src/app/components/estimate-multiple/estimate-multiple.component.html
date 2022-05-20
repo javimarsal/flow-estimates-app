@@ -48,7 +48,7 @@
 
         <section class="estimatePanels">
             <p *ngFor="let pN of panelNames">
-                <mat-checkbox (change)="changeCheckedValue($event.checked, pN)" [disabled]="disabledPanels[pN]">{{pN}} ({{numberOfWorkItems_PerPanel[pN]}} tareas)</mat-checkbox>
+                <mat-checkbox (change)="changeCheckedValue($event.checked, pN)" [disabled]="disabledPanels[pN]">{{pN}} ({{numberOfWorkItems_PerPanel[pN]}} <span *ngIf="numberOfWorkItems_PerPanel[pN]!=1"> tareas</span> <span *ngIf="numberOfWorkItems_PerPanel[pN]==1"> tarea</span>)</mat-checkbox>
             </p>
             <p class="warning" id="warningPanelBacklog"></p>
         </section>
