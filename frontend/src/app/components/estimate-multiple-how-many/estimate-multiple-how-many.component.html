@@ -11,7 +11,11 @@
 
 <mat-card class="chart-card">
     <div class="chart" *ngIf="isReady">
-        <p *ngIf="dataChart.length != 0" class="forecast">Según tus datos, las tareas de los paneles seleccionados serían completadas en <span class="forecast-important">{{xValuePercentile}}</span> <span *ngIf="xValuePercentile != '1'"> días</span> <span *ngIf="xValuePercentile == '1'"> día</span> o menos, con una probabilidad del <span class="forecast-important">{{percentile * 100}}%</span></p>
+        <p *ngIf="dataChart.length != 0" class="forecast">Según tus datos, en {{getDaysBetween(objectiveDate, todayDate)}} 
+            <span *ngIf="getDaysBetween(objectiveDate, todayDate) != 1"> días</span> <span *ngIf="getDaysBetween(objectiveDate, todayDate) == 1"> día</span> 
+            se <span *ngIf="xValuePercentile != '1'"> completarían </span> <span *ngIf="xValuePercentile == '1'"> completaría </span> <span class="forecast-important">{{xValuePercentile}}</span> 
+            <span *ngIf="xValuePercentile != '1'"> tareas</span> <span *ngIf="xValuePercentile == '1'"> tarea</span>
+             o menos, con una probabilidad del <span class="forecast-important">{{percentile * 100}}%</span></p>
 
         <apx-chart
             [series]="chartOptions.series!"
@@ -48,9 +52,10 @@
             </h3>
             <mat-form-field appearance="fill">
                 <mat-label>Fecha objetivo</mat-label>
-                <input matInput [matDatepicker]="picker" [min]="todayDate" disabled #fechaObjetivo>
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker disabled="false"></mat-datepicker>
+                <input matInput [matDatepicker]="pickerObjective" [min]="todayDate" disabled (dateInput)="setObjectiveDate($event)">
+                <mat-datepicker-toggle matSuffix [for]="pickerObjective"></mat-datepicker-toggle>
+                <mat-datepicker #pickerObjective disabled="false"></mat-datepicker>
+                <p class="warning" id="warningDateObjective"></p>
             </mat-form-field>
         </div>
 
@@ -103,7 +108,7 @@
                 <input type="text" matInput autocomplete="off" value="10000" #executions>
             </mat-form-field>
             <p class="warning" id="warningExecutions"></p>
-            <button id="create" mat-flat-button color="primary" (click)="monteCarloSimulation(executions.value, fechaObjetivo)">Simular</button>
+            <button id="create" mat-flat-button color="primary" (click)="monteCarloSimulation(executions.value)">Simular</button>
         </div>
     </div>
 </mat-card>

@@ -66,6 +66,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
   // fechas por las que filtrar los workItems para el cálculo del Throughput
   startDate!: Date;
   endDate!: Date;
+  objectiveDate!: Date;
 
   todayDate!: Date;
 
@@ -93,7 +94,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     // obtenemos el id del proyecto para poder obtener sus datos
     this.getProjectId();
 
-    this.todayDate = new Date();
+    this.todayDate = new Date(new Date().toDateString());
 
     // obtenemos el nombre de los paneles para poder hacer la selección
     await this.getPanelNames();
@@ -229,6 +230,11 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     // Borramos un posible warning, ocasionado por que el rango anterior no está permitido
     this.changeInnerText('warningDates', '');
 
+  }
+
+  setObjectiveDate(event: MatDatepickerInputEvent<Date>) {
+    this.objectiveDate = event.value!;
+    this.changeInnerText('warningDateObjective', '');
   }
 
   async setPanelDoneSelector(event: any, startDate: HTMLInputElement, endDate: HTMLInputElement) {
@@ -417,7 +423,11 @@ export class EstimateMultipleHowManyComponent implements OnInit {
       return false;
     }
 
-    // TODO: la fecha objetivo debe estar seleccionada
+    // Si falta la fecha objetivo, noReady
+    if (!this.objectiveDate) {
+      this.changeInnerText('warningDateObjective', 'Se debe seleccionar la fecha objetivo');
+      return false;
+    }
 
     if (this.startDate && this.endDate) {
       if (!await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate)) return false;
@@ -462,19 +472,6 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     }
     
     return false;
-  }
-
-  getNumberOfWorkItems_OfCheckedPanels(listOfCheckedPanels: any, listOfNumberOfWorkItems_PerPanel: any): number {
-    let numberOfWorkItems = 0;
-
-    for (let key in listOfCheckedPanels) {
-      if (listOfCheckedPanels[key] == true) {
-        // tenemos la seguridad de que el panel tiene workItems
-        numberOfWorkItems += listOfNumberOfWorkItems_PerPanel[key];
-      }
-    }
-
-    return numberOfWorkItems;
   }
 
   async calculateDailyThroughput() {
@@ -535,7 +532,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     return dailyThroughput;
   }
 
-  async monteCarloSimulation(numberOfExecutions: string, objectiveDate: HTMLInputElement) {
+  async monteCarloSimulation(numberOfExecutions: string) {
     if (!await this.isSimulationReady(numberOfExecutions)) {
       return;
     }
@@ -548,60 +545,71 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     // convertir numberOfExecutions a número para poder utilizarlo como tal
     let nExecutions = Number(numberOfExecutions);
 
-    // Obtener el número de workItems en el backlog
-    // let nWorkItems = this.getNumberOfWorkItems_OfCheckedPanels(this.checkedPanels, this.numberOfWorkItems_PerPanel);
+    // Obtener el número de días desde todayDate hasta objectiveDate
+    let nDays = this.getDaysBetween(this.objectiveDate, this.todayDate);
 
-    // Lista donde guardamos el número de días obtenido en cada ejecución
-    let dayList: number[] = [];
+    // Lista donde guardamos el número de tareas obtenido en cada ejecución
+    let nWorkItemsList: number[] = [];
 
     // Comenzamos con la Simulación, ejecutándole el número de veces que se ha especificado
     for (let i = 0; i < nExecutions; i++) {
-      // número de workItems pendientes que iremos restando
-      // let numberOfPendingWorkItems = nWorkItems;
-      // número de días transcurridos hasta que numberOfPendingWorkItems == 0
-      let days = 0
+      let nWorkItems = 0;
 
-      // while (numberOfPendingWorkItems > 0) {
+      for (let i = 0; i < nDays; i++) {
         // Elegimos un número aleatorio de la lista de daily Throughput
         let n = dailyThroughput[Math.floor(Math.random() * dTLength)];
 
-        // restamos ese número al número de workItems que hay "pendientes" por hacer
-        // numberOfPendingWorkItems -= n;
-
-        days++;
-      // }
+        // sumamos el número aleatorio a nWorkItems, así tenemos el número de workItems que se van complentado en nDays
+        nWorkItems += n;
+      }
 
       // guardamos los días transcurridos en la lista de días
-      dayList.push(days);
+      nWorkItemsList.push(nWorkItems);
     }
 
     // Transformamos los datos para el gráfico
-    this.dataChart = this.setChartData(dayList);
+    this.dataChart = this.setChartData(nWorkItemsList);
 
-    // Lista de días obtenidos en cada ejecución (para calcular el percentil)
-    this.allData = dayList;
+    // Lista de número de workItems completados, obtenidos en cada ejecución (para calcular el percentil)
+    this.allData = nWorkItemsList;
     
     // Calcular el percentil especificado por la variable this.percentile. También se inicializa el gráfico
     this.calculatePercentile(this.percentile);
   }
 
-  setChartData(dayList: number[]) {
+  getDaysBetween(dateEnd: any, dateStart: any): number {
+    // tiempo transcurrido en milisegundos
+    let daysInMiliseconds = dateEnd - dateStart;
+
+    // transformas a días y sumarle 1
+    return this.transformMsecToDays(daysInMiliseconds) + 1;
+  }
+
+  transformMsecToDays(milisecs: number): number {
+    let msecPerMinute = 1000 * 60;
+    let msecPerHour = msecPerMinute * 60;
+    let msecPerDay = msecPerHour * 24;
+
+    return Number((milisecs / msecPerDay).toFixed());
+  }
+
+  setChartData(nWorkItemsList: number[]) {
     // Datos para el gráfico
     let data: any[] = [];
 
-    // Ordenar la lista del número de días
-    this.sortList(dayList);
+    // Ordenar la lista del número de workItems
+    this.sortList(nWorkItemsList);
 
-    // Recorremos la lista, contamos los números que se repiten y lo guardamos en el array data junto con la fecha
+    // Recorremos la lista, contamos los números que se repiten y lo guardamos en el array data junto el número de tareas hechas
     // primer número para comparar
-    let num = dayList[0];
-    let dayListLength = dayList.length;
+    let num = nWorkItemsList[0];
+    let nWorkItemsListLength = nWorkItemsList.length;
     // veces que se repite el número
     let occurrences = 0;
 
-    for (let i = 0; i < dayListLength; i++) {
+    for (let i = 0; i < nWorkItemsListLength; i++) {
       // guardar los datos de la última posición si num no ha cambiado
-      if (dayList[i] == num  &&  i == (dayListLength - 1)) {
+      if (nWorkItemsList[i] == num  &&  i == (nWorkItemsListLength - 1)) {
         
         if (occurrences != 0) {
           data.push(
@@ -621,7 +629,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
         }
       }
 
-      if (dayList[i] != num) {
+      if (nWorkItemsList[i] != num) {
         data.push(
           {
             x: `${num}`,
@@ -629,11 +637,11 @@ export class EstimateMultipleHowManyComponent implements OnInit {
           }
         );
 
-        num = dayList[i];
+        num = nWorkItemsList[i];
         occurrences = 0;
 
         // caso (6, 6, 7), 7 está en la última posición, hay que guardarlo
-        if (i == (dayListLength - 1)) {
+        if (i == (nWorkItemsListLength - 1)) {
           data.push(
             {
               x: `${num}`,
@@ -654,13 +662,13 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     this.chartOptions = {
       series: [
         {
-          name: 'Días',
+          name: 'Tareas completadas',
           data: data
         }
       ],
 
       title: {
-        text: 'Posibles Duraciones de los Paneles seleccionados',
+        text: 'Posibles Tareas Completadas en la Fecha Objetivo',
         align: 'center',
         style: {
           fontSize: '18px'
@@ -675,7 +683,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
 
       xaxis: {
         title: {
-          text: 'Nº de Días para completar las tareas de los Paneles seleccionados',
+          text: 'Nº de Tareas Completadas en la Fecha Objetivo',
           style: {
             fontSize: '15px'
           }
@@ -715,7 +723,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
           let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
 
           return '<div style="padding: 10px 10px;">' +
-            '<div><b>Nº de días:</b> ' + data.x + '</div>' +
+            '<div><b>Nº tareas completadas:</b> ' + data.x + '</div>' +
             '<div><b>Ocurrencias:</b> ' + data.y + '</div>' +
             '</div>';
         }

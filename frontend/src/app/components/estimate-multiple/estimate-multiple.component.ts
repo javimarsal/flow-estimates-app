@@ -636,7 +636,7 @@ export class EstimateMultipleComponent implements OnInit {
     // Ordenar la lista del número de días
     this.sortList(dayList);
 
-    // Recorremos la lista, contamos los números que se repiten y lo guardamos en el array data junto con la fecha
+    // Recorremos la lista, contamos los números que se repiten y lo guardamos en el array data junto con el número de días
     // primer número para comparar
     let num = dayList[0];
     let dayListLength = dayList.length;
