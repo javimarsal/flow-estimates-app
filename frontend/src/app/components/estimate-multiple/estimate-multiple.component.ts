@@ -436,7 +436,7 @@ export class EstimateMultipleComponent implements OnInit {
     let numberOfPoints = this.allData.length;
 
     /* Multiplicamos el percentil por el número de puntos */
-    // Redondeamos
+    // Redondeamos (y -1 para que no haya desbordamiento en el array allData)
     let indexOfData = Number((numberOfPoints * percentile).toFixed()) - 1;
 
     // this.allData ya está ordenado de menor a mayor número

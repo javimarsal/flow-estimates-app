@@ -402,8 +402,9 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     let numberOfPoints = this.allData.length;
 
     /* Multiplicamos el percentil por el número de puntos */
-    // Redondeamos
-    let indexOfData = Number((numberOfPoints * percentile).toFixed()) - 1;
+    // Redondeamos (tenemos que darle la vuelta, por eso restamos por el numberOfPoints-1)
+    let indexOfData = (numberOfPoints - 1) - (Number((numberOfPoints * percentile).toFixed()) - 1);
+    
 
     // this.allData ya está ordenado de menor a mayor número
     // obtenemos el valor en el eje X, que es el valor de allData en la posición indexOfData

@@ -32,6 +32,11 @@
     color: #f85454;
 }
 
+.nDays {
+    font-weight: bold;
+    font-size: 25px;
+}
+
 .chart-card {
     display: flex;
     flex-direction: row;
