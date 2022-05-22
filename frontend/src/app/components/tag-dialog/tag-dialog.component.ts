@@ -11,12 +11,12 @@ import { ProjectService } from 'src/app/services/project.service';
 // A Color Picker
 import * as AColorPicker from 'a-color-picker';
 
-
 @Component({
   selector: 'app-tag-dialog',
   templateUrl: './tag-dialog.component.html',
   styleUrls: ['./tag-dialog.component.css']
 })
+
 export class TagDialogComponent implements OnInit {
   form!: FormGroup;
   name: string = '';

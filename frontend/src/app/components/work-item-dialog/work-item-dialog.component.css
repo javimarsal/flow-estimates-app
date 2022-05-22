@@ -33,6 +33,21 @@
     resize: vertical;
 }
 
+.matChipList {
+    margin-top: 30px;
+}
+
+.chip {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.chipItemList {
+    border-radius: 20px;
+    padding: 4px 10px;
+    margin-left: 2px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
 .btn {
     margin-left: 11px;
     margin-top: 20px;

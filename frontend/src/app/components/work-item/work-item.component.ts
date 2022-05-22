@@ -72,7 +72,9 @@ export class WorkItemComponent implements OnInit {
     dialogConfig.data = {
       idNumber: this.workItemIdNumber,
       title: this.workItem.title,
-      description: this.workItem.description
+      description: this.workItem.description,
+      tags: this.workItem.tags,
+      projectId: this.projectId
     }
 
     const dialogRef = this.dialog.open(WorkItemDialogComponent, dialogConfig);
@@ -89,7 +91,7 @@ export class WorkItemComponent implements OnInit {
         }
 
         // Si llegan datos y no es 'delete' actualizamos el title y description del componente
-        await this.updateWorkItemTitleDescription(data.title, data.description);
+        await this.updateWorkItemTitleDescriptionTags(data.title, data.description, data.tags);
       }
     );
   }
@@ -161,7 +163,7 @@ export class WorkItemComponent implements OnInit {
   }
 
   // Editar WorkItem
-  async updateWorkItemTitleDescription(title: string, description: string) {
+  async updateWorkItemTitleDescriptionTags(title: string, description: string, tags: string[]) {
     // Obtenemos el workItem que se va a actualizar (por si ha sufrido alguna modificación antes, como la posición)
     try {
       let workItems = await lastValueFrom(this.getWorkItemsOfProject());
@@ -184,6 +186,10 @@ export class WorkItemComponent implements OnInit {
     catch (error) {
       console.log(error)
     }
+  }
+
+  getTagByName() {
+    
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {

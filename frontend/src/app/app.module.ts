@@ -25,6 +25,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 // Components
 import { AppComponent } from './app.component';
@@ -84,6 +86,8 @@ import { EstimateMultipleHowManyComponent } from './components/estimate-multiple
     MatTooltipModule,
     MatDialogModule,
     ScrollingModule,
+    MatChipsModule,
+    MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
