@@ -4,6 +4,9 @@ import { WorkItem } from 'src/app/models/work-item';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+// Models
+import { Tag } from '../models/tag';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,6 +30,18 @@ export class WorkItemService {
 
   deleteWorkItem(id?: string): Observable<any> {
     return this.http.delete(`${this.URL_API}/${id}`);
+  }
+
+  getTags(workItemId: string): Observable<Tag[]> {
+    return this.http.get<Tag[]>(`${this.URL_API}/${workItemId}/tags`);
+  }
+
+  addTag(workItemId: string, tag: Tag) {
+    return this.http.put(`${this.URL_API}/${workItemId}/tags`, tag);
+  }
+
+  removeTag(workItemId: string, tagId?: string) {
+    return this.http.delete(`${this.URL_API}/${workItemId}/tags/${tagId}`);
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {

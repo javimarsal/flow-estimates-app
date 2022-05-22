@@ -1,7 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
+
+// Models
 import { WorkItem } from 'src/app/models/work-item';
+import { Tag } from 'src/app/models/tag';
 
 // Material
 // MatDialog --> Servicio
@@ -186,10 +189,38 @@ export class WorkItemComponent implements OnInit {
     catch (error) {
       console.log(error)
     }
+
+    let tagsOfWorkItem: any = this.workItem.tags;
+    let workItemId: any = this.workItem._id;
+    // Eliminamos las etiquetas del workItem
+    for (let tag of tagsOfWorkItem) {
+      await lastValueFrom(this.workItemService.removeTag(workItemId, tag.tag));
+    }
+
+    // Añadimos las nuevas etiquetas al workItem
+    for (let tagName of tags) {
+      let tag = await this.getTagByName(tagName);
+      await lastValueFrom(this.workItemService.addTag(workItemId, tag))
+    }
+
+    // Actualizar el workItem del componente
+    let workItemsOfProject = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
+    this.workItem = this.workItemService.getWorkItemByIdNumber(workItemsOfProject, this.workItemIdNumber);
   }
 
-  getTagByName() {
+  async getTagByName(tagName: string): Promise<Tag> {
+    let tagsOfProject = await lastValueFrom(this.projectService.getTags(this.projectId))
     
+    let tagFound!: Tag;
+
+    for (let tag of tagsOfProject) {
+      if (tag.name == tagName) {
+        tagFound = tag;
+        break;
+      };
+    }
+
+    return tagFound;
   }
 
   filterWorkItems_ByPanelName(workItems: WorkItem[], panelName: string): WorkItem[] {

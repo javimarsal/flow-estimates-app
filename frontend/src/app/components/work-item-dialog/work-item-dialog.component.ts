@@ -163,9 +163,19 @@ export class WorkItemDialogComponent implements OnInit {
   }
 
   checkIfArrayHasChanged(previousArray: string[], currentArray: string[]) {
-    for (let item of currentArray) {
-      if (!previousArray.includes(item)) {
-        return true;
+    if (currentArray.length >= previousArray.length) {
+      for (let item of currentArray) {
+        if (!previousArray.includes(item)) {
+          return true;
+        }
+      }
+    }
+    
+    if (currentArray.length < previousArray.length) {
+      for (let item of previousArray) {
+        if (!currentArray.includes(item)) {
+          return true;
+        }
       }
     }
 
