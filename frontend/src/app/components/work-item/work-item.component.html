@@ -2,10 +2,14 @@
     <p class="description" title="Título: {{workItem.title}}">
         <span class="idNumber" title="ID #{{workItemIdNumber}}">#{{workItemIdNumber}} </span>{{workItem.title}}
     </p>
-    <!-- <div *ngIf="tiene etiquetas"> -->
+    <div *ngIf="workItem.tags?.length">
+        <mat-divider class="chipList"></mat-divider>
         <!-- Para poner debajo las etiquetas si las tiene <mat-divider></mat-divider> -->
-        <!-- <mat-chip-list>
-            <mat-chip *ngFor=""></mat-chip>
-        </mat-chip-list> -->
-    <!-- </div> -->
+        <mat-chip-list aria-label="WorkItem tags">
+            <mat-chip class="chip" *ngFor="let tagName of workItemTagsNames" [ngStyle]="{'background-color': workItemTagsColors[tagName], 'color': workItemTagsFontColors[tagName]}">
+                {{tagName}}
+            </mat-chip>
+        </mat-chip-list>
+          
+    </div>
 </div>

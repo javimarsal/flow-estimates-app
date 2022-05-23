@@ -1,7 +1,8 @@
 .container {
     display: flex;
-    justify-content: space-between;
-    padding: 20px 10px;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    padding: 10px 10px;
 }
 
 .idNumber {
@@ -11,10 +12,18 @@
 
 .description {
     cursor: default;
-    font-size: 16px;
+    font-size: 18px;
     /* overflow: hidden; */
     /* text-overflow: ellipsis; */
     /* overflow-wrap: break-word; */
+}
+
+.chipList {
+    margin-bottom: 10px;
+}
+
+.chip {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
 .btn {

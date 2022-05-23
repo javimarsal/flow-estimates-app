@@ -13,10 +13,14 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 // Servicios
 import { ProjectService } from 'src/app/services/project.service';
 import { WorkItemService } from 'src/app/services/work-item.service';
+import { TagService } from 'src/app/services/tag.service';
 
 // Componentes
 import { WorkItemListComponent } from '../work-item-list/work-item-list.component';
 import { WorkItemDialogComponent } from '../work-item-dialog/work-item-dialog.component';
+
+// A Color Picker
+import * as AColorPicker from 'a-color-picker';
 
 @Component({
   selector: 'app-work-item',
@@ -35,7 +39,12 @@ export class WorkItemComponent implements OnInit {
 
   workItemsOfPanel!: WorkItem[];
 
-  constructor(private projectService: ProjectService, private workItemService: WorkItemService, private route: ActivatedRoute, private dialog: MatDialog) { }
+  // Tags
+  workItemTagsNames: string[] = [];
+  workItemTagsColors: any = [];
+  workItemTagsFontColors: any = [];
+
+  constructor(private projectService: ProjectService, private workItemService: WorkItemService, private tagService: TagService, private route: ActivatedRoute, private dialog: MatDialog) { }
 
   async ngOnInit() {
     this.getProjectId();
@@ -48,6 +57,8 @@ export class WorkItemComponent implements OnInit {
     catch (error) {
       console.log(error);
     }
+
+    await this.getWorkItemTagsProperties(this.workItem);
   }
 
   // INICIALIZAR EL COMPONENTE
@@ -61,6 +72,48 @@ export class WorkItemComponent implements OnInit {
 
   getWorkItemByIdNumber(workItemList: WorkItem[], idNumber: number): WorkItem {
     return this.workItemService.getWorkItemByIdNumber(workItemList, idNumber);
+  }
+
+  async getWorkItemTagsProperties(workItem: WorkItem) {
+    if (!workItem.tags?.length) return;
+    
+    // Obtenemos las tags del workItem (solo están las referencias)
+    let tags = workItem.tags;
+
+    // Borramos el contenido de los arrays
+    this.workItemTagsNames = [];
+    this.workItemTagsColors = [];
+    this.workItemTagsFontColors = [];
+
+    // Las recorremos para obtener los objetos Tag
+    for (let tag of tags) {
+      let tagObject = await lastValueFrom(this.tagService.getTag(tag.tag.toString()));
+      let tagName = tagObject.name;
+      let tagColor = tagObject.color;
+
+      // Guardamos su nombre
+      this.workItemTagsNames.push(tagName);
+
+      // Guardamos su color
+      this.workItemTagsColors[tagName] = tagColor;
+
+      // Guardamos su color de texto
+      this.workItemTagsFontColors[tagName] = this.setFontColor(tagColor);
+    }
+  }
+
+  setFontColor(color: string) {
+    let darkness = 0;
+
+    let colorRGB: any = AColorPicker.parseColor(color, 'rgb');
+
+    // Contar la percepción de luminosidad - human eye favors
+    let luminance = (0.299 * colorRGB[0] + 0.587 * colorRGB[1] + 0.114 * colorRGB[2]) / 255;
+
+    if (luminance > 0.5) darkness = 0; // bright colors - black font
+    else darkness = 255; // dark colors - white font
+                
+    return `rgb(${darkness}, ${darkness}, ${darkness})`;
   }
 
   // Diálogo que se abre al pinchar en el workItem
@@ -206,6 +259,9 @@ export class WorkItemComponent implements OnInit {
     // Actualizar el workItem del componente
     let workItemsOfProject = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
     this.workItem = this.workItemService.getWorkItemByIdNumber(workItemsOfProject, this.workItemIdNumber);
+
+    // Actualizar las etiquetas
+    await this.getWorkItemTagsProperties(this.workItem);
   }
 
   async getTagByName(tagName: string): Promise<Tag> {
