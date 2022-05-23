@@ -12,6 +12,7 @@ import { UserService } from 'src/app/services/user.service';
 // Models
 import { Panel } from 'src/app/models/panel';
 import { Tag } from 'src/app/models/tag';
+import { WorkItem } from 'src/app/models/work-item';
 
 @Component({
   selector: 'app-panel',
@@ -25,8 +26,8 @@ export class PanelComponent implements OnInit {
 
   projectId: any = '';
   projectName: string = '';
-
   projectTags: Tag[] = [];
+  projectWorkItems: WorkItem[] = [];
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService) {
     this.panelNames = [];
@@ -56,11 +57,28 @@ export class PanelComponent implements OnInit {
     
     await this.getPanelsOfProject();
 
-    await this.getProjectTags();
+    try {
+      await this.getProjectTags();
+    }
+    catch (error) {
+      console.log(error);
+    }
+
+    try {
+      await this.getProjectWorkItems();
+      console.log(this.projectWorkItems)
+    }
+    catch (error) {
+      console.log(error);
+    }
   }
 
   async getProjectTags() {
     this.projectTags = await lastValueFrom(this.projectService.getTags(this.projectId));
+  }
+
+  async getProjectWorkItems() {
+    this.projectWorkItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
   }
 
   getProjectId() {

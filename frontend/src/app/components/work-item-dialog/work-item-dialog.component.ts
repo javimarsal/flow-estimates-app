@@ -29,6 +29,7 @@ export class WorkItemDialogComponent implements OnInit {
   description: string = '';
   tags: string[] = [];
   projectId: any = '';
+  projectTags: Tag[] = [];
 
   // Etiquetas
   separatorKeysCodes: number[] = [];
@@ -48,7 +49,7 @@ export class WorkItemDialogComponent implements OnInit {
     this.title = data.title;
     this.description = data.description;
     this.tags = data.tags;
-    this.projectId = data.projectId;
+    this.projectTags = data.projectTags;
 
     this.form = this.fb.group({
       title: new FormControl(this.title),
@@ -67,7 +68,7 @@ export class WorkItemDialogComponent implements OnInit {
   async ngOnInit() {
     this.selectedTags = await this.getTagsNames(this.tags);
     this.originalSelectedTags = await this.getTagsNames(this.tags);
-    let tagsOfProject = await this.getTagsNamesOfProject(this.projectId);
+    let tagsOfProject = this.getTagsNamesOfProject();
     this.allTags = this.deleteSelectedTagsFromList(tagsOfProject, this.selectedTags);
   }
 
@@ -86,8 +87,8 @@ export class WorkItemDialogComponent implements OnInit {
     return await lastValueFrom(this.tagService.getTag(tagId));
   }
 
-  async getTagsNamesOfProject(projectId: string): Promise<string[]> {
-    let tagsOfProject = await lastValueFrom(this.projectService.getTags(projectId));
+  getTagsNamesOfProject(): string[] {
+    let tagsOfProject = this.projectTags;
     let tagsNames: string[] = [];
 
     for (let tag of tagsOfProject) {

@@ -67,7 +67,6 @@ export class CreateWorkItemComponent implements OnInit {
       // también obtenemos el número del workItem para establecer su idNumber
       // este debe ser el mayor idNumber + 1
       idNumber = this.getMaxIdNumber(workItems) + 1;
-
     }
     catch (error) {
       console.log(error)
@@ -97,7 +96,7 @@ export class CreateWorkItemComponent implements OnInit {
 
     try {
       let res = await lastValueFrom(this.workItemService.createWorkItem(newWorkItem));
-      console.log(res);
+      // console.log(res);
       workItemOfDB = res;
     }
     catch (error) {
@@ -109,7 +108,7 @@ export class CreateWorkItemComponent implements OnInit {
     // Añadimos el nuevo workItem en la lista del proyecto
     try {
       let res = await lastValueFrom(this.projectService.addWorkItem(this.projectId, workItemOfDB));
-      console.log(res);
+      // console.log(res);
     }
     catch (error) {
       console.log(error)
@@ -137,7 +136,7 @@ export class CreateWorkItemComponent implements OnInit {
   async updateWorkItem(workItem: WorkItem) {
     try {
       let res = await lastValueFrom(this.workItemService.updateWorkItem(workItem));
-      console.log(res);
+      // console.log(res);
     }
     catch (error) {
       console.log(error)

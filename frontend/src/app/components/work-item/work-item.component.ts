@@ -35,10 +35,9 @@ export class WorkItemComponent implements OnInit {
 
   projectId: any = '';
   @Input() projectTags!: Tag[];
+  @Input() projectWorkItems!: WorkItem[];
 
   workItem!: WorkItem;
-
-  @Input() workItemsOfPanel!: WorkItem[];
 
   // Tags
   workItemTagsNames: string[] = [];
@@ -51,7 +50,8 @@ export class WorkItemComponent implements OnInit {
     this.getProjectId();
 
     try {
-      let workItem = this.workItemsOfPanel.filter(wI => wI.idNumber == this.workItemIdNumber)[0];
+      let workItem = this.projectWorkItems.filter(wI => wI.idNumber == this.workItemIdNumber)[0];
+      // console.log(this.projectWorkItems)
 
       if (workItem) {
         this.workItem = workItem;
@@ -59,7 +59,7 @@ export class WorkItemComponent implements OnInit {
       else {
         let workItems = await lastValueFrom(this.getWorkItemsOfProject());
         this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
-        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+        this.projectWorkItems = this.filterWorkItems_ByPanelName(workItems, this.panelName);
       }
     }
     catch (error) {
@@ -139,7 +139,7 @@ export class WorkItemComponent implements OnInit {
       title: this.workItem.title,
       description: this.workItem.description,
       tags: this.workItem.tags,
-      projectId: this.projectId
+      projectTags: this.projectTags
     }
 
     const dialogRef = this.dialog.open(WorkItemDialogComponent, dialogConfig);
@@ -164,11 +164,26 @@ export class WorkItemComponent implements OnInit {
   /* EDITAR Y ELIMINAR WorkItem */
   // Eliminar WorkItem
   async deleteWorkItem() {
+    // Actualizar la lista de WorkItemListComponent
+    let idNumbersOfList = this.workItemListComponent.workItemsOfPanel_IdNumbers;
+    let lengthIdNumbers = this.workItemListComponent.workItemsOfPanel_IdNumbers.length;
+
+    // buscamos el idNumber del workItem en la lista, y lo eliminamos
+    for (let i = 0; i < lengthIdNumbers; i++) {
+      if (parseInt(idNumbersOfList[i]) == this.workItem.idNumber) {
+        idNumbersOfList.splice(i, 1);
+        // break porque ahora idNumbersOfList.length es uno menos que lengthIdNumbers. En la última iteración, idNumbersOfList[i] sería undefined
+        break;
+      }
+    }
+
+    let workItemsOfPanel: WorkItem[] = []
+
     // Obtenemos los workItems que se van a actualizar (por si ha sufrido alguna modificación antes, como la posición)
     try {
       let workItems = await lastValueFrom(this.getWorkItemsOfProject());
       this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
-      this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+      workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
     }
     catch (error) {
       console.log(error)
@@ -176,7 +191,7 @@ export class WorkItemComponent implements OnInit {
 
     // Reducir en 1 la posición de los workItems afectados
     let workItemPosition = this.workItem.position;
-    for (let wI of this.workItemsOfPanel) {
+    for (let wI of workItemsOfPanel) {
       if (wI.position > workItemPosition) {
         // Reducir su posición en 1
         wI.position--;
@@ -184,7 +199,7 @@ export class WorkItemComponent implements OnInit {
         // Actualizar el workItem
         try {
           let res = await lastValueFrom(this.workItemService.updateWorkItem(wI));
-          console.log(res);
+          // console.log(res);
         }
         catch (error) {
           console.log(error)
@@ -198,7 +213,7 @@ export class WorkItemComponent implements OnInit {
     // Eliminar workItem de la bdd
     try {
       let res = await lastValueFrom(this.workItemService.deleteWorkItem(workItemId));
-      console.log(res);
+      // console.log(res);
     }
     catch (error) {
       console.log(error)
@@ -207,23 +222,10 @@ export class WorkItemComponent implements OnInit {
     // Eliminar la referencia de la lista del proyecto
     try {
       let res = await lastValueFrom(this.projectService.removeWorkItem(this.projectId, workItemId));
-      console.log(res);
+      // console.log(res);
     }
     catch (error) {
       console.log(error)
-    }
-
-    // Actualizar la lista de WorkItemListComponent
-    let idNumbersOfList = this.workItemListComponent.workItemsOfPanel_IdNumbers;
-    let lengthIdNumbers = this.workItemListComponent.workItemsOfPanel_IdNumbers.length;
-
-    // buscamos el idNumber del workItem en la lista, y lo eliminamos
-    for (let i = 0; i < lengthIdNumbers; i++) {
-      if (parseInt(idNumbersOfList[i]) == this.workItem.idNumber) {
-        idNumbersOfList.splice(i, 1);
-        // break porque ahora idNumbersOfList.length es uno menos que lengthIdNumbers. En la última iteración, idNumbersOfList[i] sería undefined
-        break;
-      }
     }
   }
 
@@ -246,7 +248,7 @@ export class WorkItemComponent implements OnInit {
     this.workItem.description = description;
     try {
       let res = await lastValueFrom(this.workItemService.updateWorkItem(this.workItem));
-      console.log(res);
+      // console.log(res);
     }
     catch (error) {
       console.log(error)

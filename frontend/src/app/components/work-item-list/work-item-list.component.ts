@@ -22,10 +22,11 @@ export class WorkItemListComponent implements OnInit {
   @Input() panelName!: string;
 
   workItemsOfPanel_IdNumbers: string[] = [];
-  workItemsOfPanel: WorkItem[] = [];
+  // workItemsOfPanel: WorkItem[] = [];
 
   projectId: any = '';
   @Input() projectTags!: Tag[];
+  @Input() projectWorkItems!: WorkItem[];
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
@@ -41,11 +42,11 @@ export class WorkItemListComponent implements OnInit {
   // GET WorkItems
   async getWorkItemsOfPanel() {
     try {
-      let workItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
+      // let workItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
 
       // Filtrar por el tablero que le corresponde y guardarlos
-      let workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
-      this.workItemsOfPanel = workItemsOfPanel;
+      let workItemsOfPanel = this.filterWorkItems_ByPanelName(this.projectWorkItems, this.panelName);
+      // this.workItemsOfPanel = workItemsOfPanel;
         
       // Obtener los ID de los workItems del Panel, también se ordenan los objetos workItems en el método sortWorkItems
       this.workItemsOfPanel_IdNumbers = this.getWorkItemsIdNumbers(workItemsOfPanel);
@@ -161,7 +162,6 @@ export class WorkItemListComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    console.log(event.item.element.nativeElement.innerText)
     if (event.previousContainer === event.container) {
       // Hacemos una copia de event.container.data (sin referencia) porque al realizarse "moveItemInArray" también cambia event.container.data y queremos obtener el estado antes de realizar ningún movimiento
       let previousPanelIdNumbers = JSON.parse(JSON.stringify(event.container.data));
@@ -264,7 +264,7 @@ export class WorkItemListComponent implements OnInit {
         }
       }
     }
-    await this.getWorkItemsOfPanel();
+    // await this.getWorkItemsOfPanel();
   }
 
   getWorkItemByIdNumber(workItemList: WorkItem[], idNumber: number): WorkItem {
