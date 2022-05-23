@@ -34,10 +34,11 @@ export class WorkItemComponent implements OnInit {
   // workItemIdNumber!: number;
 
   projectId: any = '';
+  @Input() projectTags!: Tag[];
 
   workItem!: WorkItem;
 
-  workItemsOfPanel!: WorkItem[];
+  @Input() workItemsOfPanel!: WorkItem[];
 
   // Tags
   workItemTagsNames: string[] = [];
@@ -50,9 +51,10 @@ export class WorkItemComponent implements OnInit {
     this.getProjectId();
 
     try {
-      let workItems = await lastValueFrom(this.getWorkItemsOfProject());
-      this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
-      this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+      // let workItems = await lastValueFrom(this.getWorkItemsOfProject());
+      // this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
+      this.workItem = this.workItemsOfPanel.filter(wI => wI.idNumber == this.workItemIdNumber)[0];
+      // this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
     }
     catch (error) {
       console.log(error);
@@ -87,9 +89,10 @@ export class WorkItemComponent implements OnInit {
 
     // Las recorremos para obtener los objetos Tag
     for (let tag of tags) {
-      let tagObject = await lastValueFrom(this.tagService.getTag(tag.tag.toString()));
-      let tagName = tagObject.name;
-      let tagColor = tagObject.color;
+      // let tagObject = await lastValueFrom(this.tagService.getTag(tag.tag.toString()));
+      let tagObject = this.projectTags.filter(t => t._id == tag.tag.toString());
+      let tagName = tagObject[0].name;
+      let tagColor = tagObject[0].color;
 
       // Guardamos su nombre
       this.workItemTagsNames.push(tagName);

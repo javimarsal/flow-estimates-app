@@ -9,6 +9,7 @@ import { ProjectService } from 'src/app/services/project.service';
 
 // Models
 import { WorkItem } from 'src/app/models/work-item';
+import { Tag } from 'src/app/models/tag';
 
 
 @Component({
@@ -21,8 +22,10 @@ export class WorkItemListComponent implements OnInit {
   @Input() panelName!: string;
 
   workItemsOfPanel_IdNumbers: string[] = [];
+  workItemsOfPanel: WorkItem[] = [];
 
   projectId: any = '';
+  @Input() projectTags!: Tag[];
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
@@ -42,6 +45,7 @@ export class WorkItemListComponent implements OnInit {
 
       // Filtrar por el tablero que le corresponde y guardarlos
       let workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+      this.workItemsOfPanel = workItemsOfPanel;
         
       // Obtener los ID de los workItems del Panel, también se ordenan los objetos workItems en el método sortWorkItems
       this.workItemsOfPanel_IdNumbers = this.getWorkItemsIdNumbers(workItemsOfPanel);
