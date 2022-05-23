@@ -63,7 +63,7 @@ export class WorkItemListComponent implements OnInit {
   async updateWorkItem(workItem: WorkItem) {
     try {
       let res = await lastValueFrom(this.workItemService.updateWorkItem(workItem));
-      console.log(res);
+      // console.log(res);
     }
     catch (error) {
       console.log(error)
@@ -98,8 +98,6 @@ export class WorkItemListComponent implements OnInit {
       // Cambiamos el nombre del panel (al que se mueve) y su nueva posición
       workItem.panel = newPanelName;
       workItem.position = newPosition;
-
-      console.log(workItem)
 
       // Actualizamos el workItem en la base de datos
       this.updateWorkItem(workItem);
@@ -232,7 +230,7 @@ export class WorkItemListComponent implements OnInit {
    * @param movedWorkItemIdNumber idNumber del workItem que se ha movido
    * @param movedPanelName nombre del panel hacia el que se ha movido el workItem
    */
-  updateWorkItems_betweenPanels(currentIdNumbers: string[], previousIdNumbers: string[], movedWorkItemIdNumber: string, movedPanelName: string) {
+  async updateWorkItems_betweenPanels(currentIdNumbers: string[], previousIdNumbers: string[], movedWorkItemIdNumber: string, movedPanelName: string) {
     // Longitudes de los arrays
     let currentIdNumbers_length = currentIdNumbers.length;
     let previousIdNumbers_length = previousIdNumbers.length;
@@ -249,9 +247,9 @@ export class WorkItemListComponent implements OnInit {
         // comprobamos si el currentIdNumber en la posición i es el que hemos movido
         if (currentIdNumbers[i] == movedWorkItemIdNumber) {
           // le cambiamos el nombre del panel y la posición
-          this.updateWorkItem_PanelName_Position(parseInt(currentIdNumbers[i]), movedPanelName, i);
+          await this.updateWorkItem_PanelName_Position(parseInt(currentIdNumbers[i]), movedPanelName, i);
         } else {
-          this.updateWorkItem_Position(parseInt(currentIdNumbers[i]), i);
+          await this.updateWorkItem_Position(parseInt(currentIdNumbers[i]), i);
         }
       } else {
         // comprobamos que el currentIdNumber en la posición i ha cambiado de posición con respecto a su estado anterior (previous)
@@ -259,13 +257,14 @@ export class WorkItemListComponent implements OnInit {
           // comprobamos si el currentIdNumber en la posición i es el que hemos movido
           if (currentIdNumbers[i] == movedWorkItemIdNumber) {
             // le cambiamos el nombre del panel y la posición
-            this.updateWorkItem_PanelName_Position(parseInt(currentIdNumbers[i]), movedPanelName, i);
+            await this.updateWorkItem_PanelName_Position(parseInt(currentIdNumbers[i]), movedPanelName, i);
           } else {
-            this.updateWorkItem_Position(parseInt(currentIdNumbers[i]), i);
+            await this.updateWorkItem_Position(parseInt(currentIdNumbers[i]), i);
           }
         }
       }
     }
+    await this.getWorkItemsOfPanel();
   }
 
   getWorkItemByIdNumber(workItemList: WorkItem[], idNumber: number): WorkItem {

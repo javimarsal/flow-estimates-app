@@ -51,10 +51,16 @@ export class WorkItemComponent implements OnInit {
     this.getProjectId();
 
     try {
-      // let workItems = await lastValueFrom(this.getWorkItemsOfProject());
-      // this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
-      this.workItem = this.workItemsOfPanel.filter(wI => wI.idNumber == this.workItemIdNumber)[0];
-      // this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+      let workItem = this.workItemsOfPanel.filter(wI => wI.idNumber == this.workItemIdNumber)[0];
+
+      if (workItem) {
+        this.workItem = workItem;
+      }
+      else {
+        let workItems = await lastValueFrom(this.getWorkItemsOfProject());
+        this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
+        this.workItemsOfPanel = this.filterWorkItems_ByPanelName(workItems, this.panelName);
+      }
     }
     catch (error) {
       console.log(error);
