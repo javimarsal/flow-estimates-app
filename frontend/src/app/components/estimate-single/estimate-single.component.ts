@@ -45,6 +45,10 @@ export class EstimateSingleComponent implements OnInit {
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: Partial<ChartOptions>;
 
+  // datos pasados desde el componente "panel" a través del atributo state del router
+  historyWorkItemsOfProject = history.state.projectWorkItems;
+  historyPanelNames = history.state.panelNames;
+
   projectId: any = '';
 
   workItemsOfProject: WorkItem[] = [];
@@ -117,7 +121,10 @@ export class EstimateSingleComponent implements OnInit {
     
     try {
       // Obtener los workItems del Proyecto
-      await this.getWorkItemsOfProject();
+      if (this.historyWorkItemsOfProject && this.historyWorkItemsOfProject.length!=0) {
+        this.workItemsOfProject = this.historyWorkItemsOfProject;
+      }
+      else if (!this.historyWorkItemsOfProject || this.historyWorkItemsOfProject.length==0) await this.getWorkItemsOfProject();
 
       /* Obtenemos el conjunto de datos para el gráfico */
       // Datos de workItems que han sido completados
@@ -404,6 +411,7 @@ export class EstimateSingleComponent implements OnInit {
 
   async getWorkItemsOfProject() {
     this.workItemsOfProject = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
+    // console.log(this.workItemsOfProject)
   }
 
   // Obtener los workItems que han finalizado y su tiempo de ciclo (data puede estar vacío)
@@ -609,15 +617,20 @@ export class EstimateSingleComponent implements OnInit {
 
   async getPanelNames() {
     try {
-      let panels = await lastValueFrom(this.projectService.getPanels(this.projectId));
-
-      // Recorremos los paneles y guardamos los nombres
-      let panelNames = [];
-      for (let p of panels) {
-        panelNames.push(p.name);
+      if (this.historyPanelNames && this.historyPanelNames.length!=0) {
+        this.panelNames = this.historyPanelNames;
       }
-      
-      this.panelNames = panelNames;
+      else if (!this.historyPanelNames || this.historyPanelNames.length==0) {
+        let panels = await lastValueFrom(this.projectService.getPanels(this.projectId));
+  
+        // Recorremos los paneles y guardamos los nombres
+        let panelNames = [];
+        for (let p of panels) {
+          panelNames.push(p.name);
+        }
+        
+        this.panelNames = panelNames;
+      }
     }
     catch (error) {
       console.log(error);

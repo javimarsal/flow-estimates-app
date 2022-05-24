@@ -73,6 +73,10 @@ export class PanelComponent implements OnInit {
     }
   }
 
+  setProjectWorkItems(workItems: []) {
+    this.projectWorkItems = workItems;
+  }
+
   async getProjectTags() {
     this.projectTags = await lastValueFrom(this.projectService.getTags(this.projectId));
   }
@@ -106,6 +110,7 @@ export class PanelComponent implements OnInit {
   }
 
   async updatePanel(panel: Panel) {
+    console.log(this.projectWorkItems)
     try {
       let res = await lastValueFrom(this.panelService.updatePanel(panel));
       // console.log(res);

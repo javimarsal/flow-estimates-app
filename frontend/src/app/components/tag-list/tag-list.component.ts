@@ -21,6 +21,9 @@ import * as AColorPicker from 'a-color-picker';
 })
 
 export class TagListComponent implements OnInit {
+  // datos pasados desde el componente "panel" a través del atributo state del router
+  historyProjectTags = history.state.projectTags;
+
   projectId: any = '';
   tagsOfProject: Tag[] = [];
 
@@ -100,7 +103,12 @@ export class TagListComponent implements OnInit {
     }
 
     try {
-      this.tagsOfProject = await lastValueFrom(this.projectService.getTags(this.projectId));
+      if (this.historyProjectTags && this.historyProjectTags.length!=0) {
+        this.tagsOfProject = this.historyProjectTags;
+      }
+      else if (!this.historyProjectTags || this.historyProjectTags.length==0) {
+        this.tagsOfProject = await lastValueFrom(this.projectService.getTags(this.projectId));
+      }
     }
     catch(error) {
       console.log(error);

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
@@ -27,6 +27,8 @@ export class WorkItemListComponent implements OnInit {
   projectId: any = '';
   @Input() projectTags!: Tag[];
   @Input() projectWorkItems!: WorkItem[];
+
+  @Output() onChange = new EventEmitter<any>();
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
@@ -101,7 +103,15 @@ export class WorkItemListComponent implements OnInit {
       workItem.position = newPosition;
 
       // Actualizamos el workItem en la base de datos
-      this.updateWorkItem(workItem);
+      await this.updateWorkItem(workItem);
+      // console.log(workItems)
+      // Actualizar los workItems del proyecto para enviárselos bien a los gráficos
+      this.projectWorkItems = workItems;
+      let index = this.projectWorkItems.indexOf(workItem);
+      this.projectWorkItems[index].panel = workItem.panel;
+
+      // para actualizar el arrya projectWorkItems en el padre (en este caso el componente panel)
+      this.onChange.emit(this.projectWorkItems);
     }
     catch (error) {
       console.log(error)

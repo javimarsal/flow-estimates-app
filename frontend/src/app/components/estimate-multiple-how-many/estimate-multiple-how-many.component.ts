@@ -47,6 +47,10 @@ export class EstimateMultipleHowManyComponent implements OnInit {
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: Partial<ChartOptions>;
 
+  // datos pasados desde el componente "panel" a través del atributo state del router
+  historyWorkItemsOfProject = history.state.projectWorkItems;
+  historyPanelNames = history.state.panelNames;
+
   isReady = false;
 
   // Panel considerado como done
@@ -169,15 +173,20 @@ export class EstimateMultipleHowManyComponent implements OnInit {
 
   async getPanelNames() {
     try {
-      let panels = await this.getPanels();
-
-      // Recorremos los paneles y guardamos los nombres
-      let panelNames = [];
-      for (let p of panels) {
-        panelNames.push(p.name);
+      if (this.historyPanelNames && this.historyPanelNames.length!=0) {
+        this.panelNames = this.historyPanelNames;
       }
-
-      this.panelNames = panelNames;
+      else if (!this.historyPanelNames || this.historyPanelNames.length==0) {
+        let panels = await this.getPanels();
+  
+        // Recorremos los paneles y guardamos los nombres
+        let panelNames = [];
+        for (let p of panels) {
+          panelNames.push(p.name);
+        }
+  
+        this.panelNames = panelNames;
+      }
     }
     catch (error) {
       console.log(error);
@@ -199,7 +208,12 @@ export class EstimateMultipleHowManyComponent implements OnInit {
   async getWorkItems() {
     let workItems: WorkItem[] = [];
     try {
-      workItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
+      if (this.historyWorkItemsOfProject && this.historyWorkItemsOfProject.length!=0) {
+        workItems = this.historyWorkItemsOfProject;
+      }
+      else if (!this.historyWorkItemsOfProject || this.historyWorkItemsOfProject.length==0) {
+        workItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
+      }
     }
     catch (error) {
       console.log(error);
