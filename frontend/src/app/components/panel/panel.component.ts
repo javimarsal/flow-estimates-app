@@ -49,7 +49,7 @@ export class PanelComponent implements OnInit {
     // Cuando el usuario abre el proyecto, registramos el id en la propiedad openedProject del usuario
     try {
       let res = await lastValueFrom(this.setOpenedProjectOfUser());
-      console.log(res);
+      // console.log(res);
     }
     catch (error) {
       console.log(error)
@@ -66,7 +66,7 @@ export class PanelComponent implements OnInit {
 
     try {
       await this.getProjectWorkItems();
-      console.log(this.projectWorkItems)
+      // console.log(this.projectWorkItems)
     }
     catch (error) {
       console.log(error);
@@ -108,7 +108,7 @@ export class PanelComponent implements OnInit {
   async updatePanel(panel: Panel) {
     try {
       let res = await lastValueFrom(this.panelService.updatePanel(panel));
-      console.log(res);
+      // console.log(res);
     }
     catch (error) {
       console.log(error)

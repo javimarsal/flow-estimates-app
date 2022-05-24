@@ -27,6 +27,7 @@ export class CreateWorkItemComponent implements OnInit {
   @Input() workItemListComponent!: WorkItemListComponent;
 
   projectId: any = '';
+  @Input() projectWorkItems!: WorkItem[];
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
@@ -116,6 +117,9 @@ export class CreateWorkItemComponent implements OnInit {
 
     // Llamamos al método getWorkItems() del componente workItem para que actualice su lista
     this.workItemListComponent.workItemsOfPanel_IdNumbers.unshift(idNumber.toString());
+    
+    // Añadimos el nuevo workItem a la lista de projectWorkItems
+    this.projectWorkItems.push(workItemOfDB);
   }
 
   getMaxIdNumber(workItems: WorkItem[]) {

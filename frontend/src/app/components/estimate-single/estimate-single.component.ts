@@ -495,11 +495,16 @@ export class EstimateSingleComponent implements OnInit {
     // Panel considerado como Doing
     let panelDoing = this.panelDoing;
 
-    // Datos de los workItems que se están haciendo
+    // Datos de los workItems que se están haciendo (Doing)
     let data: any[] = [];
 
+    // Comprobar si hay workItems en el panel Doing
+    let workItemsInPanelDoing = this.workItemsOfProject.filter(wI => wI.panel == panelDoing);
+
+    if (workItemsInPanelDoing.length == 0) return;
+
     // Recorremos los WorkItems del Project
-    for (let wI of this.workItemsOfProject) {
+    for (let wI of workItemsInPanelDoing) {
       // Panel actual del WorkItem
       let currentPanel = wI.panel;
 
