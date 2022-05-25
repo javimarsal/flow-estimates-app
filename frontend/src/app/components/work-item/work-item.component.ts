@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
 
@@ -36,6 +36,8 @@ export class WorkItemComponent implements OnInit {
   projectId: any = '';
   @Input() projectTags!: Tag[];
   @Input() projectWorkItems!: WorkItem[];
+
+  @Output() onChange = new EventEmitter<any>();
 
   workItem!: WorkItem;
 
@@ -227,13 +229,20 @@ export class WorkItemComponent implements OnInit {
     catch (error) {
       console.log(error)
     }
+
+    // Actualizar el array projectWorkItems y enviárselo al padre (work-item-list)
+    let workItemObject = this.projectWorkItems.filter(wI => wI.idNumber == this.workItem.idNumber)[0];
+    let indexOfWorkItem = this.projectWorkItems.indexOf(workItemObject);
+    this.projectWorkItems.splice(indexOfWorkItem, 1);
+    this.onChange.emit(this.projectWorkItems);
   }
 
   // Editar WorkItem
   async updateWorkItemTitleDescriptionTags(title: string, description: string, tags: string[]) {
     // Obtenemos el workItem que se va a actualizar (por si ha sufrido alguna modificación antes, como la posición)
+    let workItems: WorkItem[] = [];
     try {
-      let workItems = await lastValueFrom(this.getWorkItemsOfProject());
+      workItems = await lastValueFrom(this.getWorkItemsOfProject());
       this.workItem = this.getWorkItemByIdNumber(workItems, this.workItemIdNumber);
     }
     catch (error) {
@@ -271,7 +280,16 @@ export class WorkItemComponent implements OnInit {
     let workItemsOfProject = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
     this.workItem = this.workItemService.getWorkItemByIdNumber(workItemsOfProject, this.workItemIdNumber);
 
-    // Actualizar las etiquetas
+    // Para actualizar el array projectWorkItems y emitirlo al padre (work-item-list)
+    let workItemObject = workItems.filter(wI => wI.idNumber == this.workItem.idNumber)[0];
+    let indexOfWorkItem = workItems.indexOf(workItemObject);
+    
+    workItems[indexOfWorkItem] = this.workItem;
+    this.projectWorkItems = workItems;
+
+    this.onChange.emit(this.projectWorkItems);
+
+    // Actualizar las etiquetas (visualmente, interfaz)
     await this.getWorkItemTagsProperties(this.workItem);
   }
 

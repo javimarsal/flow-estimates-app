@@ -58,6 +58,11 @@ export class WorkItemListComponent implements OnInit {
     }
   }
 
+  setProjectWorkItems(workItems: WorkItem[]) {
+    this.projectWorkItems = workItems;
+    this.onChange.emit(this.projectWorkItems);
+  }
+
   stringToNumber(s: string): number {
     return parseInt(s);
   }
@@ -110,7 +115,7 @@ export class WorkItemListComponent implements OnInit {
       let index = this.projectWorkItems.indexOf(workItem);
       this.projectWorkItems[index].panel = workItem.panel;
 
-      // para actualizar el arrya projectWorkItems en el padre (en este caso el componente panel)
+      // para actualizar el array projectWorkItems en el padre (en este caso el componente panel)
       this.onChange.emit(this.projectWorkItems);
     }
     catch (error) {
