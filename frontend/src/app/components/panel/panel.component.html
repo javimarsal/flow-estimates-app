@@ -19,14 +19,57 @@
     </div>
 </div>
 
-<div *ngIf="projectWorkItems.length != 0" cdkDropList cdkDropListOrientation="horizontal" class="panelList" (cdkDropListDropped)="drop($event)">
+<!-- <div class="filter">
+    <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="filter-title">
+              Filtrar etiquetas
+            </mat-panel-title>
+            <mat-panel-description>
+              Currently I am
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <p>I'm visible because I am open</p>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div> -->
+
+<mat-card class="filter">
+    <h2 class="filter-title">Filtrar etiquetas</h2>
+
+    <mat-form-field class="matChipList">
+        <mat-label>Etiquetas seleccionadas</mat-label>
+        <mat-chip-list #chipList aria-label="Tag selection">
+            <mat-chip class="chip" *ngFor="let tag of selectedTags" (removed)="remove(tag)">
+                {{tag}}
+                <button matChipRemove style="background-color: white; border-radius: 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                    </svg>
+                </button>
+            </mat-chip>
+
+            <input #tagInput placeholder="Añadir etiqueta..." [formControl]="tagCtrl" [matAutocomplete]="auto" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+        </mat-chip-list>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+            <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+                <span class="chipItemList">
+                    {{tag}}
+                </span>
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+</mat-card>
+
+<div *ngIf="projectWorkItems.length!=0 && filteredProjectWorkItems.length != 0" cdkDropList cdkDropListOrientation="horizontal" class="panelList" (cdkDropListDropped)="drop($event)">
     <div cdkDropListGroup>
         <!-- Es posible que el id del div (panel) ya no sea necesario -->
         <div id={{panel}} class="panelContainer" *ngFor="let panel of panelNames" cdkDrag>
             <h2 class="panelName">{{panel}}</h2>
             <!-- Crear work-item -->
             <app-create-work-item *ngIf="panel =='ToDO'" [panelName]="panel" [projectWorkItems]="projectWorkItems" [workItemListComponent]="wIC"></app-create-work-item>
-            <app-work-item-list [projectTags]="projectTags" [projectWorkItems]="projectWorkItems" [panelName]="panel" (onChange)="setProjectWorkItems($event)" #wIC></app-work-item-list>
+            <app-work-item-list [projectTags]="projectTags" [projectWorkItems]="filteredProjectWorkItems" [panelName]="panel" (onChange)="setProjectWorkItems($event)" #wIC></app-work-item-list>
         </div>
     </div>
 </div>

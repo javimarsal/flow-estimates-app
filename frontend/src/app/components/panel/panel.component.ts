@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, map, Observable, startWith } from 'rxjs';
+import { FormControl } from '@angular/forms';
 
 // Services
 import { CookieService } from 'ngx-cookie-service';
@@ -13,6 +14,9 @@ import { UserService } from 'src/app/services/user.service';
 import { Panel } from 'src/app/models/panel';
 import { Tag } from 'src/app/models/tag';
 import { WorkItem } from 'src/app/models/work-item';
+
+// Material
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-panel',
@@ -28,10 +32,27 @@ export class PanelComponent implements OnInit {
   projectName: string = '';
   projectTags: Tag[] = [];
   projectWorkItems: WorkItem[] = [];
+  filteredProjectWorkItems: WorkItem[] = [];
+
+  // Etiquetas
+  separatorKeysCodes: number[] = [];
+  filteredTags: Observable<string[]>;
+  selectedTags: string[] = [];
+  allTags: string[] = [];
+  tagCtrl = new FormControl();
+
+  @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService) {
     this.panelNames = [];
     this.panels = [];
+
+    this.filteredTags = this.tagCtrl.valueChanges.pipe(
+      startWith(null),
+      map((tag: string | null) =>
+        tag ? this._filter(tag) : this.allTags
+      )
+    );
   }
 
   async ngOnInit() {
@@ -71,6 +92,9 @@ export class PanelComponent implements OnInit {
     catch (error) {
       console.log(error);
     }
+
+    // Filtro de etiquetas
+    this.allTags = this.getTagsNamesOfProject(this.projectTags);
   }
 
   setProjectWorkItems(workItems: []) {
@@ -83,6 +107,8 @@ export class PanelComponent implements OnInit {
 
   async getProjectWorkItems() {
     this.projectWorkItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
+    
+    this.filteredProjectWorkItems = this.projectWorkItems.slice();
   }
 
   getProjectId() {
@@ -225,6 +251,53 @@ export class PanelComponent implements OnInit {
     panel.position = newPosition;
 
     return panel;
+  }
+
+  /* ETIQUETAS */
+  remove(tag: string): void {
+    let index = this.selectedTags.indexOf(tag);
+
+    if (index >= 0) {
+      this.selectedTags.splice(index, 1);
+      this.allTags.push(tag);
+    }
+
+    this.filterProjectWorkItems(this.selectedTags);
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    let value = event.option.viewValue
+    this.selectedTags.push(value);
+    this.tagInput.nativeElement.value = '';
+    
+    this.tagCtrl.setValue(null);
+
+    let indexOfValue = this.allTags.indexOf(value);
+    this.allTags.splice(indexOfValue, 1);
+
+    this.filterProjectWorkItems(this.selectedTags);
+  }
+
+  getTagsNamesOfProject(projectTags: Tag[]): string[] {
+    let tagsNames: string[] = [];
+
+    for (let tag of projectTags) {
+      tagsNames.push(tag.name);
+    }
+
+    return tagsNames;
+  }
+
+  filterProjectWorkItems(selectedTagsNames: string[]) {
+    let resultFilteredWorkItems;
+  }
+
+  private _filter(value: string): string[] {
+    let filterValue = value.toLowerCase();
+
+    return this.allTags.filter((tag) => 
+      tag.toLowerCase().includes(filterValue)
+    );
   }
 
 }

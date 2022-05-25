@@ -33,6 +33,7 @@ export class WorkItemListComponent implements OnInit {
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
   ngOnInit(): void {
+    console.log(this.projectWorkItems)
     this.getProjectId();
     this.getWorkItemsOfPanel();
   }
