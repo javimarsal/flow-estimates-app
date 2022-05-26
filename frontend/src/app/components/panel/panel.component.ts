@@ -99,6 +99,8 @@ export class PanelComponent implements OnInit {
 
   setProjectWorkItems(workItems: []) {
     this.projectWorkItems = workItems;
+    this.filterProjectWorkItems(this.selectedTags);
+    // TODO: hacer que el componente create-work-item devuelve también un Output con los nuevos workItems (para filtrar los nuevos creados)
   }
 
   async getProjectTags() {

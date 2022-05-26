@@ -27,6 +27,7 @@ export class WorkItemListComponent implements OnInit, OnChanges {
   projectId: any = '';
   @Input() projectTags!: Tag[];
   @Input() projectWorkItems!: WorkItem[];
+  @Input() filteredProjectWorkItems!: WorkItem[];
 
   @Output() onChange = new EventEmitter<any>();
 
@@ -38,9 +39,8 @@ export class WorkItemListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: any): void {
-    this.projectWorkItems = changes.projectWorkItems.currentValue;
+    this.filteredProjectWorkItems = changes.filteredProjectWorkItems.currentValue;
     this.getWorkItemsOfPanel();
-    console.log(this.workItemsOfPanel_IdNumbers)
   }
 
   getProjectId() {
@@ -53,7 +53,7 @@ export class WorkItemListComponent implements OnInit, OnChanges {
       // let workItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
 
       // Filtrar por el tablero que le corresponde y guardarlos
-      let workItemsOfPanel = this.filterWorkItems_ByPanelName(this.projectWorkItems, this.panelName);
+      let workItemsOfPanel = this.filterWorkItems_ByPanelName(this.filteredProjectWorkItems, this.panelName);
       // this.workItemsOfPanel = workItemsOfPanel;
         
       // Obtener los ID de los workItems del Panel, también se ordenan los objetos workItems en el método sortWorkItems
