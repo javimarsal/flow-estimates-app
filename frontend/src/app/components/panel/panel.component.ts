@@ -289,7 +289,51 @@ export class PanelComponent implements OnInit {
   }
 
   filterProjectWorkItems(selectedTagsNames: string[]) {
-    let resultFilteredWorkItems;
+    // Comprobamos que se hayan seleccionado etiquetas
+    if (selectedTagsNames.length == 0) {
+      // Si no se ha seleccionado ninguna etiqueta el array filtrado es todo el conjunto de projectWorkItems
+      this.filteredProjectWorkItems = this.projectWorkItems.slice();
+      return;
+    }
+    
+
+    let resultFilteredWorkItems: WorkItem[] = [];
+    // Recorremos cada workItem del proyecto
+    let projectWorkItems = this.projectWorkItems;
+    for (let wI of projectWorkItems) {
+      // Para comprobar si tiene todas las etiquetas seleccionadas
+      let hasAllSelectedTags = true;
+
+      let tagsOfwI: any = wI.tags;
+      // Si el workItems no tiene etiquetas (undefined || length(0)) continuamos con la siguiente iteración 
+      if (!tagsOfwI || tagsOfwI.length==0) continue;
+
+      // Donde se van guardando las etiquetas seleccionadas que tiene el workItem
+      let selectedTagsFound: string[] = [];
+
+      for (let tag of tagsOfwI) {
+        // Buscamos el _id de la etiqueta en el array projecTags
+        let tagId = tag.tag.toString();
+        // Ya tenemos el objeto Tag con todos sus parámetros
+        let projectTag = this.projectTags.filter(t => t._id == tagId)[0];
+        
+        // Buscamos las etiquetas del wI en las etiquetas seleccionadas
+        let selectedTagFound = selectedTagsNames.filter(t => t == projectTag.name)[0];
+        
+        // Guardamos la etiqueta que hemos encontrado
+        if (selectedTagFound) selectedTagsFound.push(selectedTagFound);
+      }
+
+      // Si no están todas las etiquetas seleccionadas en el filtro en el workItem, no podemos añadirlo al resultado del filtro
+      if (selectedTagsFound.length != selectedTagsNames.length) hasAllSelectedTags = false;
+
+      // Si tiene todas las etiquetas seleccionadas, incluimos el workItem en el resultado del filtro
+      if (hasAllSelectedTags) resultFilteredWorkItems.push(wI);
+    }
+
+    // Una vez tenemos las etiquetas filtradas, las asignamos a la variable
+    // puede que no haya workItems filtrados
+    this.filteredProjectWorkItems = resultFilteredWorkItems;
   }
 
   private _filter(value: string): string[] {

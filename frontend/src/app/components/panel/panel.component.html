@@ -62,14 +62,16 @@
     </mat-form-field>
 </mat-card>
 
-<div *ngIf="projectWorkItems.length!=0 && filteredProjectWorkItems.length != 0" cdkDropList cdkDropListOrientation="horizontal" class="panelList" (cdkDropListDropped)="drop($event)">
+<div cdkDropList cdkDropListOrientation="horizontal" class="panelList" (cdkDropListDropped)="drop($event)">
     <div cdkDropListGroup>
         <!-- Es posible que el id del div (panel) ya no sea necesario -->
         <div id={{panel}} class="panelContainer" *ngFor="let panel of panelNames" cdkDrag>
             <h2 class="panelName">{{panel}}</h2>
-            <!-- Crear work-item -->
-            <app-create-work-item *ngIf="panel =='ToDO'" [panelName]="panel" [projectWorkItems]="projectWorkItems" [workItemListComponent]="wIC"></app-create-work-item>
-            <app-work-item-list [projectTags]="projectTags" [projectWorkItems]="filteredProjectWorkItems" [panelName]="panel" (onChange)="setProjectWorkItems($event)" #wIC></app-work-item-list>
+            <div *ngIf="projectWorkItems.length!=0 && filteredProjectWorkItems.length != 0">
+                <!-- Crear work-item -->
+                <app-create-work-item *ngIf="panel =='ToDO'" [panelName]="panel" [projectWorkItems]="projectWorkItems" [workItemListComponent]="wIC"></app-create-work-item>
+                <app-work-item-list [projectTags]="projectTags" [projectWorkItems]="filteredProjectWorkItems" [panelName]="panel" (onChange)="setProjectWorkItems($event)" #wIC></app-work-item-list>
+            </div>
         </div>
     </div>
 </div>

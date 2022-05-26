@@ -9,7 +9,7 @@
 }
 
 .scrollable-area {
-    max-height: 600px;
+    max-height: 550px;
     min-height: 105px;
     overflow-y: auto;
 }
