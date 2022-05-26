@@ -69,7 +69,7 @@
             <h2 class="panelName">{{panel}}</h2>
             <div *ngIf="projectWorkItems.length!=0 && filteredProjectWorkItems.length != 0">
                 <!-- Crear work-item -->
-                <app-create-work-item *ngIf="panel =='ToDO'" [panelName]="panel" [projectWorkItems]="projectWorkItems" [workItemListComponent]="wIC"></app-create-work-item>
+                <app-create-work-item *ngIf="panel =='ToDO'" [panelName]="panel" [projectWorkItems]="projectWorkItems" [workItemListComponent]="wIC" (onChange)="setProjectWorkItems($event)"></app-create-work-item>
                 <app-work-item-list [projectTags]="projectTags" [projectWorkItems]="projectWorkItems" [filteredProjectWorkItems]="filteredProjectWorkItems" [panelName]="panel" (onChange)="setProjectWorkItems($event)" #wIC></app-work-item-list>
             </div>
         </div>

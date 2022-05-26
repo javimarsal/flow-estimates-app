@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, SimpleChanges, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, lastValueFrom } from 'rxjs';
 
@@ -18,7 +18,7 @@ import { WorkItem } from 'src/app/models/work-item';
   styleUrls: ['./create-work-item.component.css']
 })
 
-export class CreateWorkItemComponent implements OnInit {
+export class CreateWorkItemComponent implements OnInit, OnChanges {
   @Input() panelName!: string ;
   // Valor del input
   value = '';
@@ -28,6 +28,8 @@ export class CreateWorkItemComponent implements OnInit {
 
   projectId: any = '';
   @Input() projectWorkItems!: WorkItem[];
+
+  @Output() onChange = new EventEmitter<any>();
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
@@ -42,6 +44,10 @@ export class CreateWorkItemComponent implements OnInit {
         document.getElementById("create")!.click();
       }
     });
+  }
+
+  ngOnChanges(changes: any): void {
+    this.projectWorkItems = changes.projectWorkItems.currentValue;
   }
 
   getProjectId() {
@@ -120,6 +126,9 @@ export class CreateWorkItemComponent implements OnInit {
     
     // Añadimos el nuevo workItem a la lista de projectWorkItems
     this.projectWorkItems.push(workItemOfDB);
+
+    // Lo emitimos para que el padre (panel) puede actualizar la lista projectWorkItems
+    this.onChange.emit(this.projectWorkItems);
   }
 
   getMaxIdNumber(workItems: WorkItem[]) {
