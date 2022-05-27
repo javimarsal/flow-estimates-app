@@ -72,19 +72,74 @@
         </mat-form-field>
         <p class="warning" id="warningPanelDone"></p>
 
-        <!-- rango de fechas -->
-        <div class="optionGroupFechas">
-            <h4 class="optionSubtitle">Elegir rango de fechas</h4>
-            <mat-form-field appearance="fill">
-                <mat-label>Rango de fechas</mat-label>
-                <mat-date-range-input [rangePicker]="picker" [min]="permitedMinDate" [max]="permitedMaxDate">
-                    <input matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)" #startDate>
-                    <input matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)" #endDate>
-                </mat-date-range-input>
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
-                <p class="warning" id="warningDates"></p>
-            </mat-form-field>
+        <!-- FILTROS -->
+        <div class="optionGroup">
+            <mat-accordion>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="optionFilter">Elegir filtros (opcionales)</h4>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <!-- rango de fechas -->
+                    <div class="optionGroupFechas">
+                        <h4 class="optionSubtitle">Elegir rango de fechas
+                            <span matTooltip="Rango de fechas para filtrar las tareas del Panel Throughput">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                    <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                </svg>
+                            </span>
+                        </h4>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Rango de fechas</mat-label>
+                            <mat-date-range-input [rangePicker]="picker" [min]="permitedMinDate" [max]="permitedMaxDate">
+                                <input matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)" #startDate>
+                                <input matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)" #endDate>
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
+                            <p class="warning" id="warningDates"></p>
+                        </mat-form-field>
+                    </div>
+                    <!-- Etiquetas -->
+                    <h4 class="optionSubtitle">Elegir etiquetas
+                        <span matTooltip="Etiquetas por las que queremos filtrar las tareas del Panel Throughput">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                            </svg>
+                        </span>
+                    </h4>
+                    <div class="tagSelector">
+                        <mat-form-field class="matChipList">
+                            <mat-label>Etiquetas seleccionadas</mat-label>
+                            <mat-chip-list #chipList style="display: flex;" aria-label="Tag selection">
+                                <mat-chip class="chip" *ngFor="let tag of selectedTags" (removed)="remove(tag)">
+                                    {{tag}}
+                                    <button matChipRemove style="background-color: white; border-radius: 20px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                        </svg>
+                                    </button>
+                                </mat-chip>
+                    
+                                <input #tagInput placeholder="Añadir etiqueta..." [formControl]="tagCtrl" [matAutocomplete]="auto" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                            </mat-chip-list>
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                                <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+                                    <span class="chipItemList">
+                                        {{tag}}
+                                    </span>
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Botón para borrar los filtros -->
+                    <button mat-stroked-button (click)="deleteFilters(startDate, endDate)">Borrar filtros</button>
+                </mat-expansion-panel>
+            </mat-accordion>
         </div>
         
         <!-- Elegir número de ejecuciones -->

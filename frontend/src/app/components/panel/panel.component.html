@@ -5,9 +5,9 @@
     <div>
         <button *ngIf="projectWorkItems.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-single" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames }">Tiempo de Ciclo</button>
         
-        <button *ngIf="projectWorkItems.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-multiple" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames }">Estimar Duración</button>
+        <button *ngIf="projectWorkItems.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-multiple" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames, projectTags: projectTags }">Estimar Duración</button>
         
-        <button *ngIf="projectWorkItems.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-multiple-howMany" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames }">Estimar Alcance</button>
+        <button *ngIf="projectWorkItems.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-multiple-howMany" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames, projectTags: projectTags }">Estimar Alcance</button>
 
         <button *ngIf="projectTags.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/tags" [state]="{ projectTags: projectTags }">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-tags" viewBox="0 0 16 16">
@@ -36,7 +36,7 @@
 </div> -->
 
 <mat-card class="filter">
-    <h2 class="filter-title">Filtrar etiquetas</h2>
+    <h2 class="filter-title">Filtrar por etiquetas</h2>
 
     <mat-form-field class="matChipList">
         <mat-label>Etiquetas seleccionadas</mat-label>
