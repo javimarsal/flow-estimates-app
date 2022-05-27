@@ -192,6 +192,15 @@ export class EstimateMultipleComponent implements OnInit {
     }
   }
 
+  initFilteredTags() {
+    this.filteredTags = this.tagCtrl.valueChanges.pipe(
+      startWith(null),
+      map((tag: string | null) =>
+        tag ? this._filter(tag) : this.availableTags
+      )
+    );
+  }
+
   changeCheckedValue(checked: boolean, panelName: string) {
     this.checkedPanels[panelName] = checked;
 
@@ -337,6 +346,8 @@ export class EstimateMultipleComponent implements OnInit {
 
     /* Establecer las etiquetas disponibles (para el usuario) */
     this.availableTags = await this.getAvailableTagsNamesOfWorkItems(workItemsOfPanel);
+    this.initFilteredTags();
+    console.log(this.availableTags)
 
     /* Establecer el rango de fechas permitido (para el usuario) */
     // obtener las fechas de los workItems
