@@ -617,9 +617,8 @@ export class EstimateMultipleComponent implements OnInit {
       if (!await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate)) return false;
     }
 
-    // TODO Si se ha seleccionado un filtro de etiquetas y no hay workItems, noReady
-    // tener en cuenta si hay o no un rango de fechas seleccionado
-
+    // Si se ha seleccionado un filtro de etiquetas y no hay workItems, noReady
+    if (!await this.checkIfThereAreFilteredWorkItems()) return false;
 
     // No se ha seleccionado el rango de fechas y el panel Done no tiene workItems, noReady
     if (!await this.getWorkItemsOfPanel(this.panelDone, '')) return false;
@@ -689,11 +688,8 @@ export class EstimateMultipleComponent implements OnInit {
       workItems = await this.getWorkItemsOfPanel(this.panelDone, '');
     }
 
-    // TODO: Mirar si hay etiquetas seleccionadas
-    if (this.selectedTags.length != 0) {
-      workItems = await this.filterProjectWorkItems(this.selectedTags, workItems);
-      console.log(workItems)
-    }
+    // Filtrar workItems según las etiquetas seleccionadas (dentro del método se comprueba si hay etiquetas)
+    workItems = await this.filterProjectWorkItems(this.selectedTags, workItems);
 
     // Obtener las fechas de los workItems
     let datesOfWorkItems = this.getDatesOfWorkItems(workItems, this.panelDone);
