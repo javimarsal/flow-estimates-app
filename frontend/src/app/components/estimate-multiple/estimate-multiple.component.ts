@@ -325,6 +325,7 @@ export class EstimateMultipleComponent implements OnInit {
     // Borramos un posible warning, ocasionado por que el rango anterior no está permitido
     this.changeInnerText('warningDates', '');
 
+    await this.checkIfThereAreFilteredWorkItems();
   }
 
   async setPanelDoneSelector(event: any, startDate: HTMLInputElement, endDate: HTMLInputElement) {
@@ -403,10 +404,7 @@ export class EstimateMultipleComponent implements OnInit {
         workItemsFiltered = await this.filterProjectWorkItems(this.selectedTags, workItemsOfPanel);
       }
 
-      if (workItemsFiltered.length==0) {
-        this.changeInnerText('warningTag', 'No se ha encontrado ninguna tarea con estas etiquetas');
-        return;
-      }
+      if (workItemsFiltered.length==0) return;
 
       // Sí hay tareas con esas etiquetas
       this.changeInnerText('warningTag', '');
@@ -691,7 +689,7 @@ export class EstimateMultipleComponent implements OnInit {
       workItems = await this.getWorkItemsOfPanel(this.panelDone, '');
     }
 
-    // Mirar si hay etiquetas seleccionadas
+    // TODO: Mirar si hay etiquetas seleccionadas
     if (this.selectedTags.length != 0) {
       workItems = await this.filterProjectWorkItems(this.selectedTags, workItems);
       console.log(workItems)
@@ -932,7 +930,7 @@ export class EstimateMultipleComponent implements OnInit {
   }
 
   /* ETIQUETAS */
-  remove(tag: string): void {
+  async remove(tag: string) {
     let index = this.selectedTags.indexOf(tag);
 
     if (index >= 0) {
@@ -940,10 +938,11 @@ export class EstimateMultipleComponent implements OnInit {
       this.availableTags.push(tag);
     }
 
-    // TODO: comprobar si hay workItems según selectedTags (warning si no hay, borrar warning si hay)
+    // comprobar si hay workItems según selectedTags
+    await this.checkIfThereAreFilteredWorkItems();
   }
 
-  selected(event: MatAutocompleteSelectedEvent): void {
+  async selected(event: MatAutocompleteSelectedEvent) {
     let value = event.option.viewValue
     this.selectedTags.push(value);
     this.tagInput.nativeElement.value = '';
@@ -953,7 +952,49 @@ export class EstimateMultipleComponent implements OnInit {
     let indexOfValue = this.availableTags.indexOf(value);
     this.availableTags.splice(indexOfValue, 1);
 
-    // TODO: comprobar si hay workItems según selectedTags (warning si no hay, borrar warning si hay)
+    // comprobar si hay workItems según selectedTags
+    await this.checkIfThereAreFilteredWorkItems();
+  }
+
+  async checkIfThereAreFilteredWorkItems() {
+    // comprobar si hay workItems según selectedTags (warning si no hay, borrar warning si hay)
+    let filteredWorkItems: WorkItem[] = [];
+
+    // tenemos en cuenta si hay un rango de fechas seleccionado
+    if (this.startDate && this.endDate) {
+      let workItemsBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate);
+      if (workItemsBetweenDates) {
+        filteredWorkItems = await this.filterProjectWorkItems(this.selectedTags, workItemsBetweenDates);
+      }
+      else {
+        this.changeInnerText('warningTag', 'Comprueba antes que el rango de fechas contiene tareas, después vuelve a seleccionar las etiquetas que quieras');
+
+        return false;
+      }
+    }
+    // no hay rango de fechas
+    else {
+      let workItems = await this.getWorkItemsOfPanel(this.panelDone, '');
+      if (workItems) {
+        filteredWorkItems = await this.filterProjectWorkItems(this.selectedTags, workItems);
+      }
+      else {
+        this.changeInnerText('warningTag', 'Comprueba antes que el panel seleccionado contiene tareas, después vuelve a seleccionar las etiquetas que quieras');
+        this.deleteSelectedTags();
+
+        return false;
+      }
+    }
+
+    // Sí hay workItems según el filtro dado
+    if (filteredWorkItems.length != 0) {
+      this.changeInnerText('warningTag', '')
+
+      return true;
+    }
+
+    // Si no hay
+    return false;
   }
 
   getNamesOfTags(tags: Tag[]): string[] {
@@ -1013,6 +1054,10 @@ export class EstimateMultipleComponent implements OnInit {
 
     // Una vez tenemos las etiquetas filtradas, las asignamos a la variable
     // puede que no haya workItems filtrados
+    if (resultFilteredWorkItems.length == 0) {
+      this.changeInnerText('warningTag', 'No se ha encontrado ninguna tarea con estas etiquetas');
+    }
+
     return resultFilteredWorkItems;
   }
 
