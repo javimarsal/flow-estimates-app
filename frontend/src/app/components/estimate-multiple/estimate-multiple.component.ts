@@ -347,7 +347,6 @@ export class EstimateMultipleComponent implements OnInit {
     /* Establecer las etiquetas disponibles (para el usuario) */
     this.availableTags = await this.getAvailableTagsNamesOfWorkItems(workItemsOfPanel);
     this.initFilteredTags();
-    console.log(this.availableTags)
 
     /* Establecer el rango de fechas permitido (para el usuario) */
     // obtener las fechas de los workItems
@@ -361,6 +360,8 @@ export class EstimateMultipleComponent implements OnInit {
     this.permitedMinDate = datesOfPanel[0];
 
     // Comprobar que el rango de fechas (seleccionado por el usuario) sigue estando bien
+    let workItemsOfPanelDoneBetweenDates: any;
+
     if (this.startDate && this.endDate) {
       if (!this.checkDateRangeIsRight(this.startDate, this.endDate, this.permitedMinDate, this.permitedMaxDate)) {
         this.deleteDates(startDate, endDate);
@@ -371,7 +372,7 @@ export class EstimateMultipleComponent implements OnInit {
       }
 
       // el rango de fechas es correcto, comprobar si para el nuevo panel Done sigue habiendo workItems en el rango de fechas indicado
-      let workItemsOfPanelDoneBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, 'warningDates', this.startDate, this.endDate);
+      workItemsOfPanelDoneBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, 'warningDates', this.startDate, this.endDate);
 
       if (!workItemsOfPanelDoneBetweenDates) return;
 
@@ -379,7 +380,37 @@ export class EstimateMultipleComponent implements OnInit {
       this.changeInnerText('warningDates', '');
     }
 
-    // TODO: Comprobar que las etiquetas seleccionadas siguen estando bien
+    // Comprobar que las etiquetas seleccionadas siguen estando bien
+    if (this.selectedTags.length != 0) {
+      if (!this.checkSelectedTagsAreRight(this.selectedTags, this.availableTags)) {
+        this.deleteSelectedTags();
+
+        this.changeInnerText('warningTag', `Las etiquetas se han eliminado porque ya no se corresponden con las de las tareas del panel ${this.panelDone}`);
+
+        return;
+      }
+
+      // las etiquetas seleccionadas siguen estando bien
+
+      // vamos a comprobar si según las etiquetas seleccionadas hay workItems que las contienen
+      let workItemsFiltered: boolean | WorkItem[] = [];
+
+      if (this.startDate && this.endDate) {
+        // tenemos la seguridad de que workItemsOfPanelDoneBetweenDates tiene workItems, porque sino no estaríamos en este paso
+        workItemsFiltered = await this.filterProjectWorkItems(this.selectedTags, workItemsOfPanelDoneBetweenDates);
+      }
+      else {
+        workItemsFiltered = await this.filterProjectWorkItems(this.selectedTags, workItemsOfPanel);
+      }
+
+      if (workItemsFiltered.length==0) {
+        this.changeInnerText('warningTag', 'No se ha encontrado ninguna tarea con estas etiquetas');
+        return;
+      }
+
+      // Sí hay tareas con esas etiquetas
+      this.changeInnerText('warningTag', '');
+    }
   }
 
   getDatesOfWorkItems(workItems: WorkItem[], panelName: string): Date[] {
@@ -444,6 +475,16 @@ export class EstimateMultipleComponent implements OnInit {
 
     // Si no hay paneles checked
     return false;
+  }
+
+  checkSelectedTagsAreRight(selectedTags: string[], availableTags: string[]): boolean {
+    for (let sTagName of selectedTags) {
+      // miramos si sTag está contenido en availableTags
+      // si es 0, sidnifica que no está contenido
+      if (availableTags.filter(tagName => tagName == sTagName).length == 0) return false;
+    }
+
+    return true;
   }
 
   async getWorkItemsOfPanel(panelName: string, elementId: string) {
