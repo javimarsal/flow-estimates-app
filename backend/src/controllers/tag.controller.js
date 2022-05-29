@@ -42,7 +42,7 @@ tagController.checkNameTagExist = async (name) => {
     // las recorremos buscando el name pasado como parámetro
     for (let t of tags) {
         // si existe devolvemos true
-        if (t.name == name) return true;
+        if (t.name.toLowerCase() == name.toLowerCase()) return true;
     }
 
     // si no existe devolvemos false

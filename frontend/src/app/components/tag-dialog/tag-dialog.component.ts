@@ -139,7 +139,7 @@ export class TagDialogComponent implements OnInit {
 
       // buscar si algún tag coincide con el nombre que hemos puesto
       for (let tag of tagsOfProject) {
-        if (tag.name == name) return true;
+        if (tag.name.toLowerCase() == name.toLowerCase()) return true;
       }
     }
     catch (error) {
