@@ -1,11 +1,13 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
+import { Component, ViewChild, OnInit, ElementRef } from '@angular/core';
+import { lastValueFrom, map, Observable, startWith } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
+import { FormControl } from '@angular/forms';
 
 // Models
 import { Panel } from 'src/app/models/panel';
 import { WorkItem } from 'src/app/models/work-item';
+import { Tag } from 'src/app/models/tag';
 
 // Services
 import { ProjectService } from 'src/app/services/project.service';
@@ -13,6 +15,7 @@ import { WorkItemService } from 'src/app/services/work-item.service';
 
 // Material Events
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 import {
   ChartComponent,
@@ -50,6 +53,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
   // datos pasados desde el componente "panel" a través del atributo state del router
   historyWorkItemsOfProject = history.state.projectWorkItems;
   historyPanelNames = history.state.panelNames;
+  historyProjectTags = history.state.projectTags;
 
   isReady = false;
 
@@ -92,7 +96,23 @@ export class EstimateMultipleHowManyComponent implements OnInit {
   // Número de ejecuciones Simulación Monte Carlo
   numberOfExecutions: number = 10000;
 
-  constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService, private workItemService: WorkItemService) { }
+  // Etiquetas (filtro)
+  separatorKeysCodes: number[] = [];
+  filteredTags: Observable<string[]>;
+  selectedTags: string[] = [];
+  availableTags: string[] = [];
+  tagCtrl = new FormControl();
+
+  @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
+
+  constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService, private workItemService: WorkItemService) {
+    this.filteredTags = this.tagCtrl.valueChanges.pipe(
+      startWith(null),
+      map((tag: string | null) =>
+        tag ? this._filter(tag) : this.availableTags
+      )
+    );
+  }
 
   async ngOnInit() {
     // obtenemos el id del proyecto para poder obtener sus datos
@@ -118,6 +138,10 @@ export class EstimateMultipleHowManyComponent implements OnInit {
 
     // inicializar el gráfico sin datos para que se muestre el hueco del gráfico
     this.initChart([]);
+
+    // Filtro de etiquetas
+    let tagsOfProject = await this.getProjectTags();
+    this.availableTags = this.getNamesOfTags(tagsOfProject);
   }
 
   getProjectId() {
@@ -155,6 +179,15 @@ export class EstimateMultipleHowManyComponent implements OnInit {
       }
       else disableArray[pN] = true;
     }
+  }
+
+  initFilteredTags() {
+    this.filteredTags = this.tagCtrl.valueChanges.pipe(
+      startWith(null),
+      map((tag: string | null) =>
+        tag ? this._filter(tag) : this.availableTags
+      )
+    );
   }
 
   setPanelThroughputList(disabledPanels: any) {
@@ -222,6 +255,24 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     return workItems;
   }
 
+  async getProjectTags() {
+    let tags: Tag[] = [];
+
+    try {
+      if (this.historyProjectTags && this.historyProjectTags.length!=0) {
+        tags = this.historyProjectTags;
+      }
+      else if (!this.historyProjectTags || this.historyProjectTags.length==0) {
+        tags = await lastValueFrom(this.projectService.getTags(this.projectId));
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+
+    return tags;
+  }
+
   setPercentile(p: number) {
     this.percentile = p;
   }
@@ -244,6 +295,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     // Borramos un posible warning, ocasionado por que el rango anterior no está permitido
     this.changeInnerText('warningDates', '');
 
+    await this.checkIfThereAreFilteredWorkItems();
   }
 
   setObjectiveDate(event: MatDatepickerInputEvent<Date>) {
@@ -268,6 +320,10 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     if (!workItemsOfPanel) return;
     this.changeInnerText('warningPanelDone', '');
 
+    /* Establecer las etiquetas disponibles (para el usuario) */
+    this.availableTags = await this.getAvailableTagsNamesOfWorkItems(workItemsOfPanel);
+    this.initFilteredTags();
+
     /* Establecer el rango de fechas permitido (para el usuario) */
     // obtener las fechas de los workItems
     let datesOfPanel = this.getDatesOfWorkItems(workItemsOfPanel, this.panelDone);
@@ -280,6 +336,9 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     this.permitedMinDate = datesOfPanel[0];
 
     // Comprobar que el rango de fechas (seleccionado por el usuario) sigue estando bien
+    let workItemsOfPanelDoneBetweenDates: any;
+
+    // Comprobar que el rango de fechas (seleccionado por el usuario) sigue estando bien
     if (this.startDate && this.endDate) {
       if (!this.checkDateRangeIsRight(this.startDate, this.endDate, this.permitedMinDate, this.permitedMaxDate)) {
         this.deleteDates(startDate, endDate);
@@ -290,12 +349,43 @@ export class EstimateMultipleHowManyComponent implements OnInit {
       }
 
       // el rango de fechas es correcto, comprobar si para el nuevo panel Done sigue habiendo workItems en el rango de fechas indicado
-      let workItemsOfPanelDoneBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, 'warningDates', this.startDate, this.endDate);
+      workItemsOfPanelDoneBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, 'warningDates', this.startDate, this.endDate);
       
       if (!workItemsOfPanelDoneBetweenDates) return;
 
       // El rango está bien, y hay workItems en ese rango (borramos cualquier warning que pueda haber)
       this.changeInnerText('warningDates', '');
+    }
+
+    // Comprobar que las etiquetas seleccionadas siguen estando bien
+    if (this.selectedTags.length != 0) {
+      if (!this.checkSelectedTagsAreRight(this.selectedTags, this.availableTags)) {
+        this.deleteSelectedTags();
+
+        this.changeInnerText('warningTag', `Las etiquetas se han eliminado porque ya no se corresponden con las de las tareas del panel ${this.panelDone}`);
+
+        return;
+      }
+
+      // las etiquetas seleccionadas siguen estando bien
+      // eso significa que se mantienen, por lo tanto, debemos eliminar las etiquetas de selectedTags que se encuentren en availableTags
+      this.deleteSelectedFromAvailableTags();
+
+      // vamos a comprobar si según las etiquetas seleccionadas hay workItems que las contienen
+      let workItemsFiltered: boolean | WorkItem[] = [];
+
+      if (this.startDate && this.endDate) {
+        // tenemos la seguridad de que workItemsOfPanelDoneBetweenDates tiene workItems, porque sino no estaríamos en este paso
+        workItemsFiltered = await this.filterProjectWorkItems(this.selectedTags, workItemsOfPanelDoneBetweenDates);
+      }
+      else {
+        workItemsFiltered = await this.filterProjectWorkItems(this.selectedTags, workItemsOfPanel);
+      }
+
+      if (workItemsFiltered.length==0) return;
+
+      // Sí hay tareas con esas etiquetas
+      this.changeInnerText('warningTag', '');
     }
   }
 
@@ -314,6 +404,34 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     return dates;
   }
 
+  async getAvailableTagsNamesOfWorkItems(workItems: WorkItem[]): Promise<string[]> {
+    let availableTags: string[] = [];
+
+    // Lista de Tags del proyecto
+    let projectTags: Tag[] = await this.getProjectTags();
+
+    // Recorremos cada workItem
+    for (let wI of workItems) {
+      let wITagReferences = wI.tags;
+
+      // Si el wI no tiene referencias continuamos a la siguiente iteración
+      if (!wITagReferences) continue;
+
+      // Recorremos cada referencia Tag del workItem
+      for (let tagReference of wITagReferences) {
+        // Buscamos el id de la tagReference en la lista projectTags, y guardamos su nombre
+        let tagName = projectTags.filter(t => t._id == tagReference.tag.toString())[0].name;
+
+        // Si el nombre no está en la lista availableTags, lo incluimos
+        if (availableTags.filter(tN => tN == tagName).length==0) {
+          availableTags.push(tagName);
+        }
+      }
+    }
+
+    return availableTags;
+  }
+
   sortList(list: any[]) {
     return list.sort((a, b) => a - b)
   }
@@ -323,6 +441,16 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     if (((startDate >= permitedMinDate) && (startDate <= permitedMaxDate))  &&  ((endDate >= permitedMinDate) && (endDate <= permitedMaxDate))) return true;
 
     return false;
+  }
+
+  checkSelectedTagsAreRight(selectedTags: string[], availableTags: string[]): boolean {
+    for (let sTagName of selectedTags) {
+      // miramos si sTag está contenido en availableTags
+      // si es 0, sidnifica que no está contenido
+      if (availableTags.filter(tagName => tagName == sTagName).length == 0) return false;
+    }
+
+    return true;
   }
 
   async getWorkItemsOfPanel(panelName: string, elementId: string) {
@@ -393,6 +521,21 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     endDate.value = '';
   }
 
+  deleteSelectedTags() {
+    this.selectedTags = [];
+  }
+
+  async deleteFilters(startDate: HTMLInputElement, endDate: HTMLInputElement) {
+    this.deleteDates(startDate, endDate);
+    this.deleteSelectedTags();
+    if (this.panelDone) {
+      let workItems = await this.getWorkItemsOfPanel(this.panelDone, '');
+      if (!workItems) return;
+      this.availableTags = await this.getAvailableTagsNamesOfWorkItems(workItems);
+      this.initFilteredTags();
+    }
+  }
+
   /**
    * 
    * @param elementId id del elemento HTML
@@ -448,6 +591,9 @@ export class EstimateMultipleHowManyComponent implements OnInit {
       if (!await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate)) return false;
     }
 
+    // Si se ha seleccionado un filtro de etiquetas y no hay workItems, noReady
+    if (!await this.checkIfThereAreFilteredWorkItems()) return false;
+
     // No se ha seleccionado el rango de fechas y el panel Done no tiene workItems, noReady
     if (!await this.getWorkItemsOfPanel(this.panelDone, '')) return false;
 
@@ -502,6 +648,9 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     else {
       workItems = await this.getWorkItemsOfPanel(this.panelDone, '');
     }
+
+    // Filtrar workItems según las etiquetas seleccionadas (dentro del método se comprueba si hay etiquetas)
+    workItems = await this.filterProjectWorkItems(this.selectedTags, workItems);
 
     // Obtener las fechas de los workItems
     let datesOfWorkItems = this.getDatesOfWorkItems(workItems, this.panelDone);
@@ -746,6 +895,154 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     }
 
     this.isReady = true;
+  }
+
+  /* ETIQUETAS */
+  async remove(tag: string) {
+    let index = this.selectedTags.indexOf(tag);
+
+    if (index >= 0) {
+      this.selectedTags.splice(index, 1);
+      this.availableTags.push(tag);
+    }
+
+    // comprobar si hay workItems según selectedTags
+    await this.checkIfThereAreFilteredWorkItems();
+  }
+
+  async selected(event: MatAutocompleteSelectedEvent) {
+    let value = event.option.viewValue
+    this.selectedTags.push(value);
+    this.tagInput.nativeElement.value = '';
+    
+    this.tagCtrl.setValue(null);
+
+    let indexOfValue = this.availableTags.indexOf(value);
+    this.availableTags.splice(indexOfValue, 1);
+
+    // comprobar si hay workItems según selectedTags
+    await this.checkIfThereAreFilteredWorkItems();
+  }
+
+  deleteSelectedFromAvailableTags() {
+    let selectedTags = this.selectedTags;
+    for (let sTag of selectedTags) {
+      let indexInAvailable = this.availableTags.indexOf(sTag);
+      // Eliminamos la etiqueta de availableTags
+      this.availableTags.splice(indexInAvailable, 1);
+    }
+  }
+
+  async checkIfThereAreFilteredWorkItems() {
+    // comprobar si hay workItems según selectedTags (warning si no hay, borrar warning si hay)
+    let filteredWorkItems: WorkItem[] = [];
+
+    // tenemos en cuenta si hay un rango de fechas seleccionado
+    if (this.startDate && this.endDate) {
+      let workItemsBetweenDates = await this.getPanelWorkItemsBetweenDates(this.panelDone, '', this.startDate, this.endDate);
+      if (workItemsBetweenDates) {
+        filteredWorkItems = await this.filterProjectWorkItems(this.selectedTags, workItemsBetweenDates);
+      }
+      else {
+        this.changeInnerText('warningTag', 'Comprueba antes que el rango de fechas contiene tareas, después vuelve a seleccionar las etiquetas que quieras');
+
+        return false;
+      }
+    }
+    // no hay rango de fechas
+    else {
+      let workItems = await this.getWorkItemsOfPanel(this.panelDone, '');
+      if (workItems) {
+        filteredWorkItems = await this.filterProjectWorkItems(this.selectedTags, workItems);
+      }
+      else {
+        this.changeInnerText('warningTag', 'Comprueba antes que el panel seleccionado contiene tareas, después vuelve a seleccionar las etiquetas que quieras');
+        this.deleteSelectedTags();
+
+        return false;
+      }
+    }
+
+    // Sí hay workItems según el filtro dado
+    if (filteredWorkItems.length != 0) {
+      this.changeInnerText('warningTag', '')
+
+      return true;
+    }
+
+    // Si no hay
+    return false;
+  }
+
+  getNamesOfTags(tags: Tag[]): string[] {
+    let tagsNames: string[] = [];
+
+    for (let tag of tags) {
+      tagsNames.push(tag.name);
+    }
+
+    return tagsNames;
+  }
+
+  async filterProjectWorkItems(selectedTagsNames: string[], workItems: WorkItem[]) {
+    // Comprobamos que se hayan seleccionado etiquetas
+    if (selectedTagsNames.length == 0) {
+      // Si no se ha seleccionado ninguna etiqueta el array filtrado es todo el conjunto de projectWorkItems
+      return workItems;
+    }
+    
+    let resultFilteredWorkItems: WorkItem[] = [];
+    // Recorremos cada workItem del proyecto
+    for (let wI of workItems) {
+      // Para comprobar si tiene todas las etiquetas seleccionadas
+      let hasAllSelectedTags = true;
+
+      let tagsOfwI: any = wI.tags;
+      // Si el workItems no tiene etiquetas (undefined || length(0)) continuamos con la siguiente iteración 
+      if (!tagsOfwI || tagsOfwI.length==0) continue;
+
+      // Donde se van guardando las etiquetas seleccionadas que tiene el workItem
+      let selectedTagsFound: string[] = [];
+
+      for (let tag of tagsOfwI) {
+        // Buscamos el _id de la etiqueta en el array projecTags
+        let tagId = tag.tag.toString();
+
+        // Obtenemos los Tags del proyecto
+        let projectTags = await this.getProjectTags();
+
+        // Ya tenemos el objeto Tag con todos sus parámetros
+        let projectTag = projectTags.filter((t: Tag) => t._id == tagId)[0];
+        
+        // Buscamos las etiquetas del wI en las etiquetas seleccionadas
+        let selectedTagFound = selectedTagsNames.filter(t => t == projectTag.name)[0];
+        
+        // Guardamos la etiqueta que hemos encontrado
+        if (selectedTagFound) selectedTagsFound.push(selectedTagFound);
+      }
+
+      // Si no están todas las etiquetas seleccionadas en el filtro en el workItem, no podemos añadirlo al resultado del filtro
+      if (selectedTagsFound.length != selectedTagsNames.length) hasAllSelectedTags = false;
+
+      // Si tiene todas las etiquetas seleccionadas, incluimos el workItem en el resultado del filtro
+      if (hasAllSelectedTags) resultFilteredWorkItems.push(wI);
+    }
+
+    // Una vez tenemos las etiquetas filtradas, las asignamos a la variable
+    // puede que no haya workItems filtrados
+    if (resultFilteredWorkItems.length == 0) {
+      this.changeInnerText('warningTag', 'No se ha encontrado ninguna tarea con estas etiquetas');
+    }
+
+    return resultFilteredWorkItems;
+  }
+
+  private _filter(value: string): string[] {
+    let filterValue = value.toLowerCase();
+
+    return this.availableTags.filter((tag) => 
+      tag.toLowerCase().includes(filterValue)
+    );
   }
 
 }

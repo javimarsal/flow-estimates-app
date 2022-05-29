@@ -392,6 +392,8 @@ export class EstimateMultipleComponent implements OnInit {
       }
 
       // las etiquetas seleccionadas siguen estando bien
+      // eso significa que se mantienen, por lo tanto, debemos eliminar las etiquetas de selectedTags que se encuentren en availableTags
+      this.deleteSelectedFromAvailableTags();
 
       // vamos a comprobar si según las etiquetas seleccionadas hay workItems que las contienen
       let workItemsFiltered: boolean | WorkItem[] = [];
@@ -557,9 +559,15 @@ export class EstimateMultipleComponent implements OnInit {
     this.selectedTags = [];
   }
 
-  deleteFilters(startDate: HTMLInputElement, endDate: HTMLInputElement) {
+  async deleteFilters(startDate: HTMLInputElement, endDate: HTMLInputElement) {
     this.deleteDates(startDate, endDate);
     this.deleteSelectedTags();
+    if (this.panelDone) {
+      let workItems = await this.getWorkItemsOfPanel(this.panelDone, '');
+      if (!workItems) return;
+      this.availableTags = await this.getAvailableTagsNamesOfWorkItems(workItems);
+      this.initFilteredTags();
+    }
   }
 
   /**
@@ -952,6 +960,15 @@ export class EstimateMultipleComponent implements OnInit {
     await this.checkIfThereAreFilteredWorkItems();
   }
 
+  deleteSelectedFromAvailableTags() {
+    let selectedTags = this.selectedTags;
+    for (let sTag of selectedTags) {
+      let indexInAvailable = this.availableTags.indexOf(sTag);
+      // Eliminamos la etiqueta de availableTags
+      this.availableTags.splice(indexInAvailable, 1);
+    }
+  }
+
   async checkIfThereAreFilteredWorkItems() {
     // comprobar si hay workItems según selectedTags (warning si no hay, borrar warning si hay)
     let filteredWorkItems: WorkItem[] = [];
@@ -1032,7 +1049,6 @@ export class EstimateMultipleComponent implements OnInit {
 
         // Ya tenemos el objeto Tag con todos sus parámetros
         let projectTag = projectTags.filter((t: Tag) => t._id == tagId)[0];
-        // TODO: probar primero el método y luego la simulación (console.log para mirar qué llega)
         
         // Buscamos las etiquetas del wI en las etiquetas seleccionadas
         let selectedTagFound = selectedTagsNames.filter(t => t == projectTag.name)[0];

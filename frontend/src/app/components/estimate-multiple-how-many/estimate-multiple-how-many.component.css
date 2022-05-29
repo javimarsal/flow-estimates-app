@@ -93,6 +93,12 @@
     margin-top: 5px;
 }
 
+.optionFilter {
+    font-size: 17px;
+    font-weight: bold;
+    color: #5c6b87;
+}
+
 .radio-group {
     display: flex;
     flex-direction: column;
@@ -107,6 +113,11 @@
     margin-left: 7px;
     margin-top: 5px;
     margin-bottom: 20px;
+}
+
+.tagSelector {
+    display: flex;
+    flex-direction: column;
 }
 
 .warning {
