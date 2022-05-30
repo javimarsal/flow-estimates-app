@@ -38,6 +38,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         surname: 'Martínez',
         email: 'javier@correo.es',
         password: '1234',
+        verified: true,
         projects: []
     });
 

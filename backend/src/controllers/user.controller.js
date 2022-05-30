@@ -2,6 +2,9 @@ const userController = {}
 
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const { nanoid } = require('nanoid');
 
 userController.getUsers = async (req, res) => {
     const users = await User.find();
@@ -66,12 +69,46 @@ userController.signup = async (req, res) => {
     // si no existe, se crea el nuevo usuario
     let newUser = new User(req.body);
 
-    await newUser.save()
-        .then((user) => {
-            console.log(user);
-            res.send({ message: `Se ha creado un nuevo usuario con correo:"${req.body.email}"` });
-        })
-        .catch(() => res.send({ message: 'No se pudo crear el usuario' }));
+    const user = await newUser.save();
+    if (user) {
+        console.log(user);
+        res.send({ message: `Se ha creado un nuevo usuario con correo:"${req.body.email}"` });
+    }
+    else {
+        res.send({ message: 'No se pudo crear el usuario' });
+    }
+
+    const EMAIL_SECRET = nanoid();
+
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: 'jmaus67esp@gmail.com', // generated ethereal user
+          pass: 'gqqb ezjp qwyx exsb', // generated ethereal password
+        },
+      });
+    
+    jwt.sign(
+        {
+            user: user._id,
+        },
+        EMAIL_SECRET,
+        {
+            expiresIn: '1d',
+        },
+        function (err, token) {
+            const url = `http://localhost:3000/confirmation/${token}`;
+
+            transporter.sendMail({
+                from: '"Javier" <jmaus67esp@gmail.com>',
+                to: "miguedquzummppuxox@bvhrk.com",
+                subject: 'Confirm Email',
+                html: `Por favor, pincha en este enlace para confirmar tu email: <a href="${url}">confirmar email</a>`,
+            });
+        },
+        );
     
 }
 

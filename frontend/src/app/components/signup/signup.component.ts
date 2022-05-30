@@ -41,6 +41,7 @@ export class SignupComponent implements OnInit {
       surname: cleanSurname,
       email: cleanEmail,
       password: password,
+      verified: false,
       projects: []
     }
 
