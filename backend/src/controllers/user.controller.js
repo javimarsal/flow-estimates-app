@@ -86,7 +86,7 @@ userController.signup = async (req, res) => {
         secure: true,
         auth: {
           user: 'jmaus67esp@gmail.com', // generated ethereal user
-          pass: 'gqqb ezjp qwyx exsb', // generated ethereal password
+          pass: process.env.EMAIL_PASSWORD, // generated ethereal password
         },
       });
     
@@ -103,7 +103,7 @@ userController.signup = async (req, res) => {
 
             transporter.sendMail({
                 from: '"Javier" <jmaus67esp@gmail.com>',
-                to: "miguedquzummppuxox@bvhrk.com",
+                to: "mvtakfvtyoxxkozmsa@nvhrw.com",
                 subject: 'Confirm Email',
                 html: `Por favor, pincha en este enlace para confirmar tu email: <a href="${url}">confirmar email</a>`,
             });
