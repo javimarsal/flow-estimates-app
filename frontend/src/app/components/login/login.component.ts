@@ -5,6 +5,7 @@ import { lastValueFrom } from 'rxjs';
 // Services
 import { UserService } from 'src/app/services/user.service';
 import { CookieService } from 'ngx-cookie-service';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-login',
@@ -24,10 +25,23 @@ export class LoginComponent implements OnInit {
     }
 
     try {
-      let user = await lastValueFrom(this.userService.signin(email, password));
+      let user: User = await lastValueFrom(this.userService.signin(email, password));
+
+      if (!user) {
+        this.changeInnerText('warning', 'El correo o la contraseña son incorrectos.')
+
+        return;
+      }
+
+      if (!user.confirmed) {
+        this.changeInnerText('warning', 'Debes confirmar tu cuenta antes de iniciar sesión. Comprueba la bandeja de entrada de tu correo electrónico.')
+        
+        return;
+      }
+      this.changeInnerText('warning', '');
 
       // set cookie uid
-      this.setCookie(user._id);
+      this.setCookie(user._id!);
         
       // las credenciales coinciden, navegamos al proyecto abierto de user
       if (user.openedProject) {
@@ -45,6 +59,10 @@ export class LoginComponent implements OnInit {
 
   setCookie(value: string) {
     this.cookieService.set('uid', value);
+  }
+
+  changeInnerText(elementId: string, message: string) {
+    document.getElementById(elementId)!.innerText = message;
   }
 
   ngOnInit(): void {

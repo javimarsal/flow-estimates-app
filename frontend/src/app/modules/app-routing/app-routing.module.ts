@@ -9,12 +9,14 @@ import { EstimateSingleComponent } from 'src/app/components/estimate-single/esti
 import { EstimateMultipleComponent } from 'src/app/components/estimate-multiple/estimate-multiple.component';
 import { TagListComponent } from 'src/app/components/tag-list/tag-list.component';
 import { EstimateMultipleHowManyComponent } from 'src/app/components/estimate-multiple-how-many/estimate-multiple-how-many.component';
+import { ConfirmationAccountComponent } from 'src/app/components/confirmation-account/confirmation-account.component';
 
 const routes: Routes = [
   { path: '', redirectTo:'/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
+  { path: 'confirmation/:token', component: ConfirmationAccountComponent },
   { path: 'my-projects', component: MyProjectsComponent },
   { path: 'project/:id', component: PanelComponent },
   { path: 'project/:id/estimate-single', component: EstimateSingleComponent },

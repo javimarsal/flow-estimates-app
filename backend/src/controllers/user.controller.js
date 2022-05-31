@@ -47,10 +47,10 @@ userController.signin = async (req, res) => {
 
     await User.findOne({ email, password })
         .then(user => {
-            res.send(user)
+            return res.send(user)
         })
         .catch(() => {
-            res.status(401).send({ message: 'Invalid credentials' })
+            return res.status(401).send({ message: 'Invalid credentials' })
         })
 }
 
@@ -62,8 +62,7 @@ userController.signup = async (req, res) => {
         .then(user => userExist = user);
     
     if (userExist) {
-        res.status(401).send({ message: 'El correo proporcionado ya está siendo usado por otro usuario' });
-        return;
+        return res.status(401);
     }
 
     // si no existe, se crea el nuevo usuario
@@ -71,22 +70,21 @@ userController.signup = async (req, res) => {
 
     const user = await newUser.save();
     if (user) {
-        console.log(user);
         res.send({ message: `Se ha creado un nuevo usuario con correo:"${req.body.email}"` });
     }
     else {
-        res.send({ message: 'No se pudo crear el usuario' });
+        return res.send({ message: 'No se pudo crear el usuario' });
     }
 
-    const EMAIL_SECRET = nanoid();
+    // Enviar un correo para confirmar el correo electrónico proporcionado
 
     let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 465,
         secure: true,
         auth: {
-          user: 'jmaus67esp@gmail.com', // generated ethereal user
-          pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PASSWORD,
         },
       });
     
@@ -94,22 +92,54 @@ userController.signup = async (req, res) => {
         {
             user: user._id,
         },
-        EMAIL_SECRET,
+        process.env.EMAIL_SECRET,
         {
             expiresIn: '1d',
         },
         function (err, token) {
-            const url = `http://localhost:3000/confirmation/${token}`;
+            const url = `${process.env.HOSTNAME}/confirmation/${token}`;
 
             transporter.sendMail({
-                from: '"Javier" <jmaus67esp@gmail.com>',
-                to: "mvtakfvtyoxxkozmsa@nvhrw.com",
+                from: `"Flow Estimates" <${process.env.EMAIL}>`,
+                to: user.email,
                 subject: 'Confirm Email',
+                text: 'Por favor, pincha en este enlace para confirmar tu email: confirmar email',
                 html: `Por favor, pincha en este enlace para confirmar tu email: <a href="${url}">confirmar email</a>`,
             });
         },
-        );
+    );
     
+}
+
+userController.confirmEmail = async (req, res) => {
+    let token = req.params.token;
+    let userId = '';
+    try {
+        userId = jwt.verify(token, process.env.EMAIL_SECRET).user;
+        
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400);
+    }
+
+    if (!userId) {
+        return res.status(400);
+    }
+
+    try {
+        let user = await User.findById(userId);
+        if (!user.confirmed) {
+            user.confirmed = true;
+            await user.save();
+        }
+
+        return res.status(200);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(401);
+    }
 }
 
 userController.setOpenedProject = async (req, res) => {

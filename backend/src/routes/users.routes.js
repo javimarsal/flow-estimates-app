@@ -20,6 +20,8 @@ userRouter.post('/signin', userController.signin);
 
 userRouter.post('/signup', userController.signup);
 
+userRouter.get('/confirmation/:token', userController.confirmEmail);
+
 userRouter.post('/openedProject', userController.setOpenedProject);
 
 module.exports = userRouter;

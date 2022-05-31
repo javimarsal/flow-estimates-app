@@ -1,0 +1,26 @@
+.title {
+    padding-top: 5em;
+    color: white;
+    font-size: 25px;
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.confirmation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(135, 233, 116);
+    margin: auto;
+    margin-top: 10em;
+    max-width: 500px;
+}
+
+.paragraph {
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+.subparagraph {
+    font-size: 16px;
+}

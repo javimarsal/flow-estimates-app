@@ -22,3 +22,8 @@ body {
 .form-label {
     color: #307df8;
 }
+
+.warning {
+    margin-top: 20px;
+    color: #f85454;
+}

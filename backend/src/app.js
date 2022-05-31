@@ -66,6 +66,10 @@ app.get('/project/:id/estimate-multiple-howMany', function(req, res) {
     res.sendFile(path.join(__dirname + './../public/index.html'));
 });
 
+app.get('/confirmation/:token', function(req, res) {
+    res.sendFile(path.join(__dirname + './../public/index.html'));
+});
+
 // Rutas para acceder a la base de datos
 app.use("/api/projects", require('./routes/projects.routes'))
 app.use("/api/users", require('./routes/users.routes'))

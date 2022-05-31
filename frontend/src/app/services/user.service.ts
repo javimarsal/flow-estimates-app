@@ -26,6 +26,10 @@ export class UserService {
     return this.http.post(`${this.URL_API}/signup`, user);
   }
 
+  confirmEmail(token: string) {
+    return this.http.get(`${this.URL_API}/confirmation/${token}`);
+  }
+
   setOpenedProject(projectId: string, uid: string) {
     return this.http.post(`${this.URL_API}/openedProject`, {projectId: projectId, uid: uid});
   }

@@ -41,14 +41,15 @@ export class SignupComponent implements OnInit {
       surname: cleanSurname,
       email: cleanEmail,
       password: password,
-      verified: false,
+      confirmed: false,
       projects: []
     }
 
     // Se comprobará si el email existe en la bdd
     try {
       let res = await lastValueFrom(this.userService.signup(newUser));
-      console.log(res);
+      alert('Se le enviará un correo al Correo Electrónico proporcionado para que active su cuenta.');
+
       this.router.navigate(['/login']);
     }
     catch (error) {

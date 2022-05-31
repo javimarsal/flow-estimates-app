@@ -4,7 +4,7 @@ export interface User {
     surname: string
     email: string
     password: string
-    verified: boolean
+    confirmed: boolean
     openedProject?: object
     projects: [
         // {
