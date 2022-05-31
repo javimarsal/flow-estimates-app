@@ -3,6 +3,8 @@ require('dotenv').config();
 
 mongoose.Promise = global.Promise;
 
+const bcrypt = require('bcrypt');
+
 // Modelo de Datos
 var User = require('./models/User');
 var Project = require('./models/Project');
@@ -37,7 +39,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
         name: 'Javier',
         surname: 'Martínez',
         email: 'javier@correo.es',
-        password: '1234',
+        password: bcrypt.hashSync('1234', 10),
         confirmed: true,
         projects: []
     });

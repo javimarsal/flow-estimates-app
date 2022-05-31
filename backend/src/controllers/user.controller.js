@@ -2,9 +2,9 @@ const userController = {}
 
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const { nanoid } = require('nanoid');
 
 userController.getUsers = async (req, res) => {
     const users = await User.find();
@@ -45,13 +45,20 @@ userController.signin = async (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
 
-    await User.findOne({ email, password })
-        .then(user => {
-            return res.send(user)
-        })
-        .catch(() => {
-            return res.status(401).send({ message: 'Invalid credentials' })
-        })
+    try {
+        let user = await User.findOne({ email });
+        if (bcrypt.compareSync(password, user.password)) {
+            return res.send(user);
+        }
+        else {
+            return res.send(undefined);
+        }
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(401).send({ message: 'Invalid credentials' });
+    }
+
 }
 
 userController.signup = async (req, res) => {
@@ -67,6 +74,9 @@ userController.signup = async (req, res) => {
 
     // si no existe, se crea el nuevo usuario
     let newUser = new User(req.body);
+
+    // Encriptar contraseña
+    newUser.password = bcrypt.hashSync(newUser.password, 10);
 
     const user = await newUser.save();
     if (user) {
