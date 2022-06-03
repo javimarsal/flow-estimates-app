@@ -12,7 +12,7 @@
 <mat-card class="chart-card">
     <div class="chart" *ngIf="isReady">
         <p *ngIf="dataChart.length != 0" class="forecast">Según tus datos, en <span class="nDays">{{getDaysBetween(objectiveDate, todayDate)}}</span> 
-            <span *ngIf="getDaysBetween(objectiveDate, todayDate) != 1"> días</span> <span *ngIf="getDaysBetween(objectiveDate, todayDate) == 1"> día</span> 
+            <span *ngIf="getDaysBetween(objectiveDate, todayDate) != 1"> días laborables</span> <span *ngIf="getDaysBetween(objectiveDate, todayDate) == 1"> día laborable</span> 
             se <span *ngIf="xValuePercentile != '1'"> completarían </span> <span *ngIf="xValuePercentile == '1'"> completaría </span> <span class="forecast-important">{{xValuePercentile}}</span> 
             <span *ngIf="xValuePercentile != '1'"> tareas</span> <span *ngIf="xValuePercentile == '1'"> tarea</span>
              o menos, con una probabilidad del <span class="forecast-important">{{percentile * 100}}%</span></p>

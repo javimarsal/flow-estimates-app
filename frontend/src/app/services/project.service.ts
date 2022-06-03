@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { Panel } from '../models/panel';
 import { WorkItem } from '../models/work-item';
 import { Tag } from '../models/tag';
+import { Project } from '../models/project';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +18,20 @@ export class ProjectService {
 
   constructor(private http: HttpClient) { }
 
-  getProject(projectId: string): Observable<Panel> {
-    return this.http.get<Panel>(`${this.URL_API}/${projectId}`);
+  getProject(projectId: string): Observable<Project> {
+    return this.http.get<Project>(`${this.URL_API}/${projectId}`);
+  }
+
+  updateProject(project: Project): Observable<any> {
+    return this.http.put(`${this.URL_API}/${project._id}`, project);
+  }
+
+  createProject(project: Project): Observable<any> {
+    return this.http.post(this.URL_API, project);
+  }
+
+  deleteProject(projectId?: string): Observable<any> {
+    return this.http.delete(`${this.URL_API}/${projectId}`);
   }
 
   getPanels(projectId: string): Observable<Panel[]> {

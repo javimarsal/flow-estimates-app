@@ -16,21 +16,19 @@ export class MyProjectsComponent implements OnInit {
 
   constructor(private userService: UserService, private cookieService: CookieService) { }
 
+  async ngOnInit() {
+    this.uid = this.cookieService.get('uid')
+    await this.getUserProjects();
+    console.log(this.userProjects);
+  }
+
   async getUserProjects() {
     try {
       let user = await lastValueFrom(this.userService.getUser(this.uid));
       this.userProjects = user.projects;
     }
     catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
-
-  ngOnInit(): void {
-    this.uid = this.cookieService.get('uid')
-    this.getUserProjects();
-  }
-
-
-
 }

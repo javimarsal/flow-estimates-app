@@ -1,0 +1,31 @@
+.item-proyect {
+    padding: 20px 20px;
+    color: rgba(0, 0, 0, 0.87);
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    background: white;
+    font-size: 18px;
+    margin: 10px;
+    border: solid 1px rgb(190, 190, 190);
+    border-radius: 4px;
+}
+
+.nombre {
+    font-weight: bold;
+}
+
+.link-nombre {
+    color: #307df8;
+    font-weight: initial;
+}
+
+.rol {
+    padding-left: 30px;
+    color: rgb(139, 135, 135);
+    font-weight: bold;
+}
+
+.rol-name {
+    font-weight: initial;
+}
