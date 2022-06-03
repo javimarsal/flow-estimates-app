@@ -25,7 +25,21 @@ userController.getUser = async (req, res) => {
     const user = await User.findById(req.params.id).populate({
         path: 'projects',
         populate: {
-            path: 'project'
+            path: 'project',
+            populate: [
+                {
+                    path: 'panels',
+                    populate: { path: 'panel' }
+                },
+                {
+                    path: 'tags',
+                    populate: { path: 'tag' }
+                },
+                {
+                    path: 'workItems',
+                    populate: { path: 'workItem' }
+                }
+            ]
         }
     })
     res.send(user)

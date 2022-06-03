@@ -1,7 +1,7 @@
 <div class="item-proyect">
     <span class="nombre">
         Nombre: 
-            <a class="link-nombre" routerLink="/project/{{project._id}}">{{ project.name }}</a>
+            <a class="link-nombre" routerLink="/project/{{project._id}}" [state]="{ projectName: project.name, projectPanels: project.panels, projectTags: project.tags, projectWorkItems: project.workItems}">{{ project.name }}</a>
     </span>
 
     <span class="rol">

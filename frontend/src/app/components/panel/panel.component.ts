@@ -25,16 +25,19 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 })
 
 export class PanelComponent implements OnInit {
-  panelNames: string[];
-  panels: Panel[];
-
   projectId: any = '';
   projectName: string = '';
+  projectPanels: Panel[];
+  panelNames: string[];
   projectTags: Tag[] = [];
   projectWorkItems: WorkItem[] = [];
   filteredProjectWorkItems: WorkItem[] = [];
 
   // TODO: utilizar el history para obtener los datos más rápido
+  historyProjectName = history.state.projectName;
+  historyProjectPanels = history.state.projectPanels;
+  historyProjectTags = history.state.projectTags;
+  historyProjectWorkItems = history.state.projectWorkItems;
 
   // Etiquetas
   separatorKeysCodes: number[] = [];
@@ -47,7 +50,7 @@ export class PanelComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService) {
     this.panelNames = [];
-    this.panels = [];
+    this.projectPanels = [];
 
     this.filteredTags = this.tagCtrl.valueChanges.pipe(
       startWith(null),
@@ -61,13 +64,7 @@ export class PanelComponent implements OnInit {
     this.getProjectId();
     
     // Obtener el nombre del proyecto para mostrarlo en la interfaz
-    try {
-      let project = await lastValueFrom(this.getProject(this.projectId));
-      this.projectName = project.name;
-    }
-    catch (error) {
-      console.log(error)
-    }
+    this.projectName = await this.getProjectName(this.projectId);
 
     // Cuando el usuario abre el proyecto, registramos el id en la propiedad openedProject del usuario
     try {
@@ -78,40 +75,27 @@ export class PanelComponent implements OnInit {
       console.log(error)
     }
     
-    await this.getPanelsOfProject();
+    // Obtenemos los paneles del proyecto
+    this.projectPanels = await this.getProjectPanels(this.projectId);
+    // y sacamos sus nombres
+    this.panelNames = this.getNames(this.projectPanels);
 
-    try {
-      await this.getProjectTags();
-    }
-    catch (error) {
-      console.log(error);
-    }
+    // Obtenemos los Tags del proyecto
+    this.projectTags = await this.getProjectTags(this.projectId);
 
-    try {
-      await this.getProjectWorkItems();
-      // console.log(this.projectWorkItems)
-    }
-    catch (error) {
-      console.log(error);
-    }
-
-    // Filtro de etiquetas
+    // Obtenemos los workItems del proyecto
+    this.projectWorkItems = await this.getProjectWorkItems(this.projectId);
+    
+    /* FILTRO DE ETIQUETAS */
+    // copiamos la lista de workItems (que será modificada por el filtro)
+    this.filteredProjectWorkItems = this.projectWorkItems.slice();
+    // nos quedamos con los nombre de las etiquetas
     this.allTags = this.getTagsNamesOfProject(this.projectTags);
   }
 
   setProjectWorkItems(workItems: []) {
     this.projectWorkItems = workItems;
     this.filterProjectWorkItems(this.selectedTags);
-  }
-
-  async getProjectTags() {
-    this.projectTags = await lastValueFrom(this.projectService.getTags(this.projectId));
-  }
-
-  async getProjectWorkItems() {
-    this.projectWorkItems = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
-    
-    this.filteredProjectWorkItems = this.projectWorkItems.slice();
   }
 
   getProjectId() {
@@ -122,20 +106,84 @@ export class PanelComponent implements OnInit {
     return this.projectService.getProject(projectId);
   }
 
+  async getProjectName(projectId: string): Promise<string> {
+    let projectName = '';
+
+    if (this.historyProjectName) {
+      projectName = this.historyProjectName;
+    }
+    else {
+      try {
+        let project = await lastValueFrom(this.getProject(projectId));
+        projectName = project.name;
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
+    return projectName;
+  }
+
+  async getProjectPanels(projectId: string): Promise<Panel[]> {
+    let projectPanels: Panel[] = [];
+
+    if (this.historyProjectPanels && this.historyProjectPanels.length!=0) {
+      projectPanels = this.historyProjectPanels;
+      // TODO: sacar los objetos panel de cada uno
+    }
+    else if (!this.historyProjectPanels || this.historyProjectPanels.length==0) {
+      try {
+        let panels = await lastValueFrom(this.projectService.getPanels(projectId));
+        projectPanels = panels;
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
+    return projectPanels;
+  }
+
+  async getProjectTags(projectId: string): Promise<Tag[]> {
+    let projectTags: Tag[] = [];
+
+    if (this.historyProjectTags && this.historyProjectTags.length!=0) {
+      projectTags = this.historyProjectTags;
+    }
+    else if (!this.historyProjectTags || this.historyProjectTags.length==0) {
+      try {
+        projectTags = await lastValueFrom(this.projectService.getTags(projectId));
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
+    return projectTags;
+  }
+
+  async getProjectWorkItems(projectId: string): Promise<WorkItem[]> {
+    let projectWorkItems: WorkItem[] = [];
+
+    if (this.historyProjectWorkItems && this.historyProjectWorkItems!=0) {
+      projectWorkItems = this.historyProjectWorkItems;
+    }
+    else if (!this.historyProjectWorkItems || this.historyProjectWorkItems==0) {
+      try {
+        projectWorkItems = await lastValueFrom(this.projectService.getWorkItems(projectId));
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
+    return projectWorkItems;
+  }
+
   setOpenedProjectOfUser() {
     let uid = this.cookieService.get('uid');
     return this.userService.setOpenedProject(this.projectId, uid)
-  }
-
-  async getPanelsOfProject() {
-    try {
-      let panels = await lastValueFrom(this.projectService.getPanels(this.projectId));
-      this.panels = panels;
-      this.panelNames = this.getNames(panels);
-    }
-    catch (error) {
-      console.log(error)
-    }
   }
 
   async updatePanel(panel: Panel) {
@@ -153,7 +201,7 @@ export class PanelComponent implements OnInit {
     // Paneles que devolvemos para luego actualizar this.panels
     let updatedPanels: Panel[] = [];
     
-    for (let p of this.panels) {
+    for (let p of this.projectPanels) {
       // No vamos a actualizar el panel que hemos movido (porque ya está actualizado)
       if (p._id != idMovedPanel) {
         let panelToBeUpdated: Panel = {
@@ -225,7 +273,7 @@ export class PanelComponent implements OnInit {
       updatedPanels.push(panel);
 
       // Actualizar this.panels
-      this.panels = updatedPanels;
+      this.projectPanels = updatedPanels;
     }
 
     
@@ -239,7 +287,7 @@ export class PanelComponent implements OnInit {
     };
 
     // Buscamos el Objeto Panel en el array this.panels
-    for (let p of this.panels) {
+    for (let p of this.projectPanels) {
       // Si encontramos la misma posición es el panel que buscamos
       if (p.position == targetPosition) {
         // Hemos encontrado el Objeto Panel y lo devolvemos

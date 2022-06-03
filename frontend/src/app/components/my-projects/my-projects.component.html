@@ -2,9 +2,9 @@
 
 <h2 class="title">Mis proyectos</h2>
 <mat-card class="proyects">
-        <app-my-project-item *ngFor="let project of userProjects" [project]="project.project" [role]="project.role"></app-my-project-item>
+    <app-my-project-item *ngFor="let project of userProjects" [project]="project.project" [role]="project.role"></app-my-project-item>
 
-        <div *ngIf="userProjects.length==0">
-            <p class="no-projects">Ningún proyecto que mostrar</p>
-        </div>
+    <div *ngIf="userProjects.length==0">
+        <p class="no-projects">Ningún proyecto que mostrar</p>
+    </div>
 </mat-card>
