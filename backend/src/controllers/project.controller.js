@@ -9,12 +9,14 @@ projectController.getProjects = async (req, res) => {
 
 projectController.createProject = async (req, res) => {
     // Creamos el objeto con lo que nos manda el cliente (req)
-    const newProject = new Project(req.body)
+    const newProject = new Project(req.body);
+
+    // TODO: solo guardar el proyecto si el nombre no existe en los proyectos del usuario (necesitamos el uid)
 
     // Guardamos el nuevo objeto
     await newProject.save()
 
-    res.send({ message: 'Project created' })
+    res.send(newProject);
 }
 
 projectController.getProject = async (req, res) => {
@@ -47,6 +49,40 @@ projectController.getPanels = async (req, res) => {
     }
 
     res.send(panels);
+}
+
+projectController.addPanel = async (req, res) => {
+    const project = await Project.findById(req.params.id);
+    const panel = req.body;
+
+    // Añadimos el panel a la lista de project
+    project.panels.push({
+        panel: panel._id
+    });
+
+    await project.save();
+    
+    res.send({ message: `panel with id="${panel._id}" has been added to project with id="${project._id}"` });
+}
+
+projectController.deletePanel = async (req, res) => {
+    const project = await Project.findById(req.params.pid);
+    const panelId = req.params.panelId;
+
+    // Buscar el id del panel en la lista de Project y eliminarlo
+    let panelsOfProject = project.panels;
+    let panelsLength = panelsOfProject.length;
+    for (let i = 0; i < panelsLength; i++) {
+        if (panelsOfProject[i].panel.toString() == panelId) {
+            panelsOfProject.splice(i, 1);
+            break;
+        }
+    }
+
+    // Guardamos el Project con la lista actualizada
+    await project.save();
+
+    res.send({ message: `panel with id="${panelId}" has been removed from project with id="${project._id}"` });
 }
 
 projectController.getWorkItems = async (req, res) => {

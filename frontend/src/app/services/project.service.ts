@@ -26,8 +26,8 @@ export class ProjectService {
     return this.http.put(`${this.URL_API}/${project._id}`, project);
   }
 
-  createProject(project: Project): Observable<any> {
-    return this.http.post(this.URL_API, project);
+  createProject(project: Project): Observable<Project> {
+    return this.http.post<Project>(this.URL_API, project);
   }
 
   deleteProject(projectId?: string): Observable<any> {
@@ -46,12 +46,20 @@ export class ProjectService {
     return this.http.get<Tag[]>(`${this.URL_API}/${projectId}/tags`);
   }
 
+  addPanel(projectId: string, panel: Panel) {
+    return this.http.put(`${this.URL_API}/${projectId}/panels`, panel);
+  }
+
   addWorkItem(projectId: string, workItem: WorkItem) {
     return this.http.put(`${this.URL_API}/${projectId}/workitems`, workItem);
   }
 
   addTag(projectId: string, tag: Tag) {
     return this.http.put(`${this.URL_API}/${projectId}/tags`, tag);
+  }
+
+  removePanel(projectId: string, panelId?: string) {
+    return this.http.delete(`${this.URL_API}/${projectId}/panels/${panelId}`);
   }
 
   removeWorkItem(projectId: string, workItemId?: string) {

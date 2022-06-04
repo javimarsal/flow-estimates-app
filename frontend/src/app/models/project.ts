@@ -1,10 +1,10 @@
 export interface Project {
     _id?: string
     name: string
-    panels: [{
+    panels?: [{
         panel: object
     }]
-    workItems: [{
+    workItems?: [{
         workItem: object
     }]
     tags?: [{

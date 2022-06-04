@@ -12,6 +12,30 @@
     color: #307df8
 }
 
+.creationTitle {
+    font-size: 20px;
+    color: #307df8;
+}
+
+.projectCreation {
+    margin-bottom: 30px;
+}
+
+.formContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.inputFooter {
+    font-size: 14px;
+}
+
+.tagCreation-warning {
+    margin-top: 20px;
+    color: #f85454;
+}
+
 .item-proyect {
     padding: 20px 20px;
     color: rgba(0, 0, 0, 0.87);

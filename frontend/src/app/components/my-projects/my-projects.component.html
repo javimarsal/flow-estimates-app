@@ -2,6 +2,29 @@
 
 <h2 class="title">Mis proyectos</h2>
 <mat-card class="proyects">
+    <mat-accordion>
+        <mat-expansion-panel class="projectCreation">
+            <mat-expansion-panel-header>
+            <mat-panel-title class="creationTitle">
+                Crear nuevo Proyecto
+            </mat-panel-title>
+            </mat-expansion-panel-header>
+            <!-- Input to create new proyect -->
+            <div>
+                <form class="formContainer" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="createProject(formDirective)">
+                    <mat-form-field class="formTitleProject" appearance="fill" [hideRequiredMarker]="true">
+                        <mat-label>Título</mat-label>
+                        <input type="text" matInput autocomplete="off" formControlName="name" required #nameInput>
+                        <mat-error class="inputFooter" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
+                    </mat-form-field>
+
+                    <button type="submit" mat-flat-button color="primary">Crear</button>
+                </form>
+            </div>
+            <p class="tagCreation-warning" id="warning"></p>
+        </mat-expansion-panel>
+    </mat-accordion>
+
     <app-my-project-item *ngFor="let project of userProjects" [project]="project.project" [role]="project.role"></app-my-project-item>
 
     <div *ngIf="userProjects.length==0">

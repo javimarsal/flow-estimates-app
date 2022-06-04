@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Panel } from 'src/app/models/panel';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+
+// Models
+import { Panel } from 'src/app/models/panel';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +20,16 @@ export class PanelService {
     return this.http.get<Panel[]>(this.URL_API);
   }
 
+  createPanel(panel: Panel): Observable<Panel> {
+    return this.http.post<Panel>(this.URL_API, panel);
+  }
+
   updatePanel(panel: Panel) {
     return this.http.put(this.URL_API + `/${panel._id}`, panel);
+  }
+
+  deletePanel(panelId: string) {
+    return this.http.delete(`${this.URL_API}/${panelId}`);
   }
 
   getNames(panels: Panel[]): string[] {

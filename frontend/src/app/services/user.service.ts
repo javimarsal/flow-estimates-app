@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../models/user';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+// Models
+import { User } from '../models/user';
+import { Project } from '../models/project';
 
 @Injectable({
   providedIn: 'root'
@@ -32,5 +34,13 @@ export class UserService {
 
   setOpenedProject(projectId: string, uid: string) {
     return this.http.post(`${this.URL_API}/openedProject`, {projectId: projectId, uid: uid});
+  }
+
+  addProject(userId: string, project: Project) {
+    return this.http.put(`${this.URL_API}/${userId}/projects`, project);
+  }
+
+  deleteProject(userId: string, projectId: string) {
+    return this.http.delete(`${this.URL_API}/${userId}/projects/${projectId}`);
   }
 }

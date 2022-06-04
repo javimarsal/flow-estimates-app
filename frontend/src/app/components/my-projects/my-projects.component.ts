@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormGroupDirective } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 
 // Services
 import { UserService } from 'src/app/services/user.service';
+import { ProjectService } from 'src/app/services/project.service';
+import { PanelService } from 'src/app/services/panel.service';
 import { CookieService } from 'ngx-cookie-service';
 
 // Models
 import { Project } from 'src/app/models/project';
+import { Panel } from 'src/app/models/panel';
 
 @Component({
   selector: 'app-my-projects',
@@ -16,13 +20,19 @@ import { Project } from 'src/app/models/project';
 export class MyProjectsComponent implements OnInit {
   uid: string = '';
   userProjects: any[] = [];
+  
+  // Formulario para crear proyectos
+  form: FormGroup;
 
-  constructor(private userService: UserService, private cookieService: CookieService) { }
+  constructor(private userService: UserService, private projectService: ProjectService, private panelService: PanelService, private cookieService: CookieService, private fb: FormBuilder) {
+    this.form = this.fb.group({
+      name: [''],
+    });
+  }
 
   async ngOnInit() {
     this.uid = this.cookieService.get('uid')
     this.userProjects = await this.getUserProjects();
-    console.log(this.userProjects);
   }
 
   async getUserProjects(): Promise<any[]> {
@@ -47,8 +57,6 @@ export class MyProjectsComponent implements OnInit {
       project.project.workItems = this.cleanWorkItemArray(project.project.workItems);
     }
 
-    console.log(userProjects)
-
     return userProjects;
   }
 
@@ -56,10 +64,9 @@ export class MyProjectsComponent implements OnInit {
     let cleanPanelArray: any[] = [];
 
     for (let panel of panelArray) {
-      // console.log(panel.panel);
       cleanPanelArray.push(panel.panel);
     }
-    // console.log(cleanPanelArray)
+
     return cleanPanelArray;
   }
 
@@ -67,10 +74,9 @@ export class MyProjectsComponent implements OnInit {
     let cleanTagArray: any[] = [];
 
     for (let tag of tagArray) {
-      // console.log(panel.panel);
       cleanTagArray.push(tag.tag);
     }
-    // console.log(cleanPanelArray)
+
     return cleanTagArray;
   }
 
@@ -78,10 +84,99 @@ export class MyProjectsComponent implements OnInit {
     let cleanWorkItemArray: any[] = [];
 
     for (let workItem of workItemArray) {
-      // console.log(panel.panel);
       cleanWorkItemArray.push(workItem.workItem);
     }
-    // console.log(cleanPanelArray)
+
     return cleanWorkItemArray;
+  }
+
+  async createProject(formDirective: FormGroupDirective) {
+    // Eliminar espacios no deseados
+    let name = this.form.value.name.replace(/\s+/g,' ').trim();
+
+    if (!name) {
+      return;
+    }
+    
+    // Crear el Proyecto
+    let newProject: Project = {
+      name: name
+    };
+
+    // proyecto de la base de datos para añadirla a la lista del user
+    let projectDB!: any;
+
+    try {
+      projectDB = await lastValueFrom(this.projectService.createProject(newProject));
+    }
+    catch (error) {
+      console.log(error);
+    }
+
+    // controlar que projectDB no sea undefine o similar
+    if (!projectDB) {
+      // si es undefine es porque no se ha podido crear debido a que existe otra etiqueta con el mismo nombre
+      this.changeInnerText('warning', 'No se puede crear el proyecto porque el título ya está asignado en uno de tus proyectos.');
+      return;
+    };
+    this.changeInnerText('warning', '');
+
+    // Se ha creado el nuevo Proyecto
+    // Crear los cuatro paneles principales e incluirlos en la bdd
+    let mainPanels = await this.createMainPanels();
+
+    let projectId: string = projectDB._id!;
+    // añadir los paneles al proyecto
+    await this.addPanelsToProject(projectId, mainPanels);
+
+    // ya tenemos el proyecto creado con los cuatro paneles, lo incluimos en la lista del usuario
+    try {
+      await lastValueFrom(this.userService.addProject(this.uid, projectDB));
+    }
+    catch (error) {
+      console.log(error);
+    }
+
+    // Si todo ha ido bien, reseteamos el contenido del formulario
+    formDirective.resetForm();
+    this.form.reset({
+      name: '',
+    });
+
+    // y añadimos el nuevo Tag a la lista tagsOfProject
+    // puede que el orden no se corresponda al cargar la página
+    // this.tagsOfProject.unshift(projectDB);
+    this.userProjects = await this.getUserProjects();
+    console.log(this.userProjects)
+  }
+
+  async createMainPanels(): Promise<any[]> {
+    let mainPanels: any[] = [];
+
+    mainPanels.push(await this.createPanel('ToDO', 0));
+    mainPanels.push(await this.createPanel('Doing', 1));
+    mainPanels.push(await this.createPanel('Done', 2));
+    mainPanels.push(await this.createPanel('Closed', 3));
+
+    return mainPanels;
+  }
+
+  async createPanel(panelName: string, position: number): Promise<Panel> {
+    let newPanel: Panel = {
+      name: panelName,
+      position: position
+    };
+
+    return await lastValueFrom(this.panelService.createPanel(newPanel));
+  }
+
+  async addPanelsToProject(projectId: string, panels: Panel[]) {
+    for (let panel of panels) {
+      await lastValueFrom(this.projectService.addPanel(projectId, panel));
+    }
+  }
+
+  changeInnerText(elementId: string, message: string) {
+    document.getElementById(elementId)!.innerText = message;
   }
 }

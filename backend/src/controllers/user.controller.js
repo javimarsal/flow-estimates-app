@@ -185,4 +185,42 @@ userController.setOpenedProject = async (req, res) => {
     res.send({ message: `Now project with id="${projectId}" is the openedProject of user with id="${uid}"` });
 }
 
+// Añadir project
+userController.addProject = async (req, res) => {
+    let user = await User.findById(req.params.id);
+    let project = req.body;
+
+    // Añadimos el project a la lista de user
+    user.projects.push({
+        role: 'Project Manager',
+        project: project._id
+    });
+
+    await user.save();
+
+    return res.send(user);
+}
+
+// Eliminar project
+userController.deleteProject = async (req, res) => {
+    let user = await User.findById(req.params.uid);
+    let projectId = req.params.pid;
+
+    // Buscar el id del project en la lista de User y eliminarlo
+    let userProjects = user.projects;
+    let userProjectsLength = userProjects.length;
+
+    for (let i = 0; i < userProjectsLength; i++) {
+        if (userProjects[i].project.toString() == projectId) {
+            userProjects.splice(i, 1);
+            break;
+        }
+    }
+
+    // Guardamos el User con la lista actualizada
+    await user.save();
+
+    return res.send(user);
+}
+
 module.exports = userController;

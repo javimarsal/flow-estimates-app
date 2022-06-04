@@ -22,17 +22,23 @@ projectRouter.get('/:id/panels', projectController.getPanels);
 // get workItems of project
 projectRouter.get('/:id/workitems', projectController.getWorkItems);
 
-// update list of workItems of project
-projectRouter.put('/:id/workitems', projectController.addWorkItem);
-
-// delete a workItem from the list of workItems
-projectRouter.delete('/:pid/workitems/:wid', projectController.deleteWorkItem)
-
 // get tags of project
 projectRouter.get('/:id/tags', projectController.getTags);
 
+// update list of panels of project
+projectRouter.put('/:id/panels', projectController.addPanel);
+
+// update list of workItems of project
+projectRouter.put('/:id/workitems', projectController.addWorkItem);
+
 // update list of tags of project
 projectRouter.put('/:id/tags', projectController.addTag);
+
+// delete a panel from the list of panels
+projectRouter.delete('/:pid/panels/:panelId', projectController.deletePanel);
+
+// delete a workItem from the list of workItems
+projectRouter.delete('/:pid/workitems/:wid', projectController.deleteWorkItem)
 
 // delete a tag from the list of tags
 projectRouter.delete('/:pid/tags/:tid', projectController.deleteTag);
