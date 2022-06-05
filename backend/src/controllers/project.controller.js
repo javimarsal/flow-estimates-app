@@ -1,21 +1,32 @@
 const projectController = {}
 
 const Project = require('../models/Project');
+const User = require('../models/User');
 
 projectController.getProjects = async (req, res) => {
     const projects = await Project.find();
-    res.json(projects)
+    return res.json(projects);
 }
 
 projectController.createProject = async (req, res) => {
-    // Creamos el objeto con lo que nos manda el cliente (req)
+    // ID del usuario que está creando el proyecto
+    // utilizado para evitar crear proyectos con nombres duplicados
+    const uid = req.params.uid;
+    const projectName = req.body.name;
+    
+    // Solo guardar el proyecto si el nombre no existe en los proyectos del usuario (necesitamos el uid)
+    let projectNameExist = await projectController.checkNameExistInUserList(uid, projectName);
+
+    // Si existe el nombre en la lista del usuario, devolvemos undefined
+    if (projectNameExist) return res.send(undefined);
+
+    // Si no existe el nombre, creamos el objeto con lo que nos manda el cliente (req.body)
     const newProject = new Project(req.body);
 
-    // TODO: solo guardar el proyecto si el nombre no existe en los proyectos del usuario (necesitamos el uid)
-
     // Guardamos el nuevo objeto
-    await newProject.save()
+    await newProject.save();
 
+    // Y enviamos el nuevo proyecto al cliente
     res.send(newProject);
 }
 
@@ -185,6 +196,24 @@ projectController.deleteTag = async (req, res) => {
     await project.save();
 
     return res.send({ message: `tag with id="${tagId}" has been removed from project with id="${project._id}"` });
+}
+
+projectController.checkNameExistInUserList = async (uid, projectName) => {
+    // Obtenemos el usuario con el uid
+    const user = await User.findById(uid).populate({
+        path: 'projects',
+        populate: { path: 'project' }
+    });
+
+    // Recorremos los proyectos del usuario
+    let userProjects = user.projects;
+    for (let project of userProjects) {
+        // si existe el projectName, devolvemos true
+        if (project.project.name.toLowerCase() == projectName.toLowerCase()) return true;
+    }
+
+    // si no existe projectName en la lista de user
+    return false;
 }
 
 module.exports = projectController;

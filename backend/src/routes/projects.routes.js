@@ -8,7 +8,7 @@ const projectRouter = Router();
 // CRUD (Create - Read - Update - Delete)
 projectRouter.get('/', projectController.getProjects);
 
-projectRouter.post('/', projectController.createProject);
+projectRouter.post('/:uid', projectController.createProject);
 
 projectRouter.get('/:id', projectController.getProject);
 

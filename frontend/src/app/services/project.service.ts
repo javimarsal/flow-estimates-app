@@ -26,8 +26,8 @@ export class ProjectService {
     return this.http.put(`${this.URL_API}/${project._id}`, project);
   }
 
-  createProject(project: Project): Observable<Project> {
-    return this.http.post<Project>(this.URL_API, project);
+  createProject(uid: string, project: Project): Observable<Project> {
+    return this.http.post<Project>(`${this.URL_API}/${uid}`, project);
   }
 
   deleteProject(projectId?: string): Observable<any> {

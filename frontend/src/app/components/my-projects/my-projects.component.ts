@@ -107,7 +107,7 @@ export class MyProjectsComponent implements OnInit {
     let projectDB!: any;
 
     try {
-      projectDB = await lastValueFrom(this.projectService.createProject(newProject));
+      projectDB = await lastValueFrom(this.projectService.createProject(this.uid, newProject));
     }
     catch (error) {
       console.log(error);
@@ -143,11 +143,8 @@ export class MyProjectsComponent implements OnInit {
       name: '',
     });
 
-    // y añadimos el nuevo Tag a la lista tagsOfProject
-    // puede que el orden no se corresponda al cargar la página
-    // this.tagsOfProject.unshift(projectDB);
+    // volvemos a obtener los proyectos del usuario (con toda la información)
     this.userProjects = await this.getUserProjects();
-    console.log(this.userProjects)
   }
 
   async createMainPanels(): Promise<any[]> {
