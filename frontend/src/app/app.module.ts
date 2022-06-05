@@ -49,6 +49,7 @@ import { TagDialogComponent } from './components/tag-dialog/tag-dialog.component
 import { EstimateMultipleHowManyComponent } from './components/estimate-multiple-how-many/estimate-multiple-how-many.component';
 import { ConfirmationAccountComponent } from './components/confirmation-account/confirmation-account.component';
 import { MyProjectItemComponent } from './components/my-project-item/my-project-item.component';
+import { MyProjectItemDialogComponent } from './components/my-project-item-dialog/my-project-item-dialog.component';
 
 @NgModule({
   declarations: [
@@ -70,7 +71,8 @@ import { MyProjectItemComponent } from './components/my-project-item/my-project-
     TagDialogComponent,
     EstimateMultipleHowManyComponent,
     ConfirmationAccountComponent,
-    MyProjectItemComponent
+    MyProjectItemComponent,
+    MyProjectItemDialogComponent
   ],
   imports: [
     BrowserModule,

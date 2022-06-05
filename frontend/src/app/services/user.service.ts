@@ -36,6 +36,10 @@ export class UserService {
     return this.http.post(`${this.URL_API}/openedProject`, {projectId: projectId, uid: uid});
   }
 
+  getProjects(userId: string): Observable<Project[]> {
+    return this.http.get<Project[]>(`${this.URL_API}/${userId}/projects`);
+  }
+
   addProject(userId: string, project: Project) {
     return this.http.put(`${this.URL_API}/${userId}/projects`, project);
   }

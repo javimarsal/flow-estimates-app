@@ -36,8 +36,8 @@ projectController.getProject = async (req, res) => {
 }
 
 projectController.editProject = async (req, res) => {
-    await Project.findByIdAndUpdate(req.params.id, req.body)
-    res.send({ message: `Project with id="${req.params.id}" updated` })
+    const project = await Project.findByIdAndUpdate(req.params.id, req.body)
+    res.send(project);
 }
 
 projectController.deleteProject = async (req, res) => {

@@ -25,7 +25,7 @@
         </mat-expansion-panel>
     </mat-accordion>
 
-    <app-my-project-item *ngFor="let project of userProjects" [project]="project.project" [role]="project.role"></app-my-project-item>
+    <app-my-project-item *ngFor="let project of userProjects" [project]="project.project" [role]="project.role" [userId]="uid" (onChangeUpdate)="updateProjectName($event)"></app-my-project-item>
 
     <div *ngIf="userProjects.length==0">
         <p class="no-projects">Ningún proyecto que mostrar</p>

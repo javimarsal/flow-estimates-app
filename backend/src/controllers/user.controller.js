@@ -22,27 +22,32 @@ userController.createUser = async (req, res) => {
 }
 
 userController.getUser = async (req, res) => {
-    const user = await User.findById(req.params.id).populate({
-        path: 'projects',
-        populate: {
-            path: 'project',
-            populate: [
-                {
-                    path: 'panels',
-                    populate: { path: 'panel' }
-                },
-                {
-                    path: 'tags',
-                    populate: { path: 'tag' }
-                },
-                {
-                    path: 'workItems',
-                    populate: { path: 'workItem' }
-                }
-            ]
-        }
-    })
-    res.send(user)
+    try {
+        const user = await User.findById(req.params.id).populate({
+            path: 'projects',
+            populate: {
+                path: 'project',
+                populate: [
+                    {
+                        path: 'panels',
+                        populate: { path: 'panel' }
+                    },
+                    {
+                        path: 'tags',
+                        populate: { path: 'tag' }
+                    },
+                    {
+                        path: 'workItems',
+                        populate: { path: 'workItem' }
+                    }
+                ]
+            }
+        })
+        return res.send(user);
+    }
+    catch (error) {
+        console.log(error)
+    }
 }
 
 userController.editUser = async (req, res) => {
@@ -183,6 +188,22 @@ userController.setOpenedProject = async (req, res) => {
         .catch(error => console.log(error));
     
     res.send({ message: `Now project with id="${projectId}" is the openedProject of user with id="${uid}"` });
+}
+
+// Obtener los projects del usuario
+userController.getProjects = async (req, res) => {
+    const user = await User.findById(req.params.id).populate({
+        path: 'projects',
+        populate: { path: 'project' }
+    });
+
+    // rellenamos el array projects para enviarlo como respuesta
+    let projects = [];
+    for (let p of user.projects) {
+        projects.push(p.project);
+    }
+
+    return res.send(projects);
 }
 
 // Añadir project

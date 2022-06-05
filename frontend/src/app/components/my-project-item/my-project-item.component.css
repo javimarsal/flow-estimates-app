@@ -1,6 +1,7 @@
 .item-proyect {
     padding: 20px 20px;
     color: rgba(0, 0, 0, 0.87);
+    display: flex;
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
@@ -9,6 +10,7 @@
     margin: 10px;
     border: solid 1px rgb(190, 190, 190);
     border-radius: 4px;
+    min-height: 90px;
 }
 
 .nombre {
@@ -28,4 +30,12 @@
 
 .rol-name {
     font-weight: initial;
+}
+
+.editButton {
+    display: none;
+}
+
+.item-proyect:hover .editButton {
+    display: inline-block;
 }

@@ -24,7 +24,10 @@ userRouter.get('/confirmation/:token', userController.confirmEmail);
 
 userRouter.post('/openedProject', userController.setOpenedProject);
 
-// update list of projects of user
+// get projects list of user
+userRouter.get('/:id/projects', userController.getProjects);
+
+// update projects list of user
 userRouter.put('/:id/projects', userController.addProject);
 
 // delete a project from the list of projects

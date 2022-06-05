@@ -130,7 +130,6 @@ export class PanelComponent implements OnInit {
 
     if (this.historyProjectPanels && this.historyProjectPanels.length!=0) {
       projectPanels = this.historyProjectPanels;
-      // TODO: sacar los objetos panel de cada uno
     }
     else if (!this.historyProjectPanels || this.historyProjectPanels.length==0) {
       try {

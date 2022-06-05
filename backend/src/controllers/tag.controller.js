@@ -12,6 +12,7 @@ tagController.createTag = async (req, res) => {
     const newTag = new Tag(req.body);
 
     // Comprobar si existe algún Tag con el mismo nombre, en ese caso no se crea
+    // TODO: cambiar, igual que en project.controller
     if (await tagController.checkNameTagExist(newTag.name)) return res.send(undefined);
 
     // El nombre no existe, podemos guardar el nuevo objeto

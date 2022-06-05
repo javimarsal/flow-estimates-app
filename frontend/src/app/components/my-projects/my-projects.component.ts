@@ -147,6 +147,16 @@ export class MyProjectsComponent implements OnInit {
     this.userProjects = await this.getUserProjects();
   }
 
+  updateProjectName(project: Project) {
+    for (let p of this.userProjects) {
+      // Buscamos el proyecto con el mismo id
+      if (p.project._id == project._id) {
+        // y le cambiamos el nombre por el del proyecto que se ha actualizado
+        p.project.name = project.name;
+      }
+    }
+  }
+
   async createMainPanels(): Promise<any[]> {
     let mainPanels: any[] = [];
 
