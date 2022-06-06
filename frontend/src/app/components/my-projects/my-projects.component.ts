@@ -157,6 +157,19 @@ export class MyProjectsComponent implements OnInit {
     }
   }
 
+  deleteProjectFromListById(projectId: string) {
+    let userProjects = this.userProjects;
+    let userProjectsLength = userProjects.length;
+
+    for (let i = 0; i < userProjectsLength; i++) {
+      // Buscamos el proyecto con el mismo id
+      if (userProjects[i].project._id == projectId) {
+        userProjects.splice(i, 1);
+        break;
+      }
+    }
+  }
+
   async createMainPanels(): Promise<any[]> {
     let mainPanels: any[] = [];
 

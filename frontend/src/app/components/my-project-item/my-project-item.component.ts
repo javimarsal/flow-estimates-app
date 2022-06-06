@@ -6,6 +6,10 @@ import { Project } from 'src/app/models/project';
 
 // Services
 import { ProjectService } from 'src/app/services/project.service';
+import { PanelService } from 'src/app/services/panel.service';
+import { TagService } from 'src/app/services/tag.service';
+import { WorkItemService } from 'src/app/services/work-item.service';
+import { UserService } from 'src/app/services/user.service';
 
 // Component
 import { MyProjectItemDialogComponent } from '../my-project-item-dialog/my-project-item-dialog.component';
@@ -26,18 +30,66 @@ export class MyProjectItemComponent implements OnInit {
   @Output() onChangeUpdate = new EventEmitter<any>();
   @Output() onDelete = new EventEmitter<any>();
 
-  constructor(private dialog: MatDialog, private projectService: ProjectService) { }
+  constructor(private dialog: MatDialog, private projectService: ProjectService, private panelService: PanelService, private tagService: TagService, private workItemService: WorkItemService, private userService: UserService) { }
 
   ngOnInit(): void {
   }
 
   async deleteProject() {
+    let projectPanels: any = this.project.panels;
+    let projectTags: any = this.project.tags;
+    let projectWorkItems: any = this.project.workItems;
     // TODO
+    console.log(this.project)
+    // eliminar paneles
+    if (projectPanels) {
+      for (let panel of projectPanels) {
+        try {
+          await lastValueFrom(this.panelService.deletePanel(panel._id!));
+        }
+        catch (error) { console.log(error); }
+      }
+    }
+
+    // eliminar tags
+    if (projectTags) {
+      for (let tag of projectTags) {
+        try {
+          await lastValueFrom(this.tagService.deleteTag(tag._id));
+        }
+        catch (error) { console.log(error); }
+      }
+    }
+
+    // eliminar workItems
+    if (projectWorkItems) {
+      for (let workItem of projectWorkItems) {
+        try {
+          await lastValueFrom(this.workItemService.deleteWorkItem(workItem._id));
+        }
+        catch (error) { console.log(error); }
+      }
+    }
+
+    // eliminar el project
+    try {
+      await lastValueFrom(this.projectService.deleteProject(this.project._id));
+    }
+    catch (error) { console.log(error); }
+
+    // y eliminar la referencia del usuario
+    try {
+      await lastValueFrom(this.userService.deleteProject(this.userId, this.project._id!))
+    }
+    catch (error) { console.log(error); }
+
+    // Ha salido bien, emitimos el cambio en el componente padre (my-projects)
+    this.onDelete.emit(this.project._id);
   }
 
   async updateProject(project: Project) {
     try {
-      // Copiamos el objeto project
+      // Copiamos el objeto project (panels, workItems, tags populated)
       let projectToBeUpdated: Project = JSON.parse(JSON.stringify(project));
       // Y le ponemos únicamente las referencias para que esté igual que en la bdd, ya que las listas (panels, workItems, tags) no deben estar populated
       projectToBeUpdated.panels = this.getArrayOfPanelReferences(projectToBeUpdated);
