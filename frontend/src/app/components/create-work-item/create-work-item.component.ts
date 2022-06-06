@@ -72,8 +72,8 @@ export class CreateWorkItemComponent implements OnInit, OnChanges {
       let workItems = await lastValueFrom(this.getWorkItems());
       this.allWorkItems = workItems;
       // también obtenemos el número del workItem para establecer su idNumber
-      // este debe ser el mayor idNumber + 1
-      idNumber = this.getMaxIdNumber(workItems) + 1;
+      // este debe ser el mayor idNumber + 1 (o 0 si no hay workItems)
+      idNumber = this.getIdNumber(workItems);
     }
     catch (error) {
       console.log(error)
@@ -124,11 +124,23 @@ export class CreateWorkItemComponent implements OnInit, OnChanges {
     // Llamamos al método getWorkItems() del componente workItem para que actualice su lista
     this.workItemListComponent.workItemsOfPanel_IdNumbers.unshift(idNumber.toString());
     
+    for (let wI of this.projectWorkItems) {
+      wI.position++;
+    }
+
     // Añadimos el nuevo workItem a la lista de projectWorkItems
     this.projectWorkItems.push(workItemOfDB);
 
     // Lo emitimos para que el padre (panel) puede actualizar la lista projectWorkItems
     this.onChange.emit(this.projectWorkItems);
+  }
+
+  getIdNumber(workItems: WorkItem[]) {
+    if (workItems.length == 0) {
+      return 0;
+    }
+    
+    return this.getMaxIdNumber(workItems) + 1;
   }
 
   getMaxIdNumber(workItems: WorkItem[]) {

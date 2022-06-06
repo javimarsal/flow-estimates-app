@@ -1,15 +1,22 @@
 <app-navbar></app-navbar>
 
 <div class="container">
-    <h1 class="projectName">{{projectName}}</h1>
+    <h1 class="projectName">{{projectName}}
+        <span *ngIf="projectWorkItems.length==0" matTooltip="Los botones para acceder a los gráficos estarán deshabilidatos si no hay tareas en el proyecto">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                <path fill="darkgray" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path fill="darkgray" d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg>
+        </span>
+    </h1>
     <div>
-        <button *ngIf="projectWorkItems.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-single" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames }">Tiempo de Ciclo</button>
+        <button [disabled]="projectWorkItems.length==0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-single" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames }">Tiempo de Ciclo</button>
         
-        <button *ngIf="projectWorkItems.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-multiple" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames, projectTags: projectTags }">Estimar Cuándo</button>
+        <button [disabled]="projectWorkItems.length==0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-multiple" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames, projectTags: projectTags }">Estimar Cuándo</button>
         
-        <button *ngIf="projectWorkItems.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-multiple-howMany" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames, projectTags: projectTags }">Estimar Cuántos</button>
+        <button [disabled]="projectWorkItems.length==0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/estimate-multiple-howMany" [state]="{ projectWorkItems: projectWorkItems, panelNames: panelNames, projectTags: projectTags }">Estimar Cuántos</button>
 
-        <button *ngIf="projectTags.length!=0" class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/tags" [state]="{ projectTags: projectTags }">
+        <button class="botonMenu btn btn-outline-primary" routerLink="/project/{{projectId}}/tags" [state]="{ projectTags: projectTags }">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-tags" viewBox="0 0 16 16">
                 <path d="M3 2v4.586l7 7L14.586 9l-7-7H3zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2z"/>
                 <path d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 0 7.586V3a1 1 0 0 1 1-1v5.086z"/>
@@ -18,22 +25,6 @@
         </button>
     </div>
 </div>
-
-<!-- <div class="filter">
-    <mat-accordion>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title class="filter-title">
-              Filtrar etiquetas
-            </mat-panel-title>
-            <mat-panel-description>
-              Currently I am
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <p>I'm visible because I am open</p>
-        </mat-expansion-panel>
-    </mat-accordion>
-</div> -->
 
 <mat-card class="filter">
     <h2 class="filter-title">Filtrar por etiquetas</h2>
@@ -67,9 +58,9 @@
         <!-- Es posible que el id del div (panel) ya no sea necesario -->
         <div id={{panel}} class="panelContainer" *ngFor="let panel of panelNames" cdkDrag>
             <h2 class="panelName">{{panel}}</h2>
-            <div *ngIf="projectWorkItems.length!=0 && filteredProjectWorkItems.length != 0">
+            <div>
                 <!-- Crear work-item -->
-                <app-create-work-item *ngIf="panel =='ToDO'" [panelName]="panel" [projectWorkItems]="projectWorkItems" [workItemListComponent]="wIC" (onChange)="setProjectWorkItems($event)"></app-create-work-item>
+                <app-create-work-item *ngIf="panel == 'ToDO'" [panelName]="panel" [projectWorkItems]="projectWorkItems" [workItemListComponent]="wIC" (onChange)="setProjectWorkItems($event)"></app-create-work-item>
                 <app-work-item-list [projectTags]="projectTags" [projectWorkItems]="projectWorkItems" [filteredProjectWorkItems]="filteredProjectWorkItems" [panelName]="panel" (onChange)="setProjectWorkItems($event)" #wIC></app-work-item-list>
             </div>
         </div>

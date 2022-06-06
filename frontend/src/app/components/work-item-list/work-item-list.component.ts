@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
@@ -25,9 +25,9 @@ export class WorkItemListComponent implements OnInit, OnChanges {
   // workItemsOfPanel: WorkItem[] = [];
 
   projectId: any = '';
-  @Input() projectTags!: Tag[];
-  @Input() projectWorkItems!: WorkItem[];
-  @Input() filteredProjectWorkItems!: WorkItem[];
+  @Input() projectTags: Tag[] = [];
+  @Input() projectWorkItems: WorkItem[] = [];
+  @Input() filteredProjectWorkItems: WorkItem[] = [];
 
   @Output() onChange = new EventEmitter<any>();
 
@@ -39,6 +39,9 @@ export class WorkItemListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: any): void {
+    console.log(changes)
+    if (!changes.filteredProjectWorkItems) return;
+    
     this.filteredProjectWorkItems = changes.filteredProjectWorkItems.currentValue;
     this.getWorkItemsOfPanel();
   }
