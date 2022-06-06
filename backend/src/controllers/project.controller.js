@@ -27,7 +27,7 @@ projectController.createProject = async (req, res) => {
     await newProject.save();
 
     // Y enviamos el nuevo proyecto al cliente
-    res.send(newProject);
+    return res.send(newProject);
 }
 
 projectController.getProject = async (req, res) => {

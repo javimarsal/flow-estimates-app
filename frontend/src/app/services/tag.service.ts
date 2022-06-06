@@ -25,8 +25,8 @@ export class TagService {
     return this.http.put(this.URL_API + `/${tag._id}`, tag);
   }
 
-  createTag(tag: Tag): Observable<any> {
-    return this.http.post(this.URL_API, tag);
+  createTag(projectId: string, tag: Tag): Observable<any> {
+    return this.http.post(`${this.URL_API}/${projectId}`, tag);
   }
 
   deleteTag(id?: string): Observable<any> {

@@ -39,7 +39,6 @@ export class WorkItemListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: any): void {
-    console.log(changes)
     if (!changes.filteredProjectWorkItems) return;
     
     this.filteredProjectWorkItems = changes.filteredProjectWorkItems.currentValue;

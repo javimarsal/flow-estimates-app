@@ -8,7 +8,7 @@ const tagRouter = Router();
 // CRUD (Create - Read - Update - Delete)
 tagRouter.get('/', tagController.getTags);
 
-tagRouter.post('/', tagController.createTag);
+tagRouter.post('/:projectId', tagController.createTag);
 
 tagRouter.get('/:id', tagController.getTag);
 

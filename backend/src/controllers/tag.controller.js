@@ -1,6 +1,7 @@
 const tagController = {}
 
 const Tag = require('../models/Tag');
+const Project = require('../models/Project');
 
 tagController.getTags = async (req, res) => {
     const tags = await Tag.find();
@@ -8,17 +9,24 @@ tagController.getTags = async (req, res) => {
 }
 
 tagController.createTag = async (req, res) => {
-    // Creamos el objeto con lo que nos manda el cliente (req)
+    // ID del proyecto en el que se encuentra el cliente
+    // utilizado para evitar crear etiquetas con nombres duplicados
+    const projectId = req.params.projectId;
+    const tagName = req.body.name;
+
+    // Solo guardar el Tag si el nombre no existe en las etiquetas existentes en el proyecto
+    let tagNameExist = await tagController.checkNameExistInProjectList(projectId, tagName);
+
+    // Si existe el nombre en la lista del proyecto, devolvemos undefined
+    if (tagNameExist) return res.send(undefined);
+
+    // Si no existe el nombre, creamos el objeto con lo que nos manda el cliente (req.body)
     const newTag = new Tag(req.body);
 
-    // Comprobar si existe algún Tag con el mismo nombre, en ese caso no se crea
-    // TODO: cambiar, igual que en project.controller
-    if (await tagController.checkNameTagExist(newTag.name)) return res.send(undefined);
+    // Guardamos el nuevo objeto
+    await newTag.save();
 
-    // El nombre no existe, podemos guardar el nuevo objeto
-    const savedTag = await newTag.save();
-
-    return res.send(savedTag);
+    return res.send(newTag);
 }
 
 tagController.getTag = async (req, res) => {
@@ -36,17 +44,21 @@ tagController.deleteTag = async (req, res) => {
     return res.send({ message: `Tag with id="${req.params.id}" deleted` });
 }
 
-tagController.checkNameTagExist = async (name) => {
-    // Obtenemos las tags que hay en la bdd
-    let tags = await Tag.find();
+tagController.checkNameExistInProjectList = async (projectId, tagName) => {
+    // Obtenemos el proyecto con el projectID
+    const project = await Project.findById(projectId).populate({
+        path: 'tags',
+        populate: { path: 'tag' }
+    });
 
-    // las recorremos buscando el name pasado como parámetro
-    for (let t of tags) {
-        // si existe devolvemos true
-        if (t.name.toLowerCase() == name.toLowerCase()) return true;
+    // Recorremos las tags del proyecto
+    let projectTags = project.tags;
+    for (let tag of projectTags) {
+        // Si algun nombre de las tags coincide con el tagName, devolvemos true
+        if (tag.tag.name.toLowerCase() == tagName.toLowerCase()) return true;
     }
 
-    // si no existe devolvemos false
+    // si no existe tagName en la lista del project
     return false;
 }
 

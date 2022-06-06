@@ -142,7 +142,7 @@ export class TagListComponent implements OnInit {
     let tagDB!: Tag;
 
     try {
-      tagDB = await lastValueFrom(this.tagService.createTag(newTag));
+      tagDB = await lastValueFrom(this.tagService.createTag(this.projectId, newTag));
     }
     catch (error) {
       console.log(error);
