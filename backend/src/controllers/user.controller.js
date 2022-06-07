@@ -237,6 +237,18 @@ userController.deleteProject = async (req, res) => {
             break;
         }
     }
+    
+    // Si user ya no tiene proyectos
+    if (userProjects.length == 0) {
+        user.openedProject = undefined;
+    }
+
+    // Si el proyecto eliminado era el openedProject de user, lo eliminamos
+    if (user.openedProject && userProjects.length != 0) {
+        if (user.openedProject.toString() == projectId) {
+            user.openedProject = undefined;
+        }
+    }
 
     // Guardamos el User con la lista actualizada
     await user.save();

@@ -39,8 +39,7 @@ export class MyProjectItemComponent implements OnInit {
     let projectPanels: any = this.project.panels;
     let projectTags: any = this.project.tags;
     let projectWorkItems: any = this.project.workItems;
-    // TODO
-    console.log(this.project)
+    
     // eliminar paneles
     if (projectPanels) {
       for (let panel of projectPanels) {
