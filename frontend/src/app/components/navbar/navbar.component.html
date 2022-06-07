@@ -3,10 +3,10 @@
     <nav class="navbar navbar-expand-md navbar-dark fixed-top">
       <div class="container-fluid">
         <!-- Brand Logo -->
-        <a routerLink="/">
+        <a (click)="brandLink()">
           <img class="navbar-logo" src="../../../assets/logo.png" alt="home-icon">
         </a>
-        <a class="navbar-brand" routerLink="/">{{title}}</a>
+        <a class="navbar-brand" (click)="brandLink()">{{title}}</a>
   
         <!-- Menu button (when menu is collapsed) -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">

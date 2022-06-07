@@ -6,6 +6,7 @@
 
 .navbar-logo {
     width: 40px;
+    cursor: pointer;
 }
 
 .navbar-brand {
@@ -15,6 +16,7 @@
     padding-top: 15px;
     font-family: 'Style Script', cursive;
     font-size: 40px;
+    cursor: pointer;
 }
 
 .navbar-collapse {
