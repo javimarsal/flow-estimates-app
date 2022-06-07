@@ -14,8 +14,17 @@ import { User } from 'src/app/models/user';
 })
 
 export class LoginComponent implements OnInit {
+  userId: string = '';
 
   constructor(private userService: UserService, private router: Router, private cookieService: CookieService) { }
+
+  ngOnInit(): void {
+    this.userId = this.cookieService.get('uid');
+
+    if (this.userId) {
+      this.router.navigate(['/']);
+    }
+  }
 
   async signin(email: string, password: string, form: any) {
     // Comprobar que los datos requeridos del formulario han sido rellenados
@@ -63,9 +72,6 @@ export class LoginComponent implements OnInit {
 
   changeInnerText(elementId: string, message: string) {
     document.getElementById(elementId)!.innerText = message;
-  }
-
-  ngOnInit(): void {
   }
 
 }

@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom, map, Observable, startWith } from 'rxjs';
 import { FormControl } from '@angular/forms';
 
@@ -25,6 +25,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 })
 
 export class PanelComponent implements OnInit {
+  userId: string = '';
   projectId: any = '';
   projectName: string = '';
   projectPanels: Panel[];
@@ -48,7 +49,7 @@ export class PanelComponent implements OnInit {
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService) {
+  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService, private router: Router) {
     this.panelNames = [];
     this.projectPanels = [];
 
@@ -61,15 +62,28 @@ export class PanelComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.userId = this.cookieService.get('uid');
+
+    // Si no ha usuario, volvemos a home y return
+    if (!this.userId) {
+      return this.router.navigate(['/']);
+    }
+
     this.getProjectId();
+
+    // Hay usuario, comprobar si le pertenece el proyecto
+    let isAProjectOfUser = await this.userService.checkProjectExistInUserList(this.userId, this.projectId);
+
+    if (!isAProjectOfUser) {
+      return this.router.navigate(['/my-projects']);
+    }
     
     // Obtener el nombre del proyecto para mostrarlo en la interfaz
     this.projectName = await this.getProjectName(this.projectId);
 
     // Cuando el usuario abre el proyecto, registramos el id en la propiedad openedProject del usuario
     try {
-      let res = await lastValueFrom(this.setOpenedProjectOfUser());
-      // console.log(res);
+      await lastValueFrom(this.setOpenedProjectOfUser());
     }
     catch (error) {
       console.log(error)
@@ -91,6 +105,8 @@ export class PanelComponent implements OnInit {
     this.filteredProjectWorkItems = this.projectWorkItems.slice();
     // nos quedamos con los nombre de las etiquetas
     this.allTags = this.getTagsNamesOfProject(this.projectTags);
+
+    return;
   }
 
   setProjectWorkItems(workItems: []) {

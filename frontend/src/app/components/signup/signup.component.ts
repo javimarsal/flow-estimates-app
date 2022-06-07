@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 
 // Services
+import { CookieService } from 'ngx-cookie-service';
 import { UserService } from 'src/app/services/user.service';
 
 // Models
@@ -15,8 +16,17 @@ import { User } from 'src/app/models/user';
 })
 
 export class SignupComponent implements OnInit {
+  userId: string = '';
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService, private router: Router, private cookieService: CookieService) { }
+
+  ngOnInit(): void {
+    this.userId = this.cookieService.get('uid');
+
+    if (this.userId) {
+      this.router.navigate(['/']);
+    }
+  }
 
   async signup(name: string, surname: string, email: string, password: string, confirmPassword: string, form: any) {
     // Comprobar que los datos requeridos del formulario han sido rellenados
@@ -55,9 +65,6 @@ export class SignupComponent implements OnInit {
     catch (error) {
       console.log(error)
     }
-  }
-
-  ngOnInit(): void {
   }
 
 }

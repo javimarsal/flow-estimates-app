@@ -1,5 +1,5 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { Location } from '@angular/common';
 
@@ -8,6 +8,8 @@ import { ProjectService } from 'src/app/services/project.service';
 
 // Models
 import { WorkItem } from 'src/app/models/work-item';
+import { UserService } from 'src/app/services/user.service';
+import { CookieService } from 'ngx-cookie-service';
 
 // Material Events
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
@@ -49,6 +51,7 @@ export class EstimateSingleComponent implements OnInit {
   historyWorkItemsOfProject = history.state.projectWorkItems;
   historyPanelNames = history.state.panelNames;
 
+  userId: string = '';
   projectId: any = '';
 
   workItemsOfProject: WorkItem[] = [];
@@ -92,7 +95,7 @@ export class EstimateSingleComponent implements OnInit {
   startDate!: Date;
   endDate!: Date;
 
-  constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService) { }
+  constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService, private userService: UserService, private cookieService: CookieService, private router: Router) { }
 
   recalculate(newPercentile: number) {
     // Establecer el nuevo percentil
@@ -106,7 +109,22 @@ export class EstimateSingleComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.userId = this.cookieService.get('uid');
+
+    // Si no ha usuario, volvemos a home y return
+    if (!this.userId) {
+      return this.router.navigate(['/']);
+    }
+
     this.getProjectId();
+
+    // Hay usuario, comprobar si le pertenece el proyecto
+    let isAProjectOfUser = await this.userService.checkProjectExistInUserList(this.userId, this.projectId);
+
+    if (!isAProjectOfUser) {
+      return this.router.navigate(['/my-projects']);
+    }
+
     // Establecer los paneles (inicial y final)
     this.setPanelStart('Doing');
     this.setPanelEnd('Closed');
@@ -151,6 +169,8 @@ export class EstimateSingleComponent implements OnInit {
 
 
     // TODO: si dataDone está vacío mostrar un mensaje (o reemplazar el mensaje de la estimación por ese mensaje)
+
+    return;
   }
 
   goBack() {

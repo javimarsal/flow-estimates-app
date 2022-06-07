@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 // Models
@@ -46,5 +46,19 @@ export class UserService {
 
   deleteProject(userId: string, projectId: string) {
     return this.http.delete(`${this.URL_API}/${userId}/projects/${projectId}`);
+  }
+
+  async checkProjectExistInUserList(userId: string, projectId: string) {
+    // Obtenemos los proyectos del usuario
+    let userProjects: Project[] = await lastValueFrom(this.getProjects(userId));
+    
+    // Recorremos la lista de proyectos
+    for (let project of userProjects) {
+      // Si el proyectId está en la lista
+      if (project._id == projectId) return true;
+    }
+
+    // No se ha encontrado el projectId en la lista
+    return false;
   }
 }

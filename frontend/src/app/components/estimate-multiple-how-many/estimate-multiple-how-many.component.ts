@@ -1,6 +1,6 @@
 import { Component, ViewChild, OnInit, ElementRef } from '@angular/core';
 import { lastValueFrom, map, Observable, startWith } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormControl } from '@angular/forms';
 
@@ -12,6 +12,8 @@ import { Tag } from 'src/app/models/tag';
 // Services
 import { ProjectService } from 'src/app/services/project.service';
 import { WorkItemService } from 'src/app/services/work-item.service';
+import { UserService } from 'src/app/services/user.service';
+import { CookieService } from 'ngx-cookie-service';
 
 // Material Events
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
@@ -83,6 +85,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
   permitedMaxDate!: Date;
 
   projectId: any = '';
+  userId: string = '';
   panelNames: string[] = [];
 
   // Datos para el gráfico
@@ -105,7 +108,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService, private workItemService: WorkItemService) {
+  constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService, private workItemService: WorkItemService, private userService: UserService, private cookieService: CookieService, private router: Router) {
     this.filteredTags = this.tagCtrl.valueChanges.pipe(
       startWith(null),
       map((tag: string | null) =>
@@ -115,8 +118,22 @@ export class EstimateMultipleHowManyComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.userId = this.cookieService.get('uid');
+
+    // Si no ha usuario, volvemos a home y return
+    if (!this.userId) {
+      return this.router.navigate(['/']);
+    }
+
     // obtenemos el id del proyecto para poder obtener sus datos
     this.getProjectId();
+
+    // Hay usuario, comprobar si le pertenece el proyecto
+    let isAProjectOfUser = await this.userService.checkProjectExistInUserList(this.userId, this.projectId);
+
+    if (!isAProjectOfUser) {
+      return this.router.navigate(['/my-projects']);
+    }
 
     this.todayDate = new Date(new Date().toDateString());
 
@@ -142,6 +159,8 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     // Filtro de etiquetas
     let tagsOfProject = await this.getProjectTags();
     this.availableTags = this.getNamesOfTags(tagsOfProject);
+
+    return;
   }
 
   getProjectId() {

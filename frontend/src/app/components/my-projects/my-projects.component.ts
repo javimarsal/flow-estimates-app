@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormGroupDirective } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 
@@ -24,14 +25,19 @@ export class MyProjectsComponent implements OnInit {
   // Formulario para crear proyectos
   form: FormGroup;
 
-  constructor(private userService: UserService, private projectService: ProjectService, private panelService: PanelService, private cookieService: CookieService, private fb: FormBuilder) {
+  constructor(private userService: UserService, private projectService: ProjectService, private panelService: PanelService, private router: Router, private cookieService: CookieService, private fb: FormBuilder) {
     this.form = this.fb.group({
       name: [''],
     });
   }
 
   async ngOnInit() {
-    this.uid = this.cookieService.get('uid')
+    this.uid = this.cookieService.get('uid');
+
+    if (!this.uid) {
+      this.router.navigate(['/']);
+    }
+
     this.userProjects = await this.getUserProjects();
   }
 

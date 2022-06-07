@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 
 // Models
@@ -11,6 +10,8 @@ import { WorkItem } from 'src/app/models/work-item';
 // Services
 import { ProjectService } from 'src/app/services/project.service';
 import { TagService } from 'src/app/services/tag.service';
+import { UserService } from 'src/app/services/user.service';
+import { CookieService } from 'ngx-cookie-service';
 
 // A Color Picker
 import * as AColorPicker from 'a-color-picker';
@@ -26,6 +27,7 @@ export class TagListComponent implements OnInit {
   historyProjectTags = history.state.projectTags;
   historyProjectWorkItems = history.state.projectWorkItems;
 
+  userId: string = '';
   projectId: any = '';
   tagsOfProject: Tag[] = [];
   workItemsOfProject: WorkItem[] = [];
@@ -38,12 +40,29 @@ export class TagListComponent implements OnInit {
   colorPicker: any;
   characterLimitName = 15;
 
-  constructor(private route: ActivatedRoute, private location: Location, private fb: FormBuilder, private projectService: ProjectService, private tagService: TagService) { }
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private projectService: ProjectService, private tagService: TagService, private userService: UserService, private cookieService: CookieService, private router: Router) {
+    this.form = this.fb.group({
+      name: [''],
+      color: ['#f5a475'],
+    });
+  }
 
   async ngOnInit() {
+    this.userId = this.cookieService.get('uid');
+
+    // Si no ha usuario, volvemos a home y return
+    if (!this.userId) {
+      return this.router.navigate(['/']);
+    }
+
     this.getProjectId();
 
-    this.initForm();
+    // Hay usuario, comprobar si le pertenece el proyecto
+    let isAProjectOfUser = await this.userService.checkProjectExistInUserList(this.userId, this.projectId);
+
+    if (!isAProjectOfUser) {
+      return this.router.navigate(['/my-projects']);
+    }
 
     this.setButtonColor('#f5a475')
     this.createColorPicker();
@@ -53,17 +72,12 @@ export class TagListComponent implements OnInit {
 
     // Obtenemos los workItems del proyecto
     await this.getProjectWorkItems();
+
+    return;
   }
 
   getProjectId() {
     this.projectId = this.route.snapshot.paramMap.get('id');
-  }
-
-  initForm() {
-    this.form = this.fb.group({
-      name: [''],
-      color: ['#f5a475'],
-    });
   }
 
   setButtonColor(color: string) {

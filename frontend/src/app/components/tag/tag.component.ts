@@ -39,7 +39,6 @@ export class TagComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProjectId();
-    console.log(this.workItemsOfProject)
   }
 
   ngAfterViewInit() {
