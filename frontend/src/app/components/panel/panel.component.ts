@@ -33,7 +33,7 @@ export class PanelComponent implements OnInit {
   projectWorkItems: WorkItem[] = [];
   filteredProjectWorkItems: WorkItem[] = [];
 
-  // TODO: utilizar el history para obtener los datos más rápido
+  // utilizar el history para obtener los datos más rápido
   historyProjectName = history.state.projectName;
   historyProjectPanels = history.state.projectPanels;
   historyProjectTags = history.state.projectTags;

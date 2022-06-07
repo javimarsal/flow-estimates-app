@@ -73,12 +73,11 @@ workItemController.deleteTag = async (req, res) => {
     for (let i = 0; i < tWLength; i++) {
         if (tagsOfWorkItem[i].tag.toString() == tagId) {
             tagsOfWorkItem.splice(i, 1);
+            // Guardamos el WorkItem con la lista actualizada
+            await workItem.save();
             break;
         }
     }
-
-    // Guardamos el WorkItem con la lista actualizada
-    await workItem.save();
 
     return res.send({ message: `tag with id="${tagId}" has been removed from workItem with id="${workItem._id}"` });
 }

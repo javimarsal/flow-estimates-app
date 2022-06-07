@@ -4,8 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
 
-// Model
+// Models
 import { Tag } from 'src/app/models/tag';
+import { WorkItem } from 'src/app/models/work-item';
 
 // Services
 import { ProjectService } from 'src/app/services/project.service';
@@ -23,9 +24,11 @@ import * as AColorPicker from 'a-color-picker';
 export class TagListComponent implements OnInit {
   // datos pasados desde el componente "panel" a través del atributo state del router
   historyProjectTags = history.state.projectTags;
+  historyProjectWorkItems = history.state.projectWorkItems;
 
   projectId: any = '';
   tagsOfProject: Tag[] = [];
+  workItemsOfProject: WorkItem[] = [];
 
   // Formulario para crear una nueva Tag
   form!: FormGroup;
@@ -47,10 +50,9 @@ export class TagListComponent implements OnInit {
 
     // Obtenemos las etiquetas (tags) del proyecto
     await this.getProjectTags();
-  }
 
-  goBack() {
-    this.location.back();
+    // Obtenemos los workItems del proyecto
+    await this.getProjectWorkItems();
   }
 
   getProjectId() {
@@ -115,6 +117,22 @@ export class TagListComponent implements OnInit {
     }
   }
 
+  async getProjectWorkItems() {
+    if (!this.projectId) return;
+
+    if (this.historyProjectWorkItems && this.historyProjectWorkItems.length!=0) {
+      this.workItemsOfProject = this.historyProjectWorkItems;
+    }
+    else if (!this.historyProjectWorkItems || this.historyProjectWorkItems.length==0) {
+      try {
+        this.workItemsOfProject = await lastValueFrom(this.projectService.getWorkItems(this.projectId));
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
   toggleColorPicker() {
     this.colorPicker.toggle();
   }
@@ -175,7 +193,8 @@ export class TagListComponent implements OnInit {
 
     // y añadimos el nuevo Tag a la lista tagsOfProject
     // puede que el orden no se corresponda al cargar la página
-    this.tagsOfProject.unshift(tagDB);
+    // this.tagsOfProject.unshift(tagDB);
+    this.tagsOfProject.push(tagDB);
   }
 
 }

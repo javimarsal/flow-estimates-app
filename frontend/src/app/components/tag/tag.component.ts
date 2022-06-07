@@ -2,12 +2,14 @@ import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 
-// Model
+// Models
 import { Tag } from 'src/app/models/tag';
+import { WorkItem } from 'src/app/models/work-item';
 
 // Services
 import { TagService } from 'src/app/services/tag.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { WorkItemService } from 'src/app/services/work-item.service';
 
 // Components
 import { TagDialogComponent } from '../tag-dialog/tag-dialog.component';
@@ -28,14 +30,16 @@ import * as AColorPicker from 'a-color-picker';
 export class TagComponent implements OnInit {
   @Input() tag!: Tag;
   @Input() tagListComponent!: TagListComponent;
+  @Input() workItemsOfProject: WorkItem[] = [];
   projectId: any = '';
 
   @ViewChild('tagName') pElement!: ElementRef;
 
-  constructor(private dialog: MatDialog, private tagService: TagService, private projectService: ProjectService, private route: ActivatedRoute) { }
+  constructor(private dialog: MatDialog, private tagService: TagService, private projectService: ProjectService, private workItemService: WorkItemService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.getProjectId();
+    console.log(this.workItemsOfProject)
   }
 
   ngAfterViewInit() {
@@ -70,10 +74,9 @@ export class TagComponent implements OnInit {
   }
 
   async deleteTag() {
-    // TODO: Eliminamos la referencia de la etiqueta en los WorkItems que la tengan
-    alert('Si elimina esta etiqueta, también desaparecerá de las tareas correspondientes');
-
-    let tagId = this.tag._id;
+    alert('La etiqueta eliminada también ha sido quitado de las tareas correspondientes');
+    
+    let tagId = this.tag._id!;
     // Eliminamos la etiqueta
     try {
       await lastValueFrom(this.tagService.deleteTag(tagId));
@@ -89,6 +92,15 @@ export class TagComponent implements OnInit {
     catch (error) {
       console.log(error);
     }
+    
+    // Eliminamos la referencia de la etiqueta en los WorkItems que la tengan
+    try {
+      await this.deleteReferenceInWorkItemsDB(tagId);
+    }
+    catch (error) {
+      console.log(error);
+    }
+    
 
     // también eliminamos el Tag de la lista de tagListComponent
     let tagsOfProject = this.tagListComponent.tagsOfProject;
@@ -110,6 +122,13 @@ export class TagComponent implements OnInit {
     }
     catch (error) {
       console.log(error);
+    }
+  }
+
+  async deleteReferenceInWorkItemsDB(tagId: string) {
+    let workItems = this.workItemsOfProject;
+    for (let wI of workItems) {
+      await lastValueFrom(this.workItemService.removeTag(wI._id!, tagId))
     }
   }
 
