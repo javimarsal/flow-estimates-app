@@ -8,7 +8,7 @@ const panelRouter = Router();
 // CRUD (Create - Read - Update - Delete)
 panelRouter.get('/', panelController.getPanels);
 
-panelRouter.post('/', panelController.createPanel);
+panelRouter.post('/:projectId', panelController.createPanel);
 
 panelRouter.get('/:id', panelController.getPanel);
 

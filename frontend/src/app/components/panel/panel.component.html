@@ -65,4 +65,24 @@
             </div>
         </div>
     </div>
+
+    <mat-accordion>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+            <mat-panel-title>
+                Crear nuevo Panel
+            </mat-panel-title>
+            </mat-expansion-panel-header>
+            <!-- Input to create new work-item -->
+            <form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="createPanel(formDirective)">
+                <mat-form-field class="full-width" hintLabel="Máximo {{characterLimitName}} caracteres" [hideRequiredMarker]="true">
+                    <mat-label>Título del panel</mat-label>
+                    <input type="text" id="title" matInput autocomplete="off" formControlName="name" maxlength="{{characterLimitName}}" required #nameInput>
+                    <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/{{characterLimitName}}</mat-hint>
+                </mat-form-field>
+                <button class="btn buttonCreate" type="submit" mat-flat-button color="primary">Crear</button>
+            </form>
+            <p class="warning" id="warning"></p>
+        </mat-expansion-panel>
+    </mat-accordion>
 </div>

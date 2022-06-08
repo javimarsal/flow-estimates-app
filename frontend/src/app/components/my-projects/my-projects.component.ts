@@ -128,10 +128,11 @@ export class MyProjectsComponent implements OnInit {
     this.changeInnerText('warning', '');
 
     // Se ha creado el nuevo Proyecto
-    // Crear los cuatro paneles principales e incluirlos en la bdd
-    let mainPanels = await this.createMainPanels();
-
     let projectId: string = projectDB._id!;
+
+    // Crear los cuatro paneles principales e incluirlos en la bdd
+    let mainPanels = await this.createMainPanels(projectId);
+
     // añadir los paneles al proyecto
     await this.addPanelsToProject(projectId, mainPanels);
 
@@ -176,24 +177,24 @@ export class MyProjectsComponent implements OnInit {
     }
   }
 
-  async createMainPanels(): Promise<any[]> {
+  async createMainPanels(projectId: string): Promise<any[]> {
     let mainPanels: any[] = [];
 
-    mainPanels.push(await this.createPanel('ToDO', 0));
-    mainPanels.push(await this.createPanel('Doing', 1));
-    mainPanels.push(await this.createPanel('Done', 2));
-    mainPanels.push(await this.createPanel('Closed', 3));
+    mainPanels.push(await this.createPanel(projectId, 'ToDO', 0));
+    mainPanels.push(await this.createPanel(projectId, 'Doing', 1));
+    mainPanels.push(await this.createPanel(projectId, 'Done', 2));
+    mainPanels.push(await this.createPanel(projectId, 'Closed', 3));
 
     return mainPanels;
   }
 
-  async createPanel(panelName: string, position: number): Promise<Panel> {
+  async createPanel(projectId: string, panelName: string, position: number): Promise<Panel> {
     let newPanel: Panel = {
       name: panelName,
       position: position
     };
 
-    return await lastValueFrom(this.panelService.createPanel(newPanel));
+    return await lastValueFrom(this.panelService.createPanel(projectId, newPanel));
   }
 
   async addPanelsToProject(projectId: string, panels: Panel[]) {

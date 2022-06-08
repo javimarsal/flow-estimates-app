@@ -20,8 +20,8 @@ export class PanelService {
     return this.http.get<Panel[]>(this.URL_API);
   }
 
-  createPanel(panel: Panel): Observable<Panel> {
-    return this.http.post<Panel>(this.URL_API, panel);
+  createPanel(projectId: string, panel: Panel): Observable<Panel> {
+    return this.http.post<Panel>(`${this.URL_API}/${projectId}`, panel);
   }
 
   updatePanel(panel: Panel) {

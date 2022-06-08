@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom, map, Observable, startWith } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 
 // Services
 import { CookieService } from 'ngx-cookie-service';
@@ -47,9 +47,14 @@ export class PanelComponent implements OnInit {
   allTags: string[] = [];
   tagCtrl = new FormControl();
 
+  // Límite de caracteres para el título de un nuevo panel
+  characterLimitName: number;
+  // Formulario para crear un nuevo panel
+  form: FormGroup;
+
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService, private router: Router) {
+  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService, private router: Router, private fb: FormBuilder) {
     this.panelNames = [];
     this.projectPanels = [];
 
@@ -59,6 +64,12 @@ export class PanelComponent implements OnInit {
         tag ? this._filter(tag) : this.allTags
       )
     );
+
+    this.characterLimitName = 20;
+
+    this.form = this.fb.group({
+      name: ['']
+    });
   }
 
   async ngOnInit() {
@@ -202,7 +213,6 @@ export class PanelComponent implements OnInit {
   }
 
   async updatePanel(panel: Panel) {
-    console.log(this.projectWorkItems)
     try {
       let res = await lastValueFrom(this.panelService.updatePanel(panel));
       // console.log(res);
@@ -317,6 +327,59 @@ export class PanelComponent implements OnInit {
     panel.position = newPosition;
 
     return panel;
+  }
+
+  /* CREAR PANEL */
+  async createPanel(formDirective: FormGroupDirective) {
+    // Eliminar espacioes no deseados
+    let name = this.form.value.name.replace(/\s+/g,' ').trim();
+
+    if (!name) return;
+
+    // Crear el Panel
+    let newPanel: Panel = {
+      name: name,
+      position: this.projectPanels.length
+    }
+
+    // panel de la base de datos para añadirlo a la lista del proyecto
+    let panelDB!: Panel;
+
+    try {
+      panelDB = await lastValueFrom(this.panelService.createPanel(this.projectId, newPanel));
+    }
+    catch (error) {
+      console.log(error);
+    }
+
+    // controlar que panelDB no sea undefine o similar
+    if (!panelDB) {
+      // si es undefine es porque no se ha podido crear debido a que existe otro panel con el mismo nombre
+      this.changeInnerText('warning', 'No se puede crear el panel porque el nombre elegido ya está en uso.');
+      return;
+    }
+    this.changeInnerText('warning', '');
+
+    // Si panelDB no es undefine, significa que se ha podido crear y lo podemos añadir a la lista del proyecto
+    try {
+      await lastValueFrom(this.projectService.addPanel(this.projectId, panelDB));
+    }
+    catch (error) {
+      console.log(error);
+    }
+    
+    // Si todo ha ido bien, reseteamos el contenido del formulario
+    formDirective.resetForm();
+    this.form.reset({
+      name: ''
+    });
+
+    this.projectPanels.push(panelDB);
+    this.panelNames.push(name);
+  }
+
+  changeInnerText(elementId: string, message: string) {
+    document.getElementById(elementId)!.innerText = message;
   }
 
   /* ETIQUETAS */

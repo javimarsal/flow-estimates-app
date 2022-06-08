@@ -43,6 +43,16 @@
 .panelList {
     overflow: auto;
     white-space: nowrap;
+    display: flex;
+}
+
+.buttonCreate {
+    margin-left: 10px;
+}
+
+.warning {
+    margin-top: 20px;
+    color: #f85454;
 }
 
 .panelName {

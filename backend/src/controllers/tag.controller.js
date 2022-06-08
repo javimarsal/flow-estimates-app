@@ -45,7 +45,7 @@ tagController.deleteTag = async (req, res) => {
 }
 
 tagController.checkNameExistInProjectList = async (projectId, tagName) => {
-    // Obtenemos el proyecto con el projectID
+    // Obtenemos el proyecto con el projectId
     const project = await Project.findById(projectId).populate({
         path: 'tags',
         populate: { path: 'tag' }
