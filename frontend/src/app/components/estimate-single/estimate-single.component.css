@@ -89,6 +89,12 @@
     margin-top: 5px;
 }
 
+.optionFilter {
+    font-size: 17px;
+    font-weight: bold;
+    color: #5c6b87;
+}
+
 .doingCheck {
     margin-bottom: 10px;
 }

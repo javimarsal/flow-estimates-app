@@ -72,7 +72,7 @@
         <h4 class="optionSubtitle">Elegir panel</h4>
         <mat-form-field appearance="fill">
             <mat-label>Panel tareas hechas</mat-label>
-            <mat-select (selectionChange)="setPanelDoneSelector($event, startDate, endDate)">
+            <mat-select (selectionChange)="setPanelDoneSelector($event)">
                 <mat-option *ngFor="let pN of panelList_ForSelectingPanelDone" [value]="pN">{{pN}} ({{numberOfWorkItems_PerPanel[pN]}} <span *ngIf="numberOfWorkItems_PerPanel[pN]!=1"> tareas</span> <span *ngIf="numberOfWorkItems_PerPanel[pN]==1"> tarea</span>)</mat-option>
             </mat-select>
         </mat-form-field>
@@ -100,8 +100,8 @@
                         <mat-form-field appearance="fill">
                             <mat-label>Rango de fechas</mat-label>
                             <mat-date-range-input [rangePicker]="picker" [min]="permitedMinDate" [max]="permitedMaxDate">
-                                <input matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)" #startDate>
-                                <input matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)" #endDate>
+                                <input matStartDate placeholder="Start date" disabled (dateInput)="setStartDate($event)" #inputStartDate>
+                                <input matEndDate placeholder="End date" disabled (dateInput)="setEndDate($event)" #inputEndDate>
                             </mat-date-range-input>
                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
@@ -144,7 +144,7 @@
                     </div>
 
                     <!-- Botón para borrar los filtros -->
-                    <button mat-stroked-button (click)="deleteFilters(startDate, endDate)">Borrar filtros</button>
+                    <button mat-stroked-button (click)="deleteFilters()">Borrar filtros</button>
                 </mat-expansion-panel>
             </mat-accordion>
         </div>

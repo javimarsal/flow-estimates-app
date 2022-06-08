@@ -16,7 +16,8 @@ import { UserService } from 'src/app/services/user.service';
 import { CookieService } from 'ngx-cookie-service';
 
 // Material Events
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatDatepickerInputEvent, MatEndDate, MatStartDate } from '@angular/material/datepicker';
+import { MatInput } from '@angular/material/input';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 import {
@@ -107,6 +108,9 @@ export class EstimateMultipleHowManyComponent implements OnInit {
   tagCtrl = new FormControl();
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
+
+  @ViewChild('inputStartDate', { read: MatStartDate}) inputStartDate!: MatInput;
+  @ViewChild('inputEndDate', { read: MatEndDate}) inputEndDate!: MatInput;
 
   constructor(private route: ActivatedRoute, private location: Location, private projectService: ProjectService, private workItemService: WorkItemService, private userService: UserService, private cookieService: CookieService, private router: Router) {
     this.filteredTags = this.tagCtrl.valueChanges.pipe(
@@ -322,7 +326,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     this.changeInnerText('warningDateObjective', '');
   }
 
-  async setPanelDoneSelector(event: any, startDate: HTMLInputElement, endDate: HTMLInputElement) {
+  async setPanelDoneSelector(event: any) {
     // panelDone seleccionado anteriormente, para poner su disabled a false
     let previousPanelDone = this.panelDone;
 
@@ -360,7 +364,7 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     // Comprobar que el rango de fechas (seleccionado por el usuario) sigue estando bien
     if (this.startDate && this.endDate) {
       if (!this.checkDateRangeIsRight(this.startDate, this.endDate, this.permitedMinDate, this.permitedMaxDate)) {
-        this.deleteDates(startDate, endDate);
+        this.deleteDates();
         
         this.changeInnerText('warningDates', `Las fechas se han eliminado porque el rango que se había elegido ya no se corresponde con el rango permitido por el panel ${this.panelDone}`);
 
@@ -530,22 +534,22 @@ export class EstimateMultipleHowManyComponent implements OnInit {
     return workItemsOfPanelBetweenDates;
   }
 
-  deleteDates(startDate: HTMLInputElement, endDate: HTMLInputElement) {
+  deleteDates() {
     // Las fechas
     this.startDate = undefined!;
     this.endDate = undefined!;
     
     // Inputs en la interfaz
-    startDate.value = '';
-    endDate.value = '';
+    this.inputStartDate.value = '';
+    this.inputEndDate.value = '';
   }
 
   deleteSelectedTags() {
     this.selectedTags = [];
   }
 
-  async deleteFilters(startDate: HTMLInputElement, endDate: HTMLInputElement) {
-    this.deleteDates(startDate, endDate);
+  async deleteFilters() {
+    this.deleteDates();
     this.deleteSelectedTags();
     if (this.panelDone) {
       let workItems = await this.getWorkItemsOfPanel(this.panelDone, '');

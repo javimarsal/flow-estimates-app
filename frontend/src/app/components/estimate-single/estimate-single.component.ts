@@ -12,7 +12,8 @@ import { UserService } from 'src/app/services/user.service';
 import { CookieService } from 'ngx-cookie-service';
 
 // Material Events
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatDatepickerInputEvent, MatEndDate, MatStartDate } from '@angular/material/datepicker';
+import { MatInput } from '@angular/material/input';
 
 import {
   ChartComponent,
@@ -46,6 +47,9 @@ export type ChartOptions = {
 export class EstimateSingleComponent implements OnInit {
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: Partial<ChartOptions>;
+
+  @ViewChild('inputStartDate', { read: MatStartDate}) inputStartDate!: MatInput;
+  @ViewChild('inputEndDate', { read: MatEndDate}) inputEndDate!: MatInput;
 
   // datos pasados desde el componente "panel" a través del atributo state del router
   historyWorkItemsOfProject = history.state.projectWorkItems;
@@ -343,7 +347,6 @@ export class EstimateSingleComponent implements OnInit {
 
     // Recalculamos el percentil
     this.yValuePercentile = this.calculatePercentile().toString();
-    console.log(this.dataDone)
 
     // Volver a dibujar el gráfico
     this.initChart();
@@ -361,6 +364,25 @@ export class EstimateSingleComponent implements OnInit {
     // Si hay fechas, establecemos los límites
     this.maxDate = this.getMaxDate(dates);
     this.minDate = this.getMinDate(dates);
+  }
+
+  deleteFilters() {
+    this.deleteStartEndDates();
+  }
+
+  deleteStartEndDates() {
+    // Las fechas
+    this.startDate = undefined!;
+    this.endDate = undefined!;
+
+    // Inputs de la interfaz
+    this.inputStartDate.value = '';
+    this.inputEndDate.value = '';
+
+    // Volver a obtener los datos
+    this.setMinMaxDates();
+
+    this.setDataForChart();
   }
 
   getIndexFromPanelNamesArray(panelName: string) {
@@ -386,7 +408,10 @@ export class EstimateSingleComponent implements OnInit {
     let workItem = this.workItemsOfProject;
 
     for (let wI of workItem) {
-      // Recorremos el registro de paneles del workItem
+      // Si el workItem no se encuentra en el panelEnd, pasamos a la siguiente iteración
+      if (wI.panel != panelEnd) continue;
+
+      // El workItem está en el panelEnd, recorremos el registro de paneles del workItem
       for (let registry of wI.panelDateRegistry) {
         if (registry.panel == panelEnd) {
           // Añadimos la fecha
