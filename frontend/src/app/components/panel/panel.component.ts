@@ -427,6 +427,8 @@ export class PanelComponent implements OnInit {
       // eliminamos los wI de projectWorkItems para actualizar los datos que enviamos a los gráficos
       let indexOfWI = projectWorkItems.indexOf(projectWorkItemsInPanel[i])
       projectWorkItems.splice(indexOfWI, 1);
+
+      this.filterProjectWorkItems(this.selectedTags);
     }
 
     /* Actualizar la posición de los paneles afectados */
@@ -446,13 +448,56 @@ export class PanelComponent implements OnInit {
 
   /* ACTUALIZAR PANEL */
   // Actualizar también panelNames y projectPanels
+  async updatePanelAndMore(panel: Panel, newName: string, previousName: string) {
+    // Actualizamos el nombre del panel
+    if (newName != previousName) panel!.name = newName;
+
+    // TODO:  Comprobar si la propiedad backlog (boolean) ha cambiado
+    // cambiarlo en el objeto Panel
+    // la propiedad del resto de Panels se vuelve a false, si esta es true
+
+    // Actualizar el Panel en la bdd
+    await lastValueFrom(this.panelService.updatePanel(panel));
+
+    // Actualizamos el nombre en la lista panelNames
+    let panelNamesLength = this.panelNames.length;
+    for (let i = 0; i < panelNamesLength; i++) {
+      if (this.panelNames[i] == previousName) this.panelNames[i] = newName;
+    }
+
+    // Actualizamos la propiedad panel de los workItems afectados
+    // obtenemos los wI cuyo panel sea previousName
+    let panelWorkItems = this.projectWorkItems;
+
+    let panelWorkItemsLength = panelWorkItems.length;
+    for (let i = 0; i < panelWorkItemsLength; i++) {
+      // Actualizamos el panel del workItem si es igual a previousName
+      if (panelWorkItems[i].panel == previousName) panelWorkItems[i].panel = newName;
+
+      // También debemos actualizar el nombre del panel si existe en el registro de fechas de paneles del workItem (en todos)
+      let panelDateRegistry = panelWorkItems[i].panelDateRegistry;
+      let panelDRlength = panelDateRegistry.length;
+      for (let j = 0; j < panelDRlength; j++) {
+        if (panelDateRegistry[j].panel == previousName) {
+          // console.log(newName)
+          panelDateRegistry[j].panel = newName;
+        }
+      }
+
+      // Actualizamos el workItem en la bdd
+      await lastValueFrom(this.workItemService.updateWorkItem(panelWorkItems[i]));
+    }
+
+    // Volver a filtrar
+    this.filterProjectWorkItems(this.selectedTags);
+  }
 
   openDialog(buttonElement: HTMLButtonElement) {
     let panelName = buttonElement.value;
     //
     console.log(panelName);
     //
-    let panel = this.projectPanels.find(panel => panel.name == panelName);
+    let panel = this.projectPanels.find(panel => panel.name == panelName)!;
     let panelId = panel!._id!;
     let panelPosition = panel!.position;
 
@@ -476,12 +521,12 @@ export class PanelComponent implements OnInit {
 
         // Si data es 'delete' eliminamos el Panel
         if (data == 'delete') {
-          this.deletePanel(panelId, panelName, panelPosition);
+          await this.deletePanel(panelId, panelName, panelPosition);
           return;
         }
 
         // Si llegan datos y no es 'delete' actualizamos el name
-        
+        await this.updatePanelAndMore(panel, data.name, panelName);
       }
     );
   }

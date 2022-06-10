@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input, Output, SimpleChanges, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, lastValueFrom } from 'rxjs';
 
@@ -47,7 +47,13 @@ export class CreateWorkItemComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: any): void {
-    this.projectWorkItems = changes.projectWorkItems.currentValue;
+    if (changes.projectWorkItems) {
+      this.projectWorkItems = changes.projectWorkItems.currentValue;
+    }
+
+    if (changes.panelName) {
+      this.panelName = changes.panelName.currentValue;
+    }
   }
 
   getProjectId() {

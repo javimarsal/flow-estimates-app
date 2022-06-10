@@ -160,7 +160,7 @@ export class MyProjectItemComponent implements OnInit {
 
         // Si data es 'delete' eliminamos el Project
         if (data == 'delete') {
-          this.deleteProject();
+          await this.deleteProject();
           return;
         }
 

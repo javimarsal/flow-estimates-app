@@ -39,10 +39,18 @@ export class WorkItemListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: any): void {
-    if (!changes.filteredProjectWorkItems) return;
-    
-    this.filteredProjectWorkItems = changes.filteredProjectWorkItems.currentValue;
-    this.getWorkItemsOfPanel();
+    if (changes.panelName) {
+      this.panelName = changes.panelName.currentValue;
+    }
+
+    if (changes.projectWorkItems) {
+      this.projectWorkItems = changes.projectWorkItems.currentValue;
+    }
+
+    if (changes.filteredProjectWorkItems) {
+      this.filteredProjectWorkItems = changes.filteredProjectWorkItems.currentValue;
+      this.getWorkItemsOfPanel();
+    }
   }
 
   getProjectId() {

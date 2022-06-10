@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
 
@@ -27,7 +27,7 @@ import * as AColorPicker from 'a-color-picker';
   templateUrl: './work-item.component.html',
   styleUrls: ['./work-item.component.css']
 })
-export class WorkItemComponent implements OnInit {
+export class WorkItemComponent implements OnInit, OnChanges {
   @Input() workItemIdNumber!: number;
   @Input() panelName: string = '';
   @Input() workItemListComponent!: WorkItemListComponent;
@@ -69,6 +69,16 @@ export class WorkItemComponent implements OnInit {
     }
 
     await this.getWorkItemTagsProperties(this.workItem);
+  }
+
+  ngOnChanges(changes: any): void {
+    if (changes.panelName) {
+      this.panelName = changes.panelName.currentValue;
+    }
+
+    if (changes.projectWorkItems) {
+      this.projectWorkItems = changes.projectWorkItems.currentValue;
+    }
   }
 
   // INICIALIZAR EL COMPONENTE
