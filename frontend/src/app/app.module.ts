@@ -50,6 +50,7 @@ import { EstimateMultipleHowManyComponent } from './components/estimate-multiple
 import { ConfirmationAccountComponent } from './components/confirmation-account/confirmation-account.component';
 import { MyProjectItemComponent } from './components/my-project-item/my-project-item.component';
 import { MyProjectItemDialogComponent } from './components/my-project-item-dialog/my-project-item-dialog.component';
+import { PanelDialogComponent } from './components/panel-dialog/panel-dialog.component';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { MyProjectItemDialogComponent } from './components/my-project-item-dialo
     EstimateMultipleHowManyComponent,
     ConfirmationAccountComponent,
     MyProjectItemComponent,
-    MyProjectItemDialogComponent
+    MyProjectItemDialogComponent,
+    PanelDialogComponent
   ],
   imports: [
     BrowserModule,

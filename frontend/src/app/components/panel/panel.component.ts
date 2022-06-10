@@ -9,14 +9,19 @@ import { CookieService } from 'ngx-cookie-service';
 import { PanelService } from 'src/app/services/panel.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { UserService } from 'src/app/services/user.service';
+import { WorkItemService } from 'src/app/services/work-item.service';
 
 // Models
 import { Panel } from 'src/app/models/panel';
 import { Tag } from 'src/app/models/tag';
 import { WorkItem } from 'src/app/models/work-item';
 
+// Components
+import { PanelDialogComponent } from '../panel-dialog/panel-dialog.component';
+
 // Material
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-panel',
@@ -54,7 +59,7 @@ export class PanelComponent implements OnInit {
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private cookieService: CookieService, private router: Router, private fb: FormBuilder) {
+  constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private workItemService: WorkItemService, private cookieService: CookieService, private router: Router, private fb: FormBuilder, private dialog: MatDialog) {
     this.panelNames = [];
     this.projectPanels = [];
 
@@ -376,6 +381,109 @@ export class PanelComponent implements OnInit {
 
     this.projectPanels.push(panelDB);
     this.panelNames.push(name);
+  }
+
+  /* ELIMINAR PANEL */
+  async deletePanel(panelId: string, panelName: string, panelPosition: number) {
+    let projectId = this.projectId;
+    /* Eliminamos el panel */
+    await lastValueFrom(this.panelService.deletePanel(panelId));
+
+    // Eliminamos el nombre de panelNames
+    let panelNamesLength = this.panelNames.length;
+    for (let i = 0; i < panelNamesLength; i++) {
+      if (this.panelNames[i] == panelName) {
+        this.panelNames.splice(i, 1);
+      }
+    }
+
+    // Eliminamos el panel de projectPanels
+    let projectPanelsLength = this.projectPanels.length;
+    for (let i = 0; i < projectPanelsLength; i++) {
+      if (this.projectPanels[i]._id = panelId) {
+        this.projectPanels.splice(i, 1);
+        break;
+      }
+    }
+
+    // Eliminamos la referencia panel del project
+    await lastValueFrom(this.projectService.removePanel(projectId, panelId));
+
+    /* Eliminamos los workItems del panel en el project */
+    // tenemos los workItems del proyecto
+    let projectWorkItems = this.projectWorkItems;
+
+    // Obtenemos los workItems que están en el panelName
+    let projectWorkItemsInPanel = projectWorkItems.filter(wI => wI.panel == panelName);
+
+    // recorremos los workItems del panel
+    let projectWIPlength = projectWorkItemsInPanel.length;
+    for (let i = 0; i < projectWIPlength; i++) {
+      // y los eliminamos
+      await lastValueFrom(this.workItemService.deleteWorkItem(projectWorkItemsInPanel[i]._id));
+      // también eliminamos la referencias workItems del project
+      await lastValueFrom(this.projectService.removeWorkItem(projectId, projectWorkItemsInPanel[i]._id));
+      
+      // eliminamos los wI de projectWorkItems para actualizar los datos que enviamos a los gráficos
+      let indexOfWI = projectWorkItems.indexOf(projectWorkItemsInPanel[i])
+      projectWorkItems.splice(indexOfWI, 1);
+    }
+
+    /* Actualizar la posición de los paneles afectados */
+    projectPanelsLength = this.projectPanels.length;
+    for (let i = 0; i < projectPanelsLength; i++) {
+      // si la position del panel es mayor al del eliminado
+      if (this.projectPanels[i].position > panelPosition) {
+        // hace position --
+        this.projectPanels[i].position--;
+
+        // actualizarlo en la bdd
+        await lastValueFrom(this.panelService.updatePanel(this.projectPanels[i]));
+      }
+    }
+
+  }
+
+  /* ACTUALIZAR PANEL */
+  // Actualizar también panelNames y projectPanels
+
+  openDialog(buttonElement: HTMLButtonElement) {
+    let panelName = buttonElement.value;
+    //
+    console.log(panelName);
+    //
+    let panel = this.projectPanels.find(panel => panel.name == panelName);
+    let panelId = panel!._id!;
+    let panelPosition = panel!.position;
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = '800px';
+
+    dialogConfig.data = {
+      name: panelName,
+      projectId: this.projectId
+    }
+
+    const dialogRef = this.dialog.open(PanelDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+      async data => {
+        // Si no llegan datos no se hace nada
+        if (!data) return;
+
+        // Si data es 'delete' eliminamos el Panel
+        if (data == 'delete') {
+          this.deletePanel(panelId, panelName, panelPosition);
+          return;
+        }
+
+        // Si llegan datos y no es 'delete' actualizamos el name
+        
+      }
+    );
   }
 
   changeInnerText(elementId: string, message: string) {

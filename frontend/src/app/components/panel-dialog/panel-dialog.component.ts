@@ -6,30 +6,29 @@ import { lastValueFrom } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // Services
-import { UserService } from 'src/app/services/user.service';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
-  selector: 'app-my-project-item-dialog',
-  templateUrl: './my-project-item-dialog.component.html',
-  styleUrls: ['./my-project-item-dialog.component.css']
+  selector: 'app-panel-dialog',
+  templateUrl: './panel-dialog.component.html',
+  styleUrls: ['./panel-dialog.component.css']
 })
-export class MyProjectItemDialogComponent implements OnInit {
+export class PanelDialogComponent implements OnInit {
   form!: FormGroup;
   name: string = '';
-  nameTitleHTML: string = '';
 
-  userId: any = '';
+  projectId: any = '';
 
-  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<MyProjectItemDialogComponent>, @Inject(MAT_DIALOG_DATA) data: any, private userService: UserService) {
+  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<PanelDialogComponent>, @Inject(MAT_DIALOG_DATA) data: any, private projectService: ProjectService) {
     this.name = data.name;
-    this.nameTitleHTML = data.name;
-    this.userId = data.userId;
-  }
+    this.projectId = data.projectId;
 
-  ngOnInit(): void {
     this.form = this.fb.group({
       name: [this.name]
     });
+  }
+
+  ngOnInit(): void {
   }
 
   async save() {
@@ -56,22 +55,6 @@ export class MyProjectItemDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  async checkNameExist(name: string) {
-    try {
-      let userProjects = await lastValueFrom(this.userService.getProjects(this.userId));
-
-      // buscar si el name de algún proyecto coincide con el nombre que hemos puesto
-      for (let project of userProjects) {
-        if (project.name.toLowerCase() == name.toLowerCase()) return true;
-      }
-    }
-    catch (error) {
-      console.log(error);
-    }
-
-    return false;
-  }
-
   async checkNameIsCorrect(name: string) {
     // Si el nombre está vacío, no hacer nada y warning
     if (name == "") {
@@ -82,13 +65,29 @@ export class MyProjectItemDialogComponent implements OnInit {
     // Si cambia el nombre, comprobar que no coincida con uno ya existente, si es así no hacemos nada y warning
     if (this.name != name) {
       if (await this.checkNameExist(name)) {
-        this.changeInnerText('warningName', 'El nombre no debe coincidir con el de un proyecto ya existente');
+        this.changeInnerText('warningName', 'El nombre no debe coincidir con el de un panel ya existente');
         return false;
       }
     }
 
     this.changeInnerText('warningName', '');
     return true;
+  }
+
+  async checkNameExist(name: string) {
+    try {
+      let projectPanels = await lastValueFrom(this.projectService.getPanels(this.projectId));
+
+      // buscar si el name de algún panel coincide con el nombre que hemos puesto
+      for (let panel of projectPanels) {
+        if (panel.name.toLowerCase() == name.toLowerCase()) return true;
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+
+    return false;
   }
 
   changeInnerText(elementId: string, message: string) {

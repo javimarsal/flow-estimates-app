@@ -72,6 +72,23 @@
     box-sizing: border-box;
 }
 
+.panelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttonEdit {
+    display: none;
+    height: 40px;
+    margin-right: 10px;
+}
+
+
+.panelHeader:hover .buttonEdit {
+    display: inline-block;
+}
+
 .cdk-drag-preview {
     box-sizing: border-box;
     border-radius: 4px;

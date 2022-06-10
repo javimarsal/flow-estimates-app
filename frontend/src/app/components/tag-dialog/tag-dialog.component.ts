@@ -101,6 +101,7 @@ export class TagDialogComponent implements OnInit {
   async save() {
     // Nombre y Color del formulario
     let formName = this.form.value.name;
+    formName = this.deleteExtraSpaces(formName);
     let formColor = this.form.value.color;
 
     let isNameCorrect = await this.checkNameIsCorrect(formName);
@@ -111,8 +112,6 @@ export class TagDialogComponent implements OnInit {
 
     // Ha cambiado el Name o el Color (y ambos son válidos), enviamos los datos para actualizar
     if (isNameCorrect && isColorCorrect) {
-      // Eliminamos espacios no deseados en el name
-      this.form.value.name = this.deleteExtraSpaces(this.form.value.name);
       return this.dialogRef.close(this.form.value);
     }
   }
