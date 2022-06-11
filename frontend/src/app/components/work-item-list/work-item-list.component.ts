@@ -33,12 +33,12 @@ export class WorkItemListComponent implements OnInit, OnChanges {
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public workItemService: WorkItemService) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.getProjectId();
-    this.getWorkItemsOfPanel();
+    await this.getWorkItemsOfPanel();
   }
 
-  ngOnChanges(changes: any): void {
+  async ngOnChanges(changes: any) {
     if (changes.panelName) {
       this.panelName = changes.panelName.currentValue;
     }
@@ -49,7 +49,7 @@ export class WorkItemListComponent implements OnInit, OnChanges {
 
     if (changes.filteredProjectWorkItems) {
       this.filteredProjectWorkItems = changes.filteredProjectWorkItems.currentValue;
-      this.getWorkItemsOfPanel();
+      await this.getWorkItemsOfPanel();
     }
   }
 
@@ -101,7 +101,11 @@ export class WorkItemListComponent implements OnInit, OnChanges {
 
       let workItem = this.getWorkItemByIdNumber(workItems, workItemIdNumber);
       workItem.position = newPosition;
-      this.updateWorkItem(workItem);
+      await this.updateWorkItem(workItem);
+      
+      // Actualizar el workItem en la lista projectWorkItems
+      let wI = this.projectWorkItems.find(w => w.idNumber == workItem.idNumber);
+      wI!.position = newPosition;
     }
     catch (error) {
       console.log(error);
@@ -127,12 +131,12 @@ export class WorkItemListComponent implements OnInit, OnChanges {
       await this.updateWorkItem(workItem);
       // console.log(workItems)
       // Actualizar los workItems del proyecto para enviárselos bien a los gráficos
-      this.projectWorkItems = workItems;
-      let index = this.projectWorkItems.indexOf(workItem);
-      this.projectWorkItems[index].panel = workItem.panel;
-
-      // para actualizar el array projectWorkItems en el padre (en este caso el componente panel)
-      this.onChange.emit(this.projectWorkItems);
+      let wI = this.projectWorkItems.find(w => w.idNumber == workItemNumber);
+      wI!.panel = newPanelName;
+      wI!.position = newPosition;
+      // this.projectWorkItems = workItems;
+      // let index = this.projectWorkItems.indexOf(workItem);
+      // this.projectWorkItems[index].panel = workItem.panel;
     }
     catch (error) {
       console.log(error)
@@ -192,7 +196,7 @@ export class WorkItemListComponent implements OnInit, OnChanges {
     });
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  async drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       // Hacemos una copia de event.container.data (sin referencia) porque al realizarse "moveItemInArray" también cambia event.container.data y queremos obtener el estado antes de realizar ningún movimiento
       let previousPanelIdNumbers = JSON.parse(JSON.stringify(event.container.data));
@@ -211,7 +215,7 @@ export class WorkItemListComponent implements OnInit, OnChanges {
         // es decir, en la posición que corresponda cambian los idNumbers
         for (let i = 0; i < panelIdNumbersLength; i++) {
           if (currentPanelIdNumbers[i] != previousPanelIdNumbers[i]) {
-            this.updateWorkItem_Position(parseInt(currentPanelIdNumbers[i]), i);
+            await this.updateWorkItem_Position(parseInt(currentPanelIdNumbers[i]), i);
           }
         }
       }
@@ -247,11 +251,14 @@ export class WorkItemListComponent implements OnInit, OnChanges {
 
       /* Actualizamos los workItems de los dos paneles */
       // Primer panel: previousContainer
-      this.updateWorkItems_betweenPanels(current_previousContainerIdNumbers, previous_previousContainerIdNumbers, movedWorkItemIdNumber, containerPanelName);
+      await this.updateWorkItems_betweenPanels(current_previousContainerIdNumbers, previous_previousContainerIdNumbers, movedWorkItemIdNumber, containerPanelName);
       
       // Segundo panel: container
-      this.updateWorkItems_betweenPanels(current_containerIdNumbers, previous_containerIdNumbers, movedWorkItemIdNumber, containerPanelName);
+      await this.updateWorkItems_betweenPanels(current_containerIdNumbers, previous_containerIdNumbers, movedWorkItemIdNumber, containerPanelName);
     }
+
+    // para actualizar el array projectWorkItems en el padre (en este caso el componente panel)
+    this.onChange.emit(this.projectWorkItems);
   }
 
   /**

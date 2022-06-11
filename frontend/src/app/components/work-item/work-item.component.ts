@@ -37,7 +37,7 @@ export class WorkItemComponent implements OnInit, OnChanges {
   @Input() projectTags!: Tag[];
   @Input() projectWorkItems!: WorkItem[];
 
-  @Output() onChange = new EventEmitter<any>();
+  @Output() onChange = new EventEmitter<WorkItem[]>();
 
   workItem!: WorkItem;
 
