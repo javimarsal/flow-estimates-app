@@ -2,7 +2,8 @@ const { Schema, model }  = require('mongoose')
 
 const panelSchema = new Schema({
     name: {type: String, required: true},
-    position: {type: Number, required: true}
+    position: {type: Number, required: true},
+    backlog: {type: Boolean, required: true}
 },
 {
     // Guardar fecha de creación y actualización

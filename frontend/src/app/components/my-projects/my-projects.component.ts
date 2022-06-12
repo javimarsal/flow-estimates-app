@@ -180,18 +180,19 @@ export class MyProjectsComponent implements OnInit {
   async createMainPanels(projectId: string): Promise<any[]> {
     let mainPanels: any[] = [];
 
-    mainPanels.push(await this.createPanel(projectId, 'ToDO', 0));
-    mainPanels.push(await this.createPanel(projectId, 'Doing', 1));
-    mainPanels.push(await this.createPanel(projectId, 'Done', 2));
-    mainPanels.push(await this.createPanel(projectId, 'Closed', 3));
+    mainPanels.push(await this.createPanel(projectId, 'ToDO', 0, true));
+    mainPanels.push(await this.createPanel(projectId, 'Doing', 1, false));
+    mainPanels.push(await this.createPanel(projectId, 'Done', 2, false));
+    mainPanels.push(await this.createPanel(projectId, 'Closed', 3, false));
 
     return mainPanels;
   }
 
-  async createPanel(projectId: string, panelName: string, position: number): Promise<Panel> {
+  async createPanel(projectId: string, panelName: string, position: number, backlog: boolean): Promise<Panel> {
     let newPanel: Panel = {
       name: panelName,
-      position: position
+      position: position,
+      backlog: backlog
     };
 
     return await lastValueFrom(this.panelService.createPanel(projectId, newPanel));

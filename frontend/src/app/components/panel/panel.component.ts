@@ -57,6 +57,9 @@ export class PanelComponent implements OnInit {
   // Formulario para crear un nuevo panel
   form: FormGroup;
 
+  // lista (diccionario) para saber qué panel es backlog
+  backlogList: any = [];
+
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService, public panelService: PanelService, private userService: UserService, private workItemService: WorkItemService, private cookieService: CookieService, private router: Router, private fb: FormBuilder, private dialog: MatDialog) {
@@ -122,7 +125,16 @@ export class PanelComponent implements OnInit {
     // nos quedamos con los nombre de las etiquetas
     this.allTags = this.getTagsNamesOfProject(this.projectTags);
 
+    // Obtener listado de backlog
+    this.getBacklogList(this.projectPanels);
+
     return;
+  }
+
+  getBacklogList(panels: Panel[]) {
+    for (let p of panels) {
+      this.backlogList[p.name] = p.backlog;
+    }
   }
 
   setProjectWorkItems(workItems: []) {
@@ -237,7 +249,8 @@ export class PanelComponent implements OnInit {
         let panelToBeUpdated: Panel = {
           _id: p._id,
           name: p.name,
-          position: p.position
+          position: p.position,
+          backlog: p.backlog
         };
 
         // Si currentPosition > previousPosition (hay que restar --)
@@ -313,7 +326,8 @@ export class PanelComponent implements OnInit {
     // Objeto Panel vacío, por si no lo encontrase
     let panel: Panel = {
       name: '',
-      position: 0
+      position: 0,
+      backlog: false
     };
 
     // Buscamos el Objeto Panel en el array this.panels
@@ -336,7 +350,7 @@ export class PanelComponent implements OnInit {
 
   /* CREAR PANEL */
   async createPanel(formDirective: FormGroupDirective) {
-    // Eliminar espacioes no deseados
+    // Eliminar espacios no deseados
     let name = this.form.value.name.replace(/\s+/g,' ').trim();
 
     if (!name) return;
@@ -344,7 +358,8 @@ export class PanelComponent implements OnInit {
     // Crear el Panel
     let newPanel: Panel = {
       name: name,
-      position: this.projectPanels.length
+      position: this.projectPanels.length,
+      backlog: false
     }
 
     // panel de la base de datos para añadirlo a la lista del proyecto
@@ -381,6 +396,9 @@ export class PanelComponent implements OnInit {
 
     this.projectPanels.push(panelDB);
     this.panelNames.push(name);
+
+    // Añadir panel a la lista backlog
+    this.backlogList[name] = false;
   }
 
   /* ELIMINAR PANEL */
@@ -444,17 +462,41 @@ export class PanelComponent implements OnInit {
       }
     }
 
+    // Quitar el valor y la key de la lista backlog
+    delete this.backlogList[panelName];
   }
 
   /* ACTUALIZAR PANEL */
   // Actualizar también panelNames y projectPanels
-  async updatePanelAndMore(panel: Panel, newName: string, previousName: string) {
+  async updatePanelAndMore(panel: Panel, newName: string, previousName: string, backlog: boolean) {
     // Actualizamos el nombre del panel
-    if (newName != previousName) panel!.name = newName;
+    if (newName != previousName) {
+      panel!.name = newName
+      // y eliminamos la entrada de la lista backlog del previousName
+      delete this.backlogList[previousName];
+    }
 
-    // TODO:  Comprobar si la propiedad backlog (boolean) ha cambiado
-    // cambiarlo en el objeto Panel
-    // la propiedad del resto de Panels se vuelve a false, si esta es true
+    // Actualizar backlog del panel
+    panel.backlog = backlog;
+
+    // cambiarlo en la lista backlog (o se creará una nueva entrada si el nombre ha cambiado)
+    this.backlogList[newName] = backlog;
+
+    // si backlog es true, la propiedad del resto de Panels se vuelve a false
+    // actualizar objetos en la bdd
+    if (backlog) {
+      for (let panel of this.projectPanels) {
+        if (panel.name != newName  &&  panel.backlog) {
+          this.backlogList[panel.name] = false;
+          panel.backlog = false;
+          await lastValueFrom(this.panelService.updatePanel(panel));
+          // porque solo debe haber un panel con backlog true
+          break;
+        }
+      }
+    }
+
+    // si backlog es false, no hacer nada más
 
     // Actualizar el Panel en la bdd
     await lastValueFrom(this.panelService.updatePanel(panel));
@@ -494,12 +536,10 @@ export class PanelComponent implements OnInit {
 
   openDialog(buttonElement: HTMLButtonElement) {
     let panelName = buttonElement.value;
-    //
-    console.log(panelName);
-    //
     let panel = this.projectPanels.find(panel => panel.name == panelName)!;
     let panelId = panel!._id!;
     let panelPosition = panel!.position;
+    let panelBacklog = panel.backlog;
 
     const dialogConfig = new MatDialogConfig();
 
@@ -509,7 +549,8 @@ export class PanelComponent implements OnInit {
 
     dialogConfig.data = {
       name: panelName,
-      projectId: this.projectId
+      projectId: this.projectId,
+      backlog: panelBacklog
     }
 
     const dialogRef = this.dialog.open(PanelDialogComponent, dialogConfig);
@@ -526,7 +567,7 @@ export class PanelComponent implements OnInit {
         }
 
         // Si llegan datos y no es 'delete' actualizamos el name
-        await this.updatePanelAndMore(panel, data.name, panelName);
+        await this.updatePanelAndMore(panel, data.name, panelName, data.backlog);
       }
     );
   }

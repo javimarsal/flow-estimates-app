@@ -14,17 +14,20 @@ import { ProjectService } from 'src/app/services/project.service';
   styleUrls: ['./panel-dialog.component.css']
 })
 export class PanelDialogComponent implements OnInit {
-  form!: FormGroup;
+  form: FormGroup;
   name: string = '';
+  backlog: boolean;
 
   projectId: any = '';
 
   constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<PanelDialogComponent>, @Inject(MAT_DIALOG_DATA) data: any, private projectService: ProjectService) {
     this.name = data.name;
     this.projectId = data.projectId;
+    this.backlog = data.backlog;
 
     this.form = this.fb.group({
-      name: [this.name]
+      name: [this.name],
+      backlog: [this.backlog]
     });
   }
 
@@ -34,12 +37,14 @@ export class PanelDialogComponent implements OnInit {
   async save() {
     // Nombre del formulario
     let formName = this.form.value.name;
+    let formBacklog = this.form.value.backlog;
+
     formName = this.deleteExtraSpaces(formName);
 
     let isNameCorrect = await this.checkNameIsCorrect(formName);
 
     // Si no cambia el nombre, no enviamos nada para actualizar
-    if (this.name == formName) return this.dialogRef.close();
+    if (this.name == formName && this.backlog == formBacklog) return this.dialogRef.close();
 
     // Ha cambiado el nombre (y éste es válido), enviamos los datos para actualizar
     if (isNameCorrect) {
