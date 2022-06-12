@@ -171,9 +171,6 @@ export class EstimateSingleComponent implements OnInit {
     // establecer el rango de fechas según las fechas de los workItems
     this.setMinMaxDates();
 
-
-    // TODO: si dataDone está vacío mostrar un mensaje (o reemplazar el mensaje de la estimación por ese mensaje)
-
     return;
   }
 

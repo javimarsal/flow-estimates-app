@@ -138,6 +138,7 @@ export class PanelComponent implements OnInit {
   }
 
   setProjectWorkItems(workItems: []) {
+    console.log(workItems)
     this.projectWorkItems = workItems;
     this.filterProjectWorkItems(this.selectedTags);
   }

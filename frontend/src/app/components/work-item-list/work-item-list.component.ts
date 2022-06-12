@@ -121,7 +121,7 @@ export class WorkItemListComponent implements OnInit, OnChanges {
       let workItem = this.getWorkItemByIdNumber(workItems, workItemNumber);
 
       // Registrar fecha de entrada del workItem en el nuevo panel (si no existe para ese panel)
-      workItem = this.registerEntryDate(workItem, newPanelName)
+      workItem = await this.registerEntryDate(workItem, newPanelName)
 
       // Cambiamos el nombre del panel (al que se mueve) y su nueva posición
       workItem.panel = newPanelName;
@@ -129,14 +129,10 @@ export class WorkItemListComponent implements OnInit, OnChanges {
 
       // Actualizamos el workItem en la base de datos
       await this.updateWorkItem(workItem);
-      // console.log(workItems)
       // Actualizar los workItems del proyecto para enviárselos bien a los gráficos
       let wI = this.projectWorkItems.find(w => w.idNumber == workItemNumber);
       wI!.panel = newPanelName;
       wI!.position = newPosition;
-      // this.projectWorkItems = workItems;
-      // let index = this.projectWorkItems.indexOf(workItem);
-      // this.projectWorkItems[index].panel = workItem.panel;
     }
     catch (error) {
       console.log(error)
@@ -144,7 +140,32 @@ export class WorkItemListComponent implements OnInit, OnChanges {
   }
 
   // Registrar fecha de entrada del workItem en el nuevo panel
-  registerEntryDate(workItem: WorkItem, newPanelName: string): WorkItem {
+  async registerEntryDate(workItem: WorkItem, newPanelName: string): Promise<WorkItem> {
+    // Lista de paneles
+    let panelList = await lastValueFrom(this.projectService.getPanels(this.projectId));
+
+    // Panel (name) donde está el workItem
+    let fromPanelName = workItem.panel;
+    let fromPanelPosition = panelList.find(p => p.name == fromPanelName)!.position;
+
+    // Panel (name) al que va el workItem
+    let toPanelName = newPanelName;
+    let toPanelPosition = panelList.find(p => p.name == toPanelName)!.position;
+
+    // lista de nombres de paneles entre fromPanel y toPanel, según la posición
+    // let panelNameList: string[] = [];
+    if (fromPanelPosition < toPanelPosition) {
+      for (let panel of panelList) {
+        let position = panel.position;
+        if (position>fromPanelPosition  && position<toPanelPosition  && !this.checkPanelEntryExist(workItem, panel.name)) {
+          workItem.panelDateRegistry.push({
+            panel: panel.name,
+            date: new Date()
+          });
+        }
+      }
+    }
+
     // Registramos la fecha de entrada en el panel, si esta no existe
     if (!this.checkPanelEntryExist(workItem, newPanelName)) {
       workItem.panelDateRegistry.push({
