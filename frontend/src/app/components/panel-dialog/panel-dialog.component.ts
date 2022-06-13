@@ -17,6 +17,7 @@ export class PanelDialogComponent implements OnInit {
   form: FormGroup;
   name: string = '';
   backlog: boolean;
+  characterLimitName = 20;
 
   projectId: any = '';
 

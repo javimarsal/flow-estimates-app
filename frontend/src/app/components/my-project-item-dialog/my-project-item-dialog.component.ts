@@ -17,6 +17,7 @@ export class MyProjectItemDialogComponent implements OnInit {
   form!: FormGroup;
   name: string = '';
   nameTitleHTML: string = '';
+  characterLimitName = 30;
 
   userId: any = '';
 

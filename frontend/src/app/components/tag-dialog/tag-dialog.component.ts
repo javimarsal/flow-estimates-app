@@ -22,6 +22,7 @@ export class TagDialogComponent implements OnInit {
   name: string = '';
   nameTitleHTML: string = '';
   color: string = '';
+  characterLimitName = 15;
 
   projectId: any = '';
 

@@ -22,6 +22,7 @@ export class CreateWorkItemComponent implements OnInit, OnChanges {
   @Input() panelName!: string ;
   // Valor del input
   value = '';
+  characterLimitName = 50;
 
   allWorkItems!: WorkItem[];
   @Input() workItemListComponent!: WorkItemListComponent;

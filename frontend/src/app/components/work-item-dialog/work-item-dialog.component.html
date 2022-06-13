@@ -18,8 +18,9 @@
 
 <mat-dialog-content [formGroup]="form">
     <div class="container">
-        <mat-form-field>
-            <input class="title" matInput placeholder="Título" formControlName="title">
+        <mat-form-field hintLabel="Máximo {{characterLimitName}} caracteres">
+            <input class="title" matInput placeholder="Título" formControlName="title" maxlength="{{characterLimitName}}" #titleInput>
+            <mat-hint class="inputFooter" align="end">{{titleInput.value?.length || 0}}/{{characterLimitName}}</mat-hint>
         </mat-form-field>
         <p class="warning" id="warning"></p>
         <mat-form-field>

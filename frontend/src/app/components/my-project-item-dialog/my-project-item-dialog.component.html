@@ -18,8 +18,9 @@
 
 <mat-dialog-content [formGroup]="form">
     <div class="container">
-        <mat-form-field>
-            <input [(ngModel)]="nameTitleHTML" class="tagInput" matInput placeholder="Nombre" formControlName="name">
+        <mat-form-field hintLabel="Máximo {{characterLimitName}} caracteres">
+            <input [(ngModel)]="nameTitleHTML" class="tagInput" matInput placeholder="Nombre" formControlName="name" maxlength="{{characterLimitName}}" #nameInput>
+            <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/{{characterLimitName}}</mat-hint>
         </mat-form-field>
         <p class="warning" id="warningName"></p>
     </div>

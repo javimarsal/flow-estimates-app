@@ -30,6 +30,7 @@ export class WorkItemDialogComponent implements OnInit {
   tags: string[] = [];
   projectId: any = '';
   projectTags: Tag[] = [];
+  characterLimitName = 50;
 
   // Etiquetas
   separatorKeysCodes: number[] = [];

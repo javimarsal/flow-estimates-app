@@ -138,7 +138,6 @@ export class PanelComponent implements OnInit {
   }
 
   setProjectWorkItems(workItems: []) {
-    console.log(workItems)
     this.projectWorkItems = workItems;
     this.filterProjectWorkItems(this.selectedTags);
   }
@@ -495,9 +494,30 @@ export class PanelComponent implements OnInit {
           break;
         }
       }
+
+      // Si el panel no está en la position 0
+      if (panel.position != 0) {
+        let panelPosition = panel.position;
+        
+        // actualizamos la posición del resto de paneles que están entre 0 (incluido) y panelPosition (no incluido, ya que aún no hemos actualizado panel)
+        for (let p of this.projectPanels) {
+          let position = p.position;
+          if (position>=0 && position<panelPosition) {
+            p.position++;
+            await lastValueFrom(this.panelService.updatePanel(p));
+          }
+        }
+
+        // ponemos a 0 (primera posición) la posición de panel, ya que es backlog
+        panel.position = 0;
+
+        // actualizar orden en panelNames
+        let index = this.panelNames.indexOf(newName)
+        this.panelNames.splice(index, 1);
+        this.panelNames.unshift(newName);
+      }
     }
 
-    // si backlog es false, no hacer nada más
 
     // Actualizar el Panel en la bdd
     await lastValueFrom(this.panelService.updatePanel(panel));

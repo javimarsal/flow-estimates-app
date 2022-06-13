@@ -12,9 +12,10 @@
             <!-- Input to create new proyect -->
             <div>
                 <form class="formContainer" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="createProject(formDirective)">
-                    <mat-form-field class="formTitleProject" appearance="fill" [hideRequiredMarker]="true">
+                    <mat-form-field class="formTitleProject" appearance="fill" [hideRequiredMarker]="true" hintLabel="Máximo {{characterLimitName}} caracteres">
                         <mat-label>Título</mat-label>
-                        <input type="text" matInput autocomplete="off" formControlName="name" required #nameInput>
+                        <input type="text" matInput autocomplete="off" formControlName="name" required maxlength="{{characterLimitName}}" #nameInput>
+                        <mat-hint class="inputFooter" align="end">{{nameInput.value?.length || 0}}/{{characterLimitName}}</mat-hint>
                         <mat-error class="inputFooter" *ngIf="form.invalid">Debes introducir un nombre</mat-error>
                     </mat-form-field>
 

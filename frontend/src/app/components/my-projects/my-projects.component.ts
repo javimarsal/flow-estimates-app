@@ -24,6 +24,7 @@ export class MyProjectsComponent implements OnInit {
   
   // Formulario para crear proyectos
   form: FormGroup;
+  characterLimitName = 30;
 
   constructor(private userService: UserService, private projectService: ProjectService, private panelService: PanelService, private router: Router, private cookieService: CookieService, private fb: FormBuilder) {
     this.form = this.fb.group({

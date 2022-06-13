@@ -7,9 +7,10 @@
         </mat-expansion-panel-header>
         <!-- Input to create new work-item -->
         <form class="create-work-item">
-            <mat-form-field class="full-width" appearance="fill">
+            <mat-form-field class="full-width" appearance="fill" hintLabel="Máximo {{characterLimitName}} caracteres">
                 <mat-label>Título de la tarea</mat-label>
-                <input type="text" id="title" matInput autocomplete="off" [(ngModel)]="value" [ngModelOptions]="{standalone: true}">
+                <input type="text" id="title" matInput autocomplete="off" [(ngModel)]="value" [ngModelOptions]="{standalone: true}" maxlength="{{characterLimitName}}" #titleInput>
+                <mat-hint class="inputFooter" align="end">{{titleInput.value?.length || 0}}/{{characterLimitName}}</mat-hint>
                 <span>
                     <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">

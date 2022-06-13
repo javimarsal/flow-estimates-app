@@ -5,9 +5,9 @@
                 <a class="link-nombre" routerLink="/project/{{project._id}}" [state]="{ projectName: project.name, projectPanels: project.panels, projectTags: project.tags, projectWorkItems: project.workItems}">{{ project.name }}</a>
         </span>
     
-        <span class="rol">
+        <!-- <span class="rol">
             Rol: <span class="rol-name">{{ role }}</span>
-        </span>
+        </span> -->
     </div>
 
     <button class="editButton btn btn-outline-primary" (click)="openDialog()">Editar</button>
