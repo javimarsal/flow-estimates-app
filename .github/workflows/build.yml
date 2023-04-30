@@ -30,9 +30,9 @@ jobs:
         npm run build
       working-directory: ./frontend
 
-    - name: push to heroku
-      uses: akhileshns/heroku-deploy@v3.12.12
+    - name: Render Deployment
+      uses: sws2apps/render-deployment@v1.2.0
       with:
-        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+        serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+        apiKey: ${{ secrets.RENDER_API_KEY }}
+        multipleDeployment: false #optional, default true
