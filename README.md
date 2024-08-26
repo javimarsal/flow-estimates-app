@@ -1,5 +1,7 @@
 ![](https://i.ibb.co/fGcdQ5V/logo-title.png)
 
+- [New repository](https://codeberg.org/jmarsal/flow-estimates-app)
+
 A web application to organize your project and the correct way to estimate *when it will be done*!
 
 You can access using the [Flow Estimates website](https://flow-estimates.herokuapp.com/) (on development).
